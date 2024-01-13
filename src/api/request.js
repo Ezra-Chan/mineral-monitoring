@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getToken } from 'utils/account';
+import { GlobalStore } from '@/store';
 
 let apiContextPath = '';
 if (import.meta.env.DEV) {
@@ -15,7 +16,9 @@ export const getInstance = (prefix = 'shmanage') => {
     baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
-    headers: localStorage.getItem('token') ? { Authorization: localStorage.getItem('token') } : {},
+    headers: localStorage.getItem('GlobalState')
+      ? { Authorization: JSON.parse(localStorage.getItem('GlobalState')).token }
+      : {},
   });
 
   instance.defaults.headers.post['Content-Type'] = 'application/json';
@@ -32,8 +35,9 @@ export const getInstance = (prefix = 'shmanage') => {
       }
       if (data && data.code !== 200 && !(data instanceof Blob)) {
         if (data.code === 401) {
-          if (localStorage.getItem('userInfo')) {
-            const { username, password } = JSON.parse(localStorage.getItem('userInfo'));
+          const globalStore = GlobalStore();
+          if (globalStore?.userInfo) {
+            const { username, password } = globalStore.userInfo;
             await getToken({ username, password });
             // 将原请求再发一遍
             const res = await getInstance()[config.method.toLowerCase()](

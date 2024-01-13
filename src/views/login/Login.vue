@@ -83,7 +83,7 @@ const login = async formEl => {
 
 <style scoped lang="less">
 .login-wrapper {
-  background: url('../../assets/images/bg.png') no-repeat;
+  background: url('../../assets/images/login-bg.png') no-repeat;
   background-size: 100% 100%;
   .el-form {
     background-color: #fffffff5;

@@ -16,3 +16,13 @@ export const radarLogin = params => request.post('admin/login', params);
  * @returns
  */
 export const getUserInfo = () => request.get('admin/info');
+
+/**
+ * 获取仓库列表
+ */
+export const getWareHouseList = () =>
+  request.post('store/warehouse/list', {
+    pageNum: 1,
+    pageSize: 1000,
+    warehouseStatus: '302',
+  });

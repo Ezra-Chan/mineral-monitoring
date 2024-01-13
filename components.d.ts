@@ -8,14 +8,22 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Bigscreen: typeof import('./src/components/bigscreen/Bigscreen.vue')['default']
+    BigscreenBox: typeof import('./src/components/BigscreenBox.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElCol: typeof import('element-plus/es')['ElCol']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElInput: typeof import('element-plus/es')['ElInput']
+    ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
+    ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
+    ElRow: typeof import('element-plus/es')['ElRow']
+    ElSpace: typeof import('element-plus/es')['ElSpace']
     ElText: typeof import('element-plus/es')['ElText']
     Index: typeof import('./src/components/Index.vue')['default']
     Login: typeof import('./src/components/login/Login.vue')['default']
+    RealTime: typeof import('./src/components/RealTime.vue')['default']
+    Video: typeof import('./src/components/Video.vue')['default']
     Weather: typeof import('./src/components/Weather.vue')['default']
   }
   export interface ComponentCustomProperties {

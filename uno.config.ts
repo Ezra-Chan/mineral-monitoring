@@ -7,5 +7,9 @@ export default defineConfig({
     [/^fs-(\d+\.{0,1}\d{0,2})$/, ([, d]) => ({ 'font-size': `${d}rem` })],
     [/^w-calc-(\d+\.{0,1}\d{0,2})$/, ([, d]) => ({ width: `calc(100% - ${d}rem)` })],
     [/^h-calc-(\d+\.{0,1}\d{0,2})$/, ([, d]) => ({ height: `calc(100% - ${d}rem)` })],
+    [
+      /^letter-spacing-(\d+\.{0,1}\d{0,2})$/,
+      ([, d]) => ({ 'letter-spacing': `${d}em`, 'padding-left': `${d}em` }),
+    ],
   ],
 });
