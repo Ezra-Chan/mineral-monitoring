@@ -16,8 +16,9 @@
         <el-col :span="10">
           <BigscreenBox class="" title="视频监控" type="center">
             <VideoMonitor
-              src="http://root:Hhszcy%4012345@10.1.1.215/live/media/WIN-VUPGBFMIFQN/DeviceIpint.1/SourceEndpoint.video:0:0?w=1600&h=0"
+              src="WIN-VUPGBFMIFQN/DeviceIpint.1/SourceEndpoint.video:0:0"
               :header="videoHeader"
+              v-if="cameras.length"
             />
           </BigscreenBox>
         </el-col>
@@ -64,7 +65,6 @@ import VideoMonitor from '@/components/Video.vue';
 import { getWareHouseList } from '@/api/radar';
 import { getCameraList } from '@/api/camera';
 import { GlobalStore } from '@/store';
-import { reactive } from 'vue';
 
 const globalStore = GlobalStore();
 const radarChartTypes = markRaw([
@@ -83,9 +83,10 @@ const radarChartTypes = markRaw([
 ]);
 const radarChart = $ref(radarChartTypes[0].value);
 const videoHeader = reactive({
-  Authorization: 'Bearer ' + globalStore.cameraToken,
+  Authorization: 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=',
   'Access-Control-Allow-Origin': '*',
 });
+let cameras = $ref([]);
 
 const queryWareHouses = async () => {
   const { data = {} } = await getWareHouseList();
@@ -94,8 +95,8 @@ const queryWareHouses = async () => {
 };
 
 const queryCameraList = async () => {
-  const res = await getCameraList();
-  console.log({ res });
+  const { data = {} } = await getCameraList();
+  cameras = data.cameras || [];
 };
 
 onMounted(() => {

@@ -6,7 +6,7 @@ let apiContextPath = '';
 if (import.meta.env.DEV) {
   apiContextPath = '/api2';
 } else {
-  apiContextPath = 'http://root:Hhszcy%4012345@10.1.1.215';
+  apiContextPath = 'http://10.1.1.215';
 }
 
 export const getInstance = prefix => {
@@ -18,17 +18,14 @@ export const getInstance = prefix => {
     baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
-    headers: localStorage.getItem('GlobalState')
-      ? { Authorization: JSON.parse(localStorage.getItem('GlobalState')).cameraToken }
-      : {},
+    headers: { Authorization: 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=' },
   });
 
   instance.defaults.headers.post['Content-Type'] = 'application/json';
 
   instance.interceptors.response.use(
     async response => {
-      let { data, request = {}, config = {} } = response;
-      console.log({ response });
+      let { data, request = {} } = response;
       if (request.responseType === 'arraybuffer') {
         response.data = data;
         return response;
@@ -44,22 +41,7 @@ export const getInstance = prefix => {
       return response;
     },
     error => {
-      console.error(error);
       if (error.response && error.response.status === 401) {
-        axios
-          .create({
-            baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
-            timeout: 60000,
-            validateStatus: status => status >= 200 && status < 300,
-            headers: {},
-          })
-          .get('/camera/list')
-          .then(res => {
-            console.log('res', res);
-          })
-          .catch(err => {
-            console.log('err', err);
-          });
         return;
       }
       return Promise.reject(error.response);

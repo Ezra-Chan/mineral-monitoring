@@ -1,9 +1,10 @@
 <template>
-  <video ref="video" muted controls poster="" />
+  <video ref="videoRef" muted controls poster="" />
 </template>
 
 <script setup>
 import Hls from 'hls.js';
+import { getM3u8Url } from '@/api/camera';
 
 const props = defineProps({
   src: {
@@ -13,23 +14,26 @@ const props = defineProps({
   header: Object,
 });
 
-const video = ref();
+const apiContextPath = import.meta.env.DEV ? '/api2' : 'http://10.1.1.215';
+
+const videoRef = $ref();
 let hlsRef = $ref();
 let videoLive = $ref({});
 
 const initMpegts = url => {
-  videoLive = video.value;
+  videoLive = videoRef;
   if (Hls.isSupported()) {
-    hlsRef = new Hls();
-    hlsRef.loadSource(url);
-    hlsRef.attachMedia(videoLive);
-    hlsRef.on(Hls.Events.MANIFEST_PARSED, () => {
-      hlsRef.config.xhrSetup = (xhr, url) => {
+    const hls = new Hls({
+      xhrSetup: (xhr, url) => {
+        xhr.withCredentials = true;
         xhr.open('GET', url, true);
-        Object.keys(props.header).forEach(key => {
-          xhr.setRequestHeader(key, props.header[key]);
-        });
-      };
+        xhr.setRequestHeader('Authorization', 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=');
+      },
+    });
+    hlsRef = hls;
+    hls.loadSource(url);
+    hls.attachMedia(videoLive);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
       videoLive.play();
     });
   } else if (videoLive.canPlayType('application/vnd.apple.mpegurl')) {
@@ -41,8 +45,13 @@ const mpegts_destroy = () => {
   hlsRef && hlsRef.destroy();
 };
 
+const getM3u8UrlApi = async () => {
+  const { data = {} } = await getM3u8Url(props.src);
+  initMpegts(apiContextPath + data.stream_url);
+};
+
 onMounted(() => {
-  initMpegts(props.src);
+  getM3u8UrlApi();
 });
 
 onBeforeUnmount(() => {

@@ -76,7 +76,7 @@ export default defineConfig(({ mode }) => {
           rewrite: path => path.replace('/api1', ''),
         },
         '/api2': {
-          target: 'http://root:Hhszcy%4012345@10.1.1.215',
+          target: 'http://10.1.1.215',
           changeOrigin: true,
           rewrite: path => path.replace('/api2', ''),
         },
