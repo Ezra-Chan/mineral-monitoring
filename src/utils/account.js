@@ -5,9 +5,8 @@ export const getToken = async params => {
   try {
     const { data = {} } = await radarToken(params);
     const { tokenHead, token } = data;
-    localStorage.setItem('token', tokenHead + token);
     const globalStore = GlobalStore();
-    globalStore.setGlobalState({ token: tokenHead + token, userInfo: params });
+    globalStore.setGlobalState({ radarToken: tokenHead + token, userInfo: params });
   } catch (error) {
     if (error?.data?.code === 500) {
       ElMessage({ message: error.data.message, type: 'error' });

@@ -21,6 +21,10 @@ const props = defineProps({
     type: String,
     default: 'Nanjing',
   },
+  useLocation: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const weatherInfo = reactive({
@@ -30,10 +34,12 @@ const weatherInfo = reactive({
 });
 let isError = $ref(true);
 
-const getWeather = async () => {
-  const { error, data } = await useFetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${props.city},cn&APPID=dafd5b04233280103dcd8a78bf7e6843&lang=zh_cn&units=metric`,
-  );
+const getWeather = async location => {
+  const param = location
+    ? `lat=${location.latitude}&lon=${location.longitude}`
+    : `q=${props.city},cn`;
+  const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?APPID=dafd5b04233280103dcd8a78bf7e6843&lang=zh_cn&units=metric&${param}`;
+  const { error, data } = await useFetch(weatherUrl);
   if (error.value) {
     isError = true;
     return;
@@ -49,11 +55,34 @@ const getWeather = async () => {
   }
 };
 
-const { pause } = useIntervalFn(() => getWeather(), props.duration * 1000 * 60, {
-  immediateCallback: true,
-});
+const getLocation = () => {
+  const location = localStorage.getItem('geoLocation');
+  if (location) {
+    getWeather(JSON.parse(location));
+  } else {
+    getWeather();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          getWeather({ latitude, longitude });
+          localStorage.setItem('geoLocation', JSON.stringify({ latitude, longitude }));
+        },
+        err => {
+          console.log(err);
+        },
+      );
+    }
+  }
+};
+
+const { pause } = useIntervalFn(
+  () => (props.useLocation ? getLocation() : getWeather()),
+  props.duration * 1000 * 60,
+  {
+    immediateCallback: true,
+  },
+);
 
 onBeforeUnmount(() => pause());
 </script>
-
-<style lang="less" scoped></style>

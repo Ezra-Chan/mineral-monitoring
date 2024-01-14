@@ -69,11 +69,16 @@ export default defineConfig(({ mode }) => {
       open: true,
       hmr: true,
       proxy: {
-        '/api': {
+        '/api1': {
           target: 'https://app.or-intech.com',
           changeOrigin: true,
           secure: true,
-          rewrite: path => path.replace('/api', ''),
+          rewrite: path => path.replace('/api1', ''),
+        },
+        '/api2': {
+          target: 'http://root:Hhszcy%4012345@10.1.1.215',
+          changeOrigin: true,
+          rewrite: path => path.replace('/api2', ''),
         },
       },
     },

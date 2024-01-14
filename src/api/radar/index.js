@@ -1,5 +1,5 @@
 // 可信仓后台管理接口
-import request from '../request';
+import request from './request';
 
 /**
  * 登录雷达系统

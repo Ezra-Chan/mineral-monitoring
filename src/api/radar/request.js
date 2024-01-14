@@ -4,7 +4,9 @@ import { GlobalStore } from '@/store';
 
 let apiContextPath = '';
 if (import.meta.env.DEV) {
-  apiContextPath = '/api';
+  apiContextPath = '/api1';
+} else {
+  apiContextPath = 'https://app.or-intech.com';
 }
 
 export const getInstance = (prefix = 'shmanage') => {
@@ -17,7 +19,7 @@ export const getInstance = (prefix = 'shmanage') => {
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
     headers: localStorage.getItem('GlobalState')
-      ? { Authorization: JSON.parse(localStorage.getItem('GlobalState')).token }
+      ? { Authorization: JSON.parse(localStorage.getItem('GlobalState')).radarToken }
       : {},
   });
 

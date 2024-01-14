@@ -1,10 +1,10 @@
 <template>
   <div
     class="bigscreen-box w-full h-full flex flex-col p2 relative"
-    :class="{ 'after-bg': type.indexOf('center') }"
+    :class="{ 'center-box': type.includes('center') }"
   >
-    <div class="w-full h-12 flex justify-between items-center">
-      <el-text v-if="title" class="color-white fs-1">{{ title }}</el-text>
+    <div class="w-full h-10 flex justify-between items-center">
+      <el-text v-if="title" class="color-white fs-1 letter-spacing-0.2">{{ title }}</el-text>
       <slot v-else name="headerLeft"></slot>
       <slot name="headerCenter"></slot>
       <slot name="headerRight"></slot>
@@ -27,8 +27,8 @@ const props = defineProps({
 const degre = computed(() => {
   const mapping = {
     leftTop: 'rotate(180deg)',
-    leftBottom: 'rotate(90deg)',
-    right: 'rotate(0deg)',
+    leftBottom: 'rotate(180deg) scaleY(-1)',
+    rightTop: 'scaleY(-1)',
   };
   return mapping[props.type];
 });
@@ -36,7 +36,7 @@ const degre = computed(() => {
 
 <style lang="less" scoped>
 .bigscreen-box {
-  &.after-bg::after {
+  &::after {
     content: '';
     width: 100%;
     height: 100%;
@@ -46,6 +46,13 @@ const degre = computed(() => {
     background: url('@/assets/images/detail-bg.png') no-repeat right bottom;
     background-size: cover;
     transform: v-bind(degre);
+    opacity: 0.6;
+    border-radius: 0.25rem;
+    box-shadow: inset 0 0 4px 4px #0009;
+  }
+
+  &.center-box::after {
+    background: url('@/assets/images/detail-bg.png') no-repeat;
   }
 
   & > div {
