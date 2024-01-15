@@ -26,3 +26,6 @@ export const getWareHouseList = () =>
     pageSize: 1000,
     warehouseStatus: '302',
   });
+
+export const getWareHouseDetail = id =>
+  request.post('/store/warehouse/findDetailByTime', { id, timestamp: '' });

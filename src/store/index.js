@@ -21,8 +21,9 @@ export const GlobalStore = defineStore({
   id: 'globalState',
   state: () => ({
     radarToken: '',
-    userInfo: undefined,
+    userInfo: void 0,
     wareHouse: [],
+    currentWareHouse: void 0,
   }),
   getters: {},
   actions: {
