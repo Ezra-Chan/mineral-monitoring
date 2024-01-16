@@ -1,0 +1,15 @@
+@bigscreenBorderColor: #fff9;
+#bigscreen * {
+  --el-fill-color-blank: transparent;
+  --el-bg-color: transparent;
+  --el-radio-button-checked-bg-color: transparent;
+  --el-radio-button-checked-text-color: var(--el-color-primary);
+  --el-text-color-regular: #fff;
+  --el-text-color-secondary: #fff;
+  --el-border-color: @bigscreenBorderColor;
+  --el-border-color-lighter: @bigscreenBorderColor;
+  --el-border-color-extra-light: @bigscreenBorderColor;
+}
+:deep(.el-radio-button__inner) {
+  border-color: @bigscreenBorderColor;
+}

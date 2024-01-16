@@ -9,7 +9,7 @@
       <slot name="headerCenter"></slot>
       <slot name="headerRight"></slot>
     </div>
-    <div class="w-full h-calc-3">
+    <div class="w-full h-calc-3 flex flex-col gap-5">
       <slot></slot>
     </div>
   </div>

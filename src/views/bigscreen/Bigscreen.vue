@@ -43,29 +43,22 @@
         <el-col :span="7" class="h-full">
           <BigscreenBox class="" title="货物存量" type="leftBottom">
             <Inventory />
-            <Inventory :defaultDate="dayjs().subtract(1, 'day')" />
+            <Inventory :defaultDate="dayjs().subtract(1, 'day').valueOf()" />
           </BigscreenBox>
         </el-col>
         <el-col :span="10" class="h-full">
           <BigscreenBox class="" type="center">
             <template #headerLeft>
-              <el-radio-group
-                v-model="radarChart"
-                style="--el-button-bg-color: transparent; --el-button-text-color: #fff"
-              >
-                <el-radio-button
-                  v-for="(type, i) in radarChartTypes"
-                  :label="type.value"
-                  :key="i"
-                  style="
-                    --el-radio-button-checked-bg-color: transparent;
-                    --el-radio-button-checked-text-color: var(--el-color-primary);
-                  "
-                >
+              <el-radio-group v-model="radarChart">
+                <el-radio-button v-for="(type, i) in radarChartTypes" :label="type.value" :key="i">
                   {{ type.label }}
                 </el-radio-button>
               </el-radio-group>
             </template>
+            <template #headerRight>
+              <el-text class="color-white fs-1">{{ radarDataTime }}</el-text>
+            </template>
+            <PointCloud :type="radarChart" :cb="time => (radarDataTime = time)" />
           </BigscreenBox>
         </el-col>
         <el-col :span="7" class="h-full">
@@ -79,27 +72,16 @@
 <script setup>
 import dayjs from 'dayjs';
 import VideoMonitor from '@/components/Video.vue';
-import { getWareHouseList, getWareHouseDetail } from '@/api/radar';
+import { getWareHouseList, getWareHouseDetail, getCloudPointData } from '@/api/radar';
 import { getCameraList } from '@/api/camera';
 import { GlobalStore } from '@/store';
 import Inventory from './components/Inventory.vue';
+import PointCloud from './components/PointCloud.vue';
+import { radarChartTypes } from '@/utils/constant';
 
 const globalStore = GlobalStore();
-const radarChartTypes = markRaw([
-  {
-    label: '货物堆形',
-    value: 'findWarehouseGoodsPointCloudDataHistogram',
-  },
-  {
-    label: '货物点云',
-    value: 'findHandlePointCloudDataHistory',
-  },
-  {
-    label: '仓内全景',
-    value: 'findPointCloudDataHistory',
-  },
-]);
 const radarChart = $ref(radarChartTypes[0].value);
+let radarDataTime = $ref();
 const videoHeader = reactive({
   Authorization: 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=',
   'Access-Control-Allow-Origin': '*',
@@ -117,10 +99,14 @@ const wareHouseInfo = computed(
 );
 
 const queryWareHouses = async () => {
-  const { data = {} } = await getWareHouseList();
-  const { list = [] } = data;
-  currentWareHouse.value = list[0]?.id;
-  globalStore.setGlobalState({ wareHouse: list });
+  try {
+    const { data = {} } = await getWareHouseList();
+    const { list = [] } = data;
+    currentWareHouse.value = list[0]?.id;
+    globalStore.setGlobalState({ wareHouse: list });
+  } catch (error) {
+    ElMessage({ type: 'error', message: '获取仓库列表失败，请刷新重试！' });
+  }
 };
 
 const queryCameraList = async () => {
@@ -146,6 +132,8 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+@import './cover.less';
+
 #bigscreen {
   background: url('@/assets/images/bg.png') no-repeat center center;
   background-size: cover;

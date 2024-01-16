@@ -29,3 +29,6 @@ export const getWareHouseList = () =>
 
 export const getWareHouseDetail = id =>
   request.post('/store/warehouse/findDetailByTime', { id, timestamp: '' });
+
+export const getCloudPointData = (type, id) =>
+  request.post(`/store/newRadar/${type}`, { id, timestamp: '' });
