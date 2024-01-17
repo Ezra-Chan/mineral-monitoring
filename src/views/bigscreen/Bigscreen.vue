@@ -56,9 +56,13 @@
               </el-radio-group>
             </template>
             <template #headerRight>
-              <el-text class="color-white fs-1">{{ radarDataTime }}</el-text>
+              <el-text class="color-white fs-1 p-r-2">{{ radarDataTime }}</el-text>
             </template>
-            <PointCloud :type="radarChart" :cb="time => (radarDataTime = time)" />
+            <PointCloud
+              :key="currentWareHouse"
+              :type="radarChart"
+              :cb="time => (radarDataTime = time)"
+            />
           </BigscreenBox>
         </el-col>
         <el-col :span="7" class="h-full">

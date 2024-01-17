@@ -17,29 +17,38 @@ import { getCloudPointData } from '@/api/radar';
 import { GlobalStore } from '@/store';
 import { watch } from 'vue';
 
+const axis = {
+  type: 'value',
+  min: 0,
+  name: '',
+};
+const grid = {
+  axisLine: {
+    lineStyle: { color: '#fff' },
+  },
+  axisPointer: {
+    lineStyle: { color: '#fff' },
+  },
+  viewControl: {
+    minAlpha: 0,
+    minBeta: 0,
+    maxBeta: 90,
+    beta: 50,
+  },
+  boxDepth: 200,
+};
+
 const barOption = {
-  itemStyle: {
-    color: '#D9D19C',
-    opacity: 0.8,
-  },
-  emphasis: {
-    itemStyle: {
-      color: '#D8D8D2',
-    },
-  },
-  shading: 'lambert',
   xAxis3D: {
-    type: 'value',
+    ...axis,
   },
   yAxis3D: {
-    type: 'value',
+    ...axis,
   },
   zAxis3D: {
-    type: 'value',
+    ...axis,
   },
   grid3D: {
-    boxWidth: 200,
-    boxDepth: 80,
     light: {
       main: {
         intensity: 1.2,
@@ -48,50 +57,60 @@ const barOption = {
         intensity: 0.3,
       },
     },
-    axisLine: {
-      lineStyle: { color: '#fff' },
-    },
-    axisPointer: {
-      lineStyle: { color: '#fff' },
-    },
+    ...grid,
   },
   series: [
     {
       type: 'bar3D',
       data: [],
+      itemStyle: {
+        color: '#D9D19C',
+        opacity: 0.8,
+      },
+      emphasis: {
+        itemStyle: {
+          color: '#EEE',
+        },
+        label: {
+          show: false,
+        },
+      },
+      shading: 'lambert',
+      label: {
+        show: false,
+      },
     },
   ],
 };
 const pointOption = {
-  coordinateSystem: 'cartesian3D',
-  itemStyle: {
-    color: '#F46B4B',
-  },
-  blendMode: 'lighter',
   xAxis3D: {
-    type: 'value',
+    ...axis,
   },
   yAxis3D: {
-    type: 'value',
+    ...axis,
   },
   zAxis3D: {
-    type: 'value',
+    ...axis,
   },
   grid3D: {
-    axisLine: {
-      lineStyle: { color: '#fff' },
-    },
-    axisPointer: {
-      lineStyle: { color: '#fff' },
-    },
-    // viewControl: {
-    //   autoRotate: true,
-    // },
+    ...grid,
   },
   series: [
     {
       type: 'scatter3D',
       data: [],
+      itemStyle: {
+        color: '#F46B4B',
+      },
+      label: {
+        show: false,
+      },
+      emphasis: {
+        label: {
+          show: false,
+        },
+      },
+      symbolSize: 2,
     },
   ],
 };
@@ -117,11 +136,17 @@ const onResize = () => myChart?.resize();
 const getData = async () => {
   loading = true;
   try {
-    const { data = [] } = await getCloudPointData(props.type, globalStore.currentWareHouse);
+    const id = globalStore.currentWareHouse;
+    const { data = [] } = await getCloudPointData(props.type, id);
     const { infoList = [], fileDate = [], fileUpdateTime } = data;
     props.cb(fileUpdateTime);
+    const wareHouse = globalStore.wareHouse.find(item => item.id === id) || {};
+    const { houseHight, houseLength, houseWidth } = wareHouse;
     const isBar = props.type === radarChartTypes[0].value;
     const chartOption = isBar ? barOption : pointOption;
+    chartOption.xAxis3D.max = houseWidth;
+    chartOption.yAxis3D.max = houseLength;
+    chartOption.zAxis3D.max = houseHight;
     if (isBar) {
       // 堆形图
       let barData = [];
@@ -134,8 +159,6 @@ const getData = async () => {
       chartOption.series[0].data = fileDate;
     }
     console.log(chartOption);
-    myChart && myChart.clear();
-    myChart = echarts.init(chartRef.value);
     myChart.setOption(chartOption);
   } catch (error) {
     ElMessage({ type: 'error', message: '获取数据失败' });
@@ -145,11 +168,12 @@ const getData = async () => {
 };
 
 watch(
-  () => [props.type, globalStore.currentWareHouse],
+  () => props.type,
   () => getData(),
 );
 
 onMounted(() => {
+  myChart = echarts.init(chartRef.value);
   getData();
 });
 </script>
