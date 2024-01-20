@@ -24,6 +24,8 @@ export const GlobalStore = defineStore({
     userInfo: void 0,
     wareHouse: [],
     currentWareHouse: void 0,
+    goodsType: [],
+    houseType: [],
   }),
   getters: {},
   actions: {

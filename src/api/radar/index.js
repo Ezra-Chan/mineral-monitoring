@@ -27,8 +27,17 @@ export const getWareHouseList = () =>
     warehouseStatus: '302',
   });
 
-export const getWareHouseDetail = id =>
-  request.post('/store/warehouse/findDetailByTime', { id, timestamp: '' });
+// 获取货仓详细信息
+export const getWareHouseDetail = (id, timestamp = '') =>
+  request.post('/store/warehouse/findDetailByTime', { id, timestamp });
 
+// 堆形图、点云图
 export const getCloudPointData = (type, id) =>
   request.post(`/store/newRadar/${type}`, { id, timestamp: '' });
+
+// 堆形图 用来获取不同时间的数据
+export const getDataByTime = (id, timestamp) =>
+  request.post('/store/newRadar/findWarehouseGoodsPointCloudDataHistogram', { id, timestamp });
+
+// 获取字典
+export const getDict = () => request.get('/store/enums/list?name=FoodstuffTypeEnum,HouseTypeEnum');

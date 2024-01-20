@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BigscreenBox: typeof import('./src/components/BigscreenBox.vue')['default']
+    Carousel: typeof import('./src/components/Carousel.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
@@ -23,6 +24,7 @@ declare module 'vue' {
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElText: typeof import('element-plus/es')['ElText']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     RealTime: typeof import('./src/components/RealTime.vue')['default']
     Video: typeof import('./src/components/Video.vue')['default']
     Weather: typeof import('./src/components/Weather.vue')['default']

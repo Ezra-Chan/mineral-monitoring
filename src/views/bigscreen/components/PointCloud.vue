@@ -15,7 +15,6 @@ import { vElementSize } from '@vueuse/components';
 import { radarChartTypes } from '@/utils/constant';
 import { getCloudPointData } from '@/api/radar';
 import { GlobalStore } from '@/store';
-import { watch } from 'vue';
 
 const axis = {
   type: 'value',
@@ -128,11 +127,10 @@ const props = defineProps({
 const globalStore = GlobalStore();
 
 const chartRef = ref();
-let myChart = $ref();
+let myChart = shallowRef();
 let loading = $ref(false);
 
-const onResize = () => myChart?.resize();
-
+const onResize = () => myChart.value?.resize();
 const getData = async () => {
   loading = true;
   try {
@@ -158,8 +156,7 @@ const getData = async () => {
       // 点云图
       chartOption.series[0].data = fileDate;
     }
-    console.log(chartOption);
-    myChart.setOption(chartOption);
+    myChart.value.setOption(chartOption);
   } catch (error) {
     ElMessage({ type: 'error', message: '获取数据失败' });
   } finally {
@@ -173,7 +170,7 @@ watch(
 );
 
 onMounted(() => {
-  myChart = echarts.init(chartRef.value);
+  myChart.value = echarts.init(chartRef.value);
   getData();
 });
 </script>

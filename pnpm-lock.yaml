@@ -17,6 +17,9 @@ dependencies:
   axios:
     specifier: ^1.6.5
     version: 1.6.5
+  bifrost-cors:
+    specifier: ^1.0.4
+    version: 1.0.4
   dayjs:
     specifier: ^1.11.10
     version: 1.11.10
@@ -41,6 +44,9 @@ dependencies:
   querystringify:
     specifier: ^2.2.0
     version: 2.2.0
+  swiper:
+    specifier: ^11.0.5
+    version: 11.0.5
   vue:
     specifier: ^3.4.5
     version: 3.4.5(typescript@5.3.3)
@@ -1426,6 +1432,10 @@ packages:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
 
+  /bifrost-cors@1.0.4:
+    resolution: {integrity: sha512-58fxEYxZGicacXngn469553Wy3pmyHdiPVLN10W/BSC34P9Ebs50bx6Lbaw6xiFMVbU/fPi2pFjJGR1A7+c+MQ==}
+    dev: false
+
   /binary-extensions@2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
@@ -2551,6 +2561,11 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
     dev: true
+
+  /swiper@11.0.5:
+    resolution: {integrity: sha512-rhCwupqSyRnWrtNzWzemnBLMoyYuoDgGgspAm/8iBD3jCvAWycPLH4Z3TB0O5520DHLzMx94yUMH/B9Efpa48w==}
+    engines: {node: '>= 4.7.0'}
+    dev: false
 
   /to-fast-properties@2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
