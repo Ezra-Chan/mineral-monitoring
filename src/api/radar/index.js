@@ -32,8 +32,8 @@ export const getWareHouseDetail = (id, timestamp = '') =>
   request.post('/store/warehouse/findDetailByTime', { id, timestamp });
 
 // 堆形图、点云图
-export const getCloudPointData = (type, id) =>
-  request.post(`/store/newRadar/${type}`, { id, timestamp: '' });
+export const getCloudPointData = (type, id, timestamp) =>
+  request.post(`/store/newRadar/${type}`, { id, timestamp: timestamp || '' });
 
 // 堆形图 用来获取不同时间的数据
 export const getDataByTime = (id, timestamp) =>

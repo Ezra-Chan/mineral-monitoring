@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pie-chart w-full h-full"
+    class="bar-chart w-full h-full"
     ref="chartRef"
     v-element-size="onResize"
     v-loading="loading"
@@ -33,6 +33,16 @@ const goodsType = computed(() => {
   });
   return map;
 });
+const serie = {
+  type: 'bar',
+  stack: 'total',
+  label: {
+    color: '#fff',
+  },
+  emphasis: {
+    focus: 'series',
+  },
+};
 
 const onResize = () => myChart.value?.resize();
 
@@ -41,24 +51,25 @@ const initChart = async () => {
     loading = true;
     myChart.value = echarts.init(chartRef.value);
     const list = globalStore.wareHouse.map(item => item.id);
-    const value = await Promise.all([...list.map(querySingleData)]);
-    let dt = [];
-    value.forEach(item => (dt = dt.concat(item)));
-    const map = {};
-    dt.forEach(item => {
-      if (!map[item.key]) {
-        map[item.key] = 0;
-      }
-      map[item.key] += item.value;
-    });
-    const chartData = [];
-    Object.keys(map).forEach(key => {
-      chartData.push({
-        value: toFixed2(map[key]),
-        name: goodsType.value[key],
+    const values = await Promise.all(list.map(querySingleData));
+    const goodsMap = [];
+    values.forEach(item => {
+      Object.keys(item).forEach(key => {
+        if (!goodsMap.includes(key)) {
+          goodsMap.push(key);
+        }
       });
     });
-    const options = {
+    const series = goodsMap.map(key => ({
+      ...serie,
+      name: goodsType.value[key],
+      label: {
+        show: true,
+        formatter: ({ value }) => value || '',
+      },
+      data: list.map((_, i) => toFixed2(values[i][key])),
+    }));
+    myChart.value.setOption({
       tooltip: {
         trigger: 'item',
       },
@@ -69,32 +80,35 @@ const initChart = async () => {
           color: '#fff',
         },
       },
-      series: [
-        {
-          name: '',
-          type: 'pie',
-          radius: ['35%', '60%'],
-          data: chartData,
-          label: {
+      xAxis: {
+        type: 'category',
+        data: globalStore.wareHouse.map(item => item.fullName),
+        axisLine: {
+          show: true,
+          lineStyle: {
             color: '#fff',
-            formatter: '{b}\n{c}m³\n{d}%',
-          },
-          itemStyle: {
-            borderRadius: 10,
-            borderColor: '#fff',
-            borderWidth: 2,
-          },
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)',
-            },
           },
         },
-      ],
-    };
-    myChart.value.setOption(options);
+      },
+      yAxis: {
+        type: 'value',
+        name: '单位：m³',
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#fff',
+          },
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: '#999',
+            type: 'dashed',
+          },
+        },
+      },
+      series,
+    });
   } catch (error) {
   } finally {
     loading = false;
@@ -113,7 +127,7 @@ const querySingleData = async id => {
     }
     goodsMap[type] += item.actualVolume || 0;
   });
-  return Object.keys(goodsMap).map(key => ({ key, value: goodsMap[key] }));
+  return goodsMap;
 };
 
 onMounted(() => {

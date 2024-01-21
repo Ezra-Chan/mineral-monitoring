@@ -119,6 +119,10 @@ const props = defineProps({
     type: String,
     default: radarChartTypes[0].value,
   },
+  time: {
+    type: [String, Number, Date, Array],
+    default: '',
+  },
   cb: {
     type: Function,
     default: () => {},
@@ -135,7 +139,7 @@ const getData = async () => {
   loading = true;
   try {
     const id = globalStore.currentWareHouse;
-    const { data = [] } = await getCloudPointData(props.type, id);
+    const { data = [] } = await getCloudPointData(props.type, id, props.time);
     const { infoList = [], fileDate = [], fileUpdateTime } = data;
     props.cb(fileUpdateTime);
     const wareHouse = globalStore.wareHouse.find(item => item.id === id) || {};
@@ -158,6 +162,7 @@ const getData = async () => {
     }
     myChart.value.setOption(chartOption);
   } catch (error) {
+    console.error(error);
     ElMessage({ type: 'error', message: '获取数据失败' });
   } finally {
     loading = false;

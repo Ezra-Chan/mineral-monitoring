@@ -3,7 +3,7 @@
     <div class="bigscreen-header h-20 flex justify-center items-center select-none">
       <Weather city="Hechi" class="self-start absolute left-0" />
       <el-text class="letter-spacing-0.5 p-l-5 fs-2.5 color-white fw-bold">
-        仓库监管集成平台
+        数字仓储管理平台
       </el-text>
       <div class="flex items-center gap-15 absolute right-0 self-start p-r-4 h-12.5">
         <el-select v-model="currentWareHouse">
@@ -26,12 +26,21 @@
         </el-col>
         <el-col :span="10" class="h-full">
           <bigscreen-box class="" title="视频监控" type="center">
-            <template #headerRight>
-              <el-text v-if="currentWareHouse" class="color-white">
-                {{ wareHouseInfo }}
-              </el-text>
-            </template>
-            <!-- <Carousel /> -->
+            <Carousel :length="['大门', '仓内', '后门']" :smooth="true">
+              <template v-for="item in ['大门', '仓内', '后门']" :key="item" v-slot:[item]>
+                <div class="w-full h-full flex flex-col justify-between items-center">
+                  <video
+                    class="w-full h-calc-2"
+                    src="http://vd3.bdstatic.com/mda-qaj9zjyf871krg42/360p/h264/1705734190377815932/mda-qaj9zjyf871krg42.mp4"
+                    muted
+                    autoplay
+                    controls
+                    poster=""
+                  />
+                  <span>{{ item }}</span>
+                </div>
+              </template>
+            </Carousel>
             <!-- <video-monitor
               src="WIN-VUPGBFMIFQN/DeviceIpint.1/SourceEndpoint.video:0:0"
               :header="videoHeader"
@@ -40,19 +49,28 @@
           </bigscreen-box>
         </el-col>
         <el-col :span="7" class="h-full">
-          <bigscreen-box class="" title="货物存量占比饼图（所有仓库）" type="rightTop">
-            <pie-chart />
+          <bigscreen-box class="" title="货物存量堆叠柱状图" type="rightTop">
+            <bar-chart />
           </bigscreen-box>
         </el-col>
       </el-row>
       <el-row class="w-full h-50%" :gutter="8">
         <el-col :span="7" class="h-full">
           <bigscreen-box class="" title="货物存量" type="leftBottom">
-            <Inventory :key="currentWareHouse + ':Inventory1'" />
-            <Inventory
-              :key="currentWareHouse + ':Inventory2'"
-              :defaultDate="dayjs().subtract(1, 'day').valueOf()"
-            />
+            <div class="h-full flex flex-col justify-between">
+              <Inventory
+                class="h-50%"
+                :key="currentWareHouse + ':Inventory1'"
+                :defaultDate="firstTime.valueOf()"
+                :cb="t => (firstTime = t)"
+              />
+              <Inventory
+                class="h-50%"
+                :key="currentWareHouse + ':Inventory2'"
+                :defaultDate="secondTime.valueOf()"
+                :cb="t => (secondTime = t)"
+              />
+            </div>
           </bigscreen-box>
         </el-col>
         <el-col :span="10" class="h-full">
@@ -64,19 +82,57 @@
                 </el-radio-button>
               </el-radio-group>
             </template>
-            <template #headerRight v-if="radarDataTime">
+            <template #headerRight v-if="currentWareHouse">
+              <el-tooltip effect="dark" content="点击跳往可信仓系统">
+                <el-text @click="openRaderSystem" class="color-blue fs-1 p-r-1 cursor-pointer">
+                  {{ wareHouseInfo }}
+                </el-text>
+              </el-tooltip>
+            </template>
+            <!-- <template #headerRight v-if="radarDataTime">
               <el-tooltip effect="dark" content="点击跳往可信仓系统">
                 <el-text @click="openRaderSystem" class="color-blue fs-1 p-r-2 cursor-pointer">
                   数据时间：{{ radarDataTime }}
                 </el-text>
               </el-tooltip>
-            </template>
-            <point-cloud
-              v-if="currentWareHouse"
-              :key="currentWareHouse"
-              :type="radarChart"
-              :cb="time => (radarDataTime = time)"
-            />
+            </template> -->
+            <Carousel :length="2" :showSize="1" noDrag>
+              <!-- <template v-for="item in [firstTime, secondTime]" :key="item" v-slot:[item]>
+                <point-cloud
+                  v-if="currentWareHouse"
+                  :key="currentWareHouse + item"
+                  :type="radarChart"
+                  :time="dayjs(item).format(format)"
+                  :cb="time => (radarDataTime = time)"
+                />
+              </template> -->
+              <template #1>
+                <div class="w-full h-full flex flex-col justify-between items-center">
+                  <span class="fs-1"> 数据时间：{{ radarDataTime1 }} </span>
+                  <point-cloud
+                    v-if="currentWareHouse"
+                    :key="currentWareHouse + firstTime"
+                    :type="radarChart"
+                    :time="dayjs(firstTime).format(format)"
+                    :cb="time => (radarDataTime1 = time)"
+                    class="h-calc-1.5"
+                  />
+                </div>
+              </template>
+              <template #2>
+                <div class="w-full h-full flex flex-col justify-between items-center">
+                  <span class="fs-1"> 数据时间：{{ radarDataTime2 }} </span>
+                  <point-cloud
+                    v-if="currentWareHouse"
+                    :key="currentWareHouse + secondTime"
+                    :type="radarChart"
+                    :time="dayjs(secondTime).format(format)"
+                    :cb="time => (radarDataTime2 = time)"
+                    class="h-calc-1.5"
+                  />
+                </div>
+              </template>
+            </Carousel>
           </bigscreen-box>
         </el-col>
         <el-col :span="7" class="h-full">
@@ -96,13 +152,17 @@ import { GlobalStore } from '@/store';
 import Inventory from './components/Inventory.vue';
 import PointCloud from './components/PointCloud.vue';
 import CurveChart from './components/CurveChart.vue';
-import PieChart from './components/PieChart.vue';
+import BarChart from './components/BarChart.vue';
 import { radarChartTypes } from '@/utils/constant';
 // import BifrostCors from 'bifrost-cors';
 
 const globalStore = GlobalStore();
 const radarChart = $ref(radarChartTypes[0].value);
-let radarDataTime = $ref();
+let radarDataTime1 = $ref();
+let radarDataTime2 = $ref();
+let firstTime = $ref(dayjs());
+let secondTime = $ref(dayjs().subtract(1, 'day'));
+const format = 'YYYY-MM-DD 23:59:59';
 const videoHeader = reactive({
   Authorization: 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=',
   'Access-Control-Allow-Origin': '*',
@@ -112,11 +172,9 @@ const currentWareHouse = ref(globalStore.currentWareHouse);
 let wareHouseDetail = $ref({});
 const wareHouseInfo = computed(
   () =>
-    `${wareHouseDetail.houseTypeDesc || '平房仓'}（长：${wareHouseDetail.houseLength || 0}米，宽：${
+    `${wareHouseDetail.houseTypeDesc || '平房仓'}(长:${wareHouseDetail.houseLength || 0}米，宽:${
       wareHouseDetail.houseWidth || 0
-    }米，高：${wareHouseDetail.houseHight || 0}米，堆放限高：${
-      wareHouseDetail.highestGrain || 0
-    }米）`,
+    }米，高:${wareHouseDetail.houseHight || 0}米，堆放限高:${wareHouseDetail.highestGrain || 0}米)`,
 );
 
 const queryWareHouses = async () => {

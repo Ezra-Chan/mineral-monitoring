@@ -4,11 +4,12 @@
       <el-date-picker
         v-model="date"
         type="date"
+        format="YYYY-MM-DD"
+        style="width: 150px"
         :clearable="false"
         :disabled-date="disabledDate"
         :value-format="format"
-        format="YYYY-MM-DD"
-        style="width: 150px"
+        @change="handleDateChange"
       />
       <el-text class="color-white fs-1" v-if="dataTime">数据时间：{{ dataTime }}</el-text>
     </div>
@@ -35,6 +36,7 @@ const props = defineProps({
     type: [Date, Array, Number, String],
     default: dayjs().valueOf(),
   },
+  cb: Function,
 });
 const columns = [
   {
@@ -100,6 +102,8 @@ const queryGoodsInventory = async time => {
     }
   }
 };
+
+const handleDateChange = t => props.cb?.(t);
 
 watch(
   () => date,
