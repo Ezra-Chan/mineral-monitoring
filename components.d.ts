@@ -26,7 +26,9 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElText: typeof import('element-plus/es')['ElText']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    FullScreen: typeof import('./src/components/FullScreen.vue')['default']
     RealTime: typeof import('./src/components/RealTime.vue')['default']
+    SvgIcon: typeof import('./src/components/SvgIcon.vue')['default']
     Video: typeof import('./src/components/Video.vue')['default']
     Weather: typeof import('./src/components/Weather.vue')['default']
   }

@@ -1,10 +1,22 @@
 <template>
-  <video ref="videoRef" muted controls poster="" />
+  <video ref="videoRef" class="video-js" poster="" />
 </template>
 
 <script setup>
-import Hls from 'hls.js';
+import videojs from 'video.js';
+import lang_zhcn from 'video.js/dist/lang/zh-CN.json';
 import { getM3u8Url } from '@/api/camera';
+import 'video.js/dist/video-js.min.css';
+
+videojs.addLanguage('zh-CN', lang_zhcn);
+
+// videojs.Vhs.xhr.beforeRequest = function (options) {
+//   const headers = options.headers || {};
+//   headers['Authorization'] = 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=';
+//   console.log(headers);
+//   options.headers = headers;
+//   return options;
+// };
 
 const props = defineProps({
   src: {
@@ -14,49 +26,63 @@ const props = defineProps({
   header: Object,
 });
 
-const apiContextPath = import.meta.env.DEV ? '/api2' : 'http://10.1.1.215';
+const apiContextPath = import.meta.env.DEV ? '/api2' : 'http://root:Hhszcy@12345@10.1.1.215';
 
 const videoRef = $ref();
-let hlsRef = $ref();
-let videoLive = $ref({});
+const videoInst = shallowRef();
 
-const initMpegts = url => {
-  videoLive = videoRef;
-  if (Hls.isSupported()) {
-    const hls = new Hls({
-      xhrSetup: (xhr, url) => {
-        xhr.withCredentials = true;
-        xhr.open('GET', url, true);
-        xhr.setRequestHeader('Authorization', 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=');
+const initVideo = () => {
+  videoInst.value = videojs(videoRef, {
+    autoplay: true,
+    muted: true,
+    language: 'zh-CN',
+    controls: true,
+    preload: 'auto',
+    liveui: true,
+    playbackRates: [1.0],
+    sources: [
+      {
+        src: apiContextPath + '/live/media' + props.src + '?format=mp4',
+        type: 'video/mp4',
       },
-    });
-    hlsRef = hls;
-    hls.loadSource(url);
-    hls.attachMedia(videoLive);
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      videoLive.play();
-    });
-  } else if (videoLive.canPlayType('application/vnd.apple.mpegurl')) {
-    videoLive.src = url;
-  }
+    ],
+  });
 };
-
-const mpegts_destroy = () => {
-  hlsRef && hlsRef.destroy();
-};
-
-const getM3u8UrlApi = async () => {
-  const { data = {} } = await getM3u8Url(props.src);
-  initMpegts(apiContextPath + data.stream_url);
-};
+// const playerOptions = reactive({
+//   playbackRates: [1.0],
+//   autoplay: true,
+//   muted: true,
+//   loop: false,
+//   preload: 'auto',
+//   poster: '',
+//   volume: 0,
+//   language: 'zh-CN',
+//   fluid: true,
+//   hls: true,
+//   sources: [
+//     {
+//       type: 'application/x-mpegURL',
+//       src: apiContextPath + '/live/media' + props.src + '?format=mp4',
+//     },
+//   ],
+//   controlBar: {
+//     timeDivider: true,
+//     durationDisplay: true,
+//     remainingTimeDisplay: false,
+//     fullscreenToggle: true,
+//   },
+//   crossorigin: 'use-credentials',
+// });
 
 onMounted(() => {
-  getM3u8UrlApi();
+  initVideo();
 });
 
-onBeforeUnmount(() => {
-  mpegts_destroy();
-});
+onBeforeUnmount(() => {});
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+:deep(.vjs-big-play-button) {
+  display: none !important;
+}
+</style>

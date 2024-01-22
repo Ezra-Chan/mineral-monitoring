@@ -1,11 +1,11 @@
 <template>
-  <div id="bigscreen" class="w-full h-full flex flex-col">
+  <div id="bigscreen" ref="bigscreenRef" class="w-full h-full flex flex-col">
     <div class="bigscreen-header h-20 flex justify-center items-center select-none">
       <Weather city="Hechi" class="self-start absolute left-0" />
       <el-text class="letter-spacing-0.5 p-l-5 fs-2.5 color-white fw-bold">
         {{ globalStore.systemTitle }}
       </el-text>
-      <div class="flex items-center gap-15 absolute right-0 self-start p-r-4 h-12.5">
+      <div class="flex items-center gap-10 absolute right-0 self-start p-r-4 h-12.5">
         <el-select v-model="currentWareHouse">
           <el-option
             v-for="item in globalStore.wareHouse"
@@ -15,6 +15,7 @@
           />
         </el-select>
         <real-time class="color-white" />
+        <full-screen />
       </div>
     </div>
     <div class="w-full h-calc-5 flex-1 flex flex-col justify-between items-center gap-2">
@@ -41,23 +42,23 @@
                   <video class="w-full h-calc-2" muted autoplay controls poster="">
                     <source
                       :src="
-                        'http://root:Hhszcy@12345@10.1.1.215/live/media' +
+                        '/api2/live/media' +
                         globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint +
                         '?format=mp4'
                       "
                     />
                   </video>
+                  <!-- <video-monitor
+                    class="w-full h-calc-2"
+                    :src="globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint"
+                    :header="videoHeader"
+                  /> -->
                   <el-text class="fs-1">{{
                     globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].name
                   }}</el-text>
                 </div>
               </template>
             </Carousel>
-            <!-- <video-monitor
-              src="WIN-VUPGBFMIFQN/DeviceIpint.1/SourceEndpoint.video:0:0"
-              :header="videoHeader"
-              v-if="cameras.length"
-            /> -->
           </bigscreen-box>
         </el-col>
         <el-col :span="7" class="h-full">
@@ -172,6 +173,8 @@ import EventList from './components/EventList.vue';
 import { radarChartTypes } from '@/utils/constant';
 // import BifrostCors from 'bifrost-cors';
 const globalStore = GlobalStore();
+const bigscreenRef = ref();
+const { isFullscreen, toggle } = useFullscreen(bigscreenRef);
 const radarChart = $ref(radarChartTypes[0].value);
 let radarDataTime1 = $ref();
 let radarDataTime2 = $ref();

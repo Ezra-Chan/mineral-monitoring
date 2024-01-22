@@ -19,11 +19,11 @@
     "echarts": "^5.4.3",
     "echarts-gl": "^2.0.9",
     "element-plus": "^2.4.4",
-    "hls.js": "^1.5.1",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "querystringify": "^2.2.0",
     "swiper": "^11.0.5",
+    "video.js": "^7.21.5",
     "vue": "^3.4.5"
   },
   "devDependencies": {

@@ -43,6 +43,7 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { User, Lock } from '@element-plus/icons-vue';
 import { getToken } from '@/utils/account';
 import { GlobalStore } from '@/store';
