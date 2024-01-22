@@ -3,7 +3,7 @@
     <div class="bigscreen-header h-20 flex justify-center items-center select-none">
       <Weather city="Hechi" class="self-start absolute left-0" />
       <el-text class="letter-spacing-0.5 p-l-5 fs-2.5 color-white fw-bold">
-        数字仓储管理平台
+        {{ globalStore.systemTitle }}
       </el-text>
       <div class="flex items-center gap-15 absolute right-0 self-start p-r-4 h-12.5">
         <el-select v-model="currentWareHouse">
@@ -26,18 +26,30 @@
         </el-col>
         <el-col :span="10" class="h-full">
           <bigscreen-box class="" title="视频监控" type="center">
-            <Carousel :length="['大门', '仓内', '后门']" :smooth="true">
-              <template v-for="item in ['大门', '仓内', '后门']" :key="item" v-slot:[item]>
+            <Carousel
+              v-if="globalStore.wareHouseIdMapCameras && currentWareHouse"
+              :length="globalStore.wareHouseIdMapCameras[currentWareHouse].length"
+              :smooth="true"
+              :key="currentWareHouse + ':Carousel'"
+            >
+              <template
+                v-for="item in globalStore.wareHouseIdMapCameras[currentWareHouse].length"
+                :key="item"
+                v-slot:[item]
+              >
                 <div class="w-full h-full flex flex-col justify-between items-center">
-                  <video
-                    class="w-full h-calc-2"
-                    src="http://vd3.bdstatic.com/mda-qaj9zjyf871krg42/360p/h264/1705734190377815932/mda-qaj9zjyf871krg42.mp4"
-                    muted
-                    autoplay
-                    controls
-                    poster=""
-                  />
-                  <span>{{ item }}</span>
+                  <video class="w-full h-calc-2" muted autoplay controls poster="">
+                    <source
+                      :src="
+                        'http://root:Hhszcy@12345@10.1.1.215/live/media' +
+                        globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint +
+                        '?format=mp4'
+                      "
+                    />
+                  </video>
+                  <el-text class="fs-1">{{
+                    globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].name
+                  }}</el-text>
                 </div>
               </template>
             </Carousel>
@@ -84,14 +96,14 @@
             </template>
             <template #headerRight v-if="currentWareHouse">
               <el-tooltip effect="dark" content="点击跳往可信仓系统">
-                <el-text @click="openRaderSystem" class="color-blue fs-1 p-r-1 cursor-pointer">
+                <el-text @click="openRadarSystem" class="color-blue fs-1 p-r-1 cursor-pointer">
                   {{ wareHouseInfo }}
                 </el-text>
               </el-tooltip>
             </template>
             <!-- <template #headerRight v-if="radarDataTime">
               <el-tooltip effect="dark" content="点击跳往可信仓系统">
-                <el-text @click="openRaderSystem" class="color-blue fs-1 p-r-2 cursor-pointer">
+                <el-text @click="openRadarSystem" class="color-blue fs-1 p-r-2 cursor-pointer">
                   数据时间：{{ radarDataTime }}
                 </el-text>
               </el-tooltip>
@@ -136,7 +148,9 @@
           </bigscreen-box>
         </el-col>
         <el-col :span="7" class="h-full">
-          <bigscreen-box class="" title="仓库动态" type="rightBottom"></bigscreen-box>
+          <bigscreen-box class="" title="仓库动态" type="rightBottom">
+            <event-list />
+          </bigscreen-box>
         </el-col>
       </el-row>
     </div>
@@ -145,17 +159,18 @@
 
 <script setup>
 import dayjs from 'dayjs';
+import axios from 'axios';
 import VideoMonitor from '@/components/Video.vue';
-import { getWareHouseList, getWareHouseDetail, getDataByTime, getDict } from '@/api/radar';
-import { getCameraList } from '@/api/camera';
+import { getWareHouseList, getWareHouseDetail, getDict } from '@/api/radar';
+import { getCameraList, getLayouts, getBatch } from '@/api/camera';
 import { GlobalStore } from '@/store';
 import Inventory from './components/Inventory.vue';
 import PointCloud from './components/PointCloud.vue';
 import CurveChart from './components/CurveChart.vue';
 import BarChart from './components/BarChart.vue';
+import EventList from './components/EventList.vue';
 import { radarChartTypes } from '@/utils/constant';
 // import BifrostCors from 'bifrost-cors';
-
 const globalStore = GlobalStore();
 const radarChart = $ref(radarChartTypes[0].value);
 let radarDataTime1 = $ref();
@@ -188,6 +203,45 @@ const queryWareHouses = async () => {
   }
 };
 
+const getCameraLayout = async () => {
+  const { data: { items = [] } = {} } = await getLayouts(dayjs().valueOf());
+  const cameraMaps = {};
+  items.forEach((item = {}) => {
+    const { id, cells = [] } = item.body || {};
+    cameraMaps[id] = Object.values(cells)
+      .filter(cell => cell.camera_ap)
+      .map(cell => cell.camera_ap);
+  });
+  const wareHouseIdMapCameras = {};
+  globalStore.radarCameraMap.forEach(item => {
+    wareHouseIdMapCameras[item.wareHouseId] = cameraMaps[item.cameraLayoutId];
+  });
+  const keys = Object.keys(wareHouseIdMapCameras);
+  keys.forEach(key => {
+    wareHouseIdMapCameras[key] = wareHouseIdMapCameras[key].map(item => {
+      const detail = cameras.find(c => c.accessPoint === item);
+      return {
+        accessPoint: item.replace('hosts', ''),
+        name: detail?.displayName || '',
+      };
+    });
+  });
+  globalStore.setGlobalState({ wareHouseIdMapCameras });
+  // const details = await Promise.all(
+  //   keys.map(id => getCameraDetail(wareHouseIdMapCameras[id].join(','))),
+  // );
+};
+
+const getCameraDetail = async filter => {
+  const { data = {} } = await getBatch(filter, dayjs().valueOf());
+  return data;
+};
+
+const getStaticMap = async () => {
+  const { data: { radarCameraMap = [], title } = {} } = await axios.get('/public/config.json');
+  globalStore.setGlobalState({ radarCameraMap, systemTitle: title });
+};
+
 const queryCameraList = async () => {
   const { data = {} } = await getCameraList();
   cameras = data.cameras || [];
@@ -205,7 +259,7 @@ const getDictApi = async () => {
   globalStore.setGlobalState({ goodsType: FoodstuffTypeEnum, houseType: HouseTypeEnum });
 };
 
-const openRaderSystem = () => {
+const openRadarSystem = () => {
   const id = currentWareHouse.value;
   const wareHouseInfo = globalStore.wareHouse.find(item => item.id === id) || {};
   const { houseHight, houseLength, houseWidth } = wareHouseInfo;
@@ -233,8 +287,10 @@ watch(
 
 onMounted(() => {
   getDictApi();
+  getStaticMap();
+  queryCameraList();
+  getCameraLayout();
   queryWareHouses();
-  // queryCameraList();
 });
 </script>
 

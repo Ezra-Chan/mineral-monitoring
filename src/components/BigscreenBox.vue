@@ -9,7 +9,7 @@
       <slot name="headerCenter"></slot>
       <slot name="headerRight"></slot>
     </div>
-    <div class="w-full h-calc-3 flex flex-col overflow-y-auto">
+    <div class="bigscreen-box-content w-full h-calc-3 flex flex-col overflow-y-auto">
       <slot></slot>
     </div>
   </div>
@@ -57,6 +57,23 @@ const degre = computed(() => {
 
   & > div {
     z-index: 1;
+  }
+
+  .bigscreen-box-content {
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.2);
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+      }
+    }
   }
 }
 </style>

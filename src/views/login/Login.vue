@@ -13,7 +13,7 @@
       :rules="rules"
     >
       <el-text type="primary" tag="div" class="font-size-7 text-center m-b-8">
-        仓库监管集成平台
+        {{ globalStore.systemTitle }}
       </el-text>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" :prefix-icon="User" placeholder="请输入账号" />
@@ -45,11 +45,13 @@
 <script setup>
 import { User, Lock } from '@element-plus/icons-vue';
 import { getToken } from '@/utils/account';
+import { GlobalStore } from '@/store';
 
 defineProps({
   msg: String,
 });
 
+const globalStore = GlobalStore();
 const loginFormRef = ref();
 const loginForm = reactive({
   username: '',
@@ -79,6 +81,15 @@ const login = async formEl => {
     }
   });
 };
+
+const getStaticMap = async () => {
+  const { data: { radarCameraMap = [], title } = {} } = await axios.get('/public/config.json');
+  globalStore.setGlobalState({ radarCameraMap, systemTitle: title });
+};
+
+onMounted(() => {
+  getStaticMap();
+});
 </script>
 
 <style scoped lang="less">

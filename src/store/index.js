@@ -20,12 +20,15 @@ const piniaPersistConfig = (key, paths) => {
 export const GlobalStore = defineStore({
   id: 'globalState',
   state: () => ({
+    systemTitle: '数字仓储管理平台',
     radarToken: '',
     userInfo: void 0,
     wareHouse: [],
     currentWareHouse: void 0,
     goodsType: [],
     houseType: [],
+    radarCameraMap: [],
+    wareHouseIdMapCameras: {},
   }),
   getters: {},
   actions: {
