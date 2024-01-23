@@ -15,6 +15,7 @@ import { vElementSize } from '@vueuse/components';
 import { getDataByTime } from '@/api/radar';
 import { GlobalStore } from '@/store';
 import { toFixed2 } from '@/utils/math';
+import { gradientColors } from '@/utils/constant';
 
 const globalStore = GlobalStore();
 const chartRef = ref(null);
@@ -50,7 +51,7 @@ const initChart = async () => {
         }
       });
     });
-    const series = dtMap.map(key => ({
+    const series = dtMap.map((key, i) => ({
       name: goodsType.value[key],
       data: values.map(item => {
         const value = item.find(item => item.key === key)?.value;
@@ -58,10 +59,30 @@ const initChart = async () => {
       }),
       type: 'line',
       smooth: true,
+      areaStyle: {
+        opacity: 0.8,
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: gradientColors[i % 3][0],
+          },
+          {
+            offset: 1,
+            color: gradientColors[i % 3][1],
+          },
+        ]),
+      },
     }));
     myChart.value.setOption({
+      animationDuration: 2000,
       tooltip: {
-        trigger: 'item',
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+          label: {
+            backgroundColor: '#6a7985',
+          },
+        },
       },
       legend: {
         orient: 'vertical',
