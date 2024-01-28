@@ -23,7 +23,8 @@
     "querystringify": "^2.2.0",
     "swiper": "^11.0.5",
     "video.js": "^7.21.5",
-    "vue": "^3.4.5"
+    "vue": "^3.4.5",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@unocss/preset-attributify": "^0.58.3",

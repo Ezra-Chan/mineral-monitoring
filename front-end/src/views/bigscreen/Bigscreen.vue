@@ -35,7 +35,7 @@
           <Inventory />
         </el-col>
         <el-col :span="10" class="h-full">
-          <bigscreen-box class="" title="视频监控" type="center">
+          <bigscreen-box title="视频监控" type="center">
             <Carousel
               v-if="globalStore.wareHouseIdMapCameras && currentWareHouse"
               :length="globalStore.wareHouseIdMapCameras[currentWareHouse].length"
@@ -71,8 +71,8 @@
           </bigscreen-box>
         </el-col>
         <el-col :span="7" class="h-full">
-          <bigscreen-box class="" title="货物存量堆叠柱状图" type="rightTop">
-            <bar-chart />
+          <bigscreen-box title="货物存量堆叠柱状图" type="rightTop">
+            <bar-chart v-if="currentWareHouse" />
           </bigscreen-box>
         </el-col>
       </el-row>
@@ -81,13 +81,13 @@
           <Inventory :default-date="dayjs().subtract(1, 'day')" type="leftBottom" />
         </el-col>
         <el-col :span="10" class="h-full">
-          <bigscreen-box class="" title="仓库动态" type="centerBottom">
+          <bigscreen-box title="仓库动态" type="centerBottom">
             <event-list />
           </bigscreen-box>
         </el-col>
         <el-col :span="7" class="h-full">
-          <bigscreen-box class="" title="货物体积变化曲线图" type="rightBottom">
-            <curve-chart :key="currentWareHouse + ':Curve'" />
+          <bigscreen-box title="货物体积变化曲线图" type="rightBottom">
+            <curve-chart v-if="currentWareHouse" :key="currentWareHouse + ':Curve'" />
           </bigscreen-box>
         </el-col>
       </el-row>

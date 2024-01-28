@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => {
             prefix: 'Icon',
           }),
         ],
-        imports: ['vue', '@vueuse/core'],
+        imports: ['vue', 'vue-router', '@vueuse/core'],
       }),
       Components({
         resolvers: [

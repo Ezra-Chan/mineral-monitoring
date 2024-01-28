@@ -2,8 +2,8 @@ import 'dotenv/config';
 import * as bodyParser from 'body-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { HttpFilter } from 'src/common/filter';
-import { TransformInterceptor } from 'src/common/response';
+import { HttpFilter } from './common/filter';
+import { TransformInterceptor } from './common/response';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

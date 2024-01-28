@@ -49,7 +49,7 @@ export const getInstance = (prefix = 'shmanage') => {
             );
             return res;
           } else {
-            location.href = '/login';
+            location.href = '/#/login';
           }
         }
         return Promise.reject(response);
@@ -79,8 +79,7 @@ export const sendRequest = (url, params = {}, options = {}) => {
     return getInstance()
       [options.method.toLowerCase()](url, params, options)
       .then(res => {
-        console.log(res);
-        localStorage.setItem(key, JSON.stringify(res));
+        localStorage.setItem(key, JSON.stringify({ data: res.data }));
         return res;
       })
       .catch(err => {
