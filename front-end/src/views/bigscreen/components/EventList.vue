@@ -16,7 +16,13 @@
     />
     <el-table-column label="操作" min-width="100" align="center">
       <template #default="{ row }">
-        <el-text type="primary" class="cursor-pointer" size="small" @click="handleView(row)">
+        <el-text
+          v-if="row.detail"
+          type="primary"
+          class="cursor-pointer"
+          size="small"
+          @click="handleView(row)"
+        >
           查看
         </el-text>
       </template>
@@ -27,20 +33,21 @@
 <script setup>
 import dayjs from 'dayjs';
 import { getEvents } from '@/api/camera';
+import { getAllEvents } from '@/api/monitoring';
 
 const eventTypes = ['车辆越线', '非机动车', '人员越线'];
 const columns = [
   {
-    prop: 'time',
+    prop: 'eventTime',
     label: '时间',
     minWidth: 150,
   },
   {
-    prop: 'type',
+    prop: 'eventName',
     label: '事件',
   },
   {
-    prop: 'detail',
+    prop: 'licensePlate',
     label: '明细',
   },
 ];
@@ -50,10 +57,11 @@ let loading = $ref(false);
 const getEventsList = async () => {
   loading = true;
   try {
-    const { data = {} } = await getEvents();
-    dataSource.value = (data.events || []).map(ev => ({
-      time: dayjs(ev.timestamp).format('YYYY-MM-DD hh:mm:ss'),
-      type: eventTypes[Math.floor(Math.random() * 3)],
+    // const { data = {} } = await getEvents();
+    const { data = [] } = await getAllEvents();
+    dataSource.value = data.map(ev => ({
+      ...ev,
+      eventTime: dayjs(ev.eventTime).format('YYYY-MM-DD hh:mm:ss'),
     }));
   } catch (error) {
   } finally {
@@ -61,14 +69,12 @@ const getEventsList = async () => {
   }
 };
 
-onMounted(() => {
-  getEventsList();
-  setInterval(() => {
-    dataSource.value.unshift({
-      time: dayjs().format('YYYY-MM-DD hh:mm:ss'),
-      type: eventTypes[Math.floor(Math.random() * 3)],
-    });
-  }, 2 * 1000);
+const handleView = row => {
+  console.log(row);
+};
+
+useIntervalFn(getEventsList, 10 * 1000, {
+  immediateCallback: true,
 });
 </script>
 

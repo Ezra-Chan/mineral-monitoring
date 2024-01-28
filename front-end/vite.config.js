@@ -80,6 +80,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: path => path.replace('/api2', ''),
         },
+        '/api3': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+          rewrite: path => path.replace('/api3', ''),
+        },
       },
     },
     esbuild: {

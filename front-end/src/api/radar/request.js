@@ -71,4 +71,22 @@ export const getInstance = (prefix = 'shmanage') => {
   return instance;
 };
 
+export const sendRequest = (url, params = {}, options = {}) => {
+  const key = url + JSON.stringify(params);
+  if (localStorage.getItem(key)) {
+    return Promise.resolve(JSON.parse(localStorage.getItem(key)));
+  } else {
+    return getInstance()
+      [options.method.toLowerCase()](url, params, options)
+      .then(res => {
+        console.log(res);
+        localStorage.setItem(key, JSON.stringify(res));
+        return res;
+      })
+      .catch(err => {
+        return Promise.reject(err);
+      });
+  }
+};
+
 export default getInstance();

@@ -1,5 +1,6 @@
 // 可信仓后台管理接口
-import request from './request';
+import dayjs from 'dayjs';
+import request, { sendRequest } from './request';
 
 /**
  * 登录雷达系统
@@ -32,12 +33,33 @@ export const getWareHouseDetail = (id, timestamp = '') =>
   request.post('/store/warehouse/findDetailByTime', { id, timestamp });
 
 // 堆形图、点云图
-export const getCloudPointData = (type, id, timestamp) =>
-  request.post(`/store/newRadar/${type}`, { id, timestamp: timestamp || '' });
+export const getCloudPointData = (type, id, timestamp) => {
+  if (!timestamp || dayjs(timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
+    return request.post(`/store/newRadar/${type}`, { id, timestamp: timestamp || '' });
+  } else {
+    return sendRequest(
+      `/store/newRadar/${type}`,
+      { id, timestamp: timestamp || '' },
+      { method: 'POST' },
+    );
+  }
+};
 
 // 堆形图 用来获取不同时间的数据
-export const getDataByTime = (id, timestamp) =>
-  request.post('/store/newRadar/findWarehouseGoodsPointCloudDataHistogram', { id, timestamp });
+export const getDataByTime = (id, timestamp) => {
+  if (!timestamp || dayjs(timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
+    return request.post('/store/newRadar/findWarehouseGoodsPointCloudDataHistogram', {
+      id,
+      timestamp,
+    });
+  } else {
+    return sendRequest(
+      '/store/newRadar/findWarehouseGoodsPointCloudDataHistogram',
+      { id, timestamp },
+      { method: 'POST' },
+    );
+  }
+};
 
 // 获取字典
 export const getDict = () => request.get('/store/enums/list?name=FoodstuffTypeEnum,HouseTypeEnum');
