@@ -87,7 +87,7 @@ const columns = [
 ];
 const format = 'YYYY-MM-DD 23:59:59';
 const radarChart = $ref(radarChartTypes[0].value);
-let dataSource = $ref([]);
+const dataSource = ref([]);
 const date = $ref(dayjs(props.defaultDate).format(format));
 let dataTime = $ref();
 const currentWareHouseInfo = computed(() =>
@@ -127,7 +127,7 @@ const queryGoodsInventory = async time => {
         volume: Math.round((goodsMap[goods].volume || 0) * 100) / 100,
         weight: Math.round((goodsMap[goods].weight || 0) * 100) / 100,
       }));
-      dataSource = ds;
+      dataSource.value = ds;
     } catch (error) {}
   }
 };
