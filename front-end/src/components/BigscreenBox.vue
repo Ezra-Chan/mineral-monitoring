@@ -54,9 +54,9 @@ const showAfter = computed(() => (props.title ? 'block' : 'none'));
     transform: v-bind(degre);
     opacity: 0.6;
     border-radius: 0.25rem;
-    border: 1px solid rgba(141, 255, 233, 0.3);
+    border: 1px solid rgba(141, 255, 233, 0.8);
     backdrop-filter: blur(10px);
-    // box-shadow: inset 0 0 4px 4px #0009;
+    box-shadow: inset 0 0 4px 4px rgba(87, 87, 87, 0.6);
   }
 
   &.center-box::after {

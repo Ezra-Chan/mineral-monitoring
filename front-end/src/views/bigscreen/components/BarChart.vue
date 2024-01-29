@@ -14,7 +14,7 @@ import { vElementSize } from '@vueuse/components';
 import { getDataByTime } from '@/api/radar';
 import { GlobalStore } from '@/store';
 import { toFixed2 } from '@/utils/math';
-import { gradientColors } from '@/utils/constant';
+import { barGradientColors } from '@/utils/constant';
 
 const props = defineProps({
   loopTooltip: {
@@ -103,7 +103,7 @@ const loopTootip = (chart, option) => {
       seriesIndex: i,
       dataIndex,
     });
-    chart.dispatchAction({ type: 'highlight', seriesIndex: i, dataIndex });
+    // chart.dispatchAction({ type: 'highlight', seriesIndex: i, dataIndex });
     /**
      * 当跑到最后一个的时候，再回到第一项
      * */
@@ -139,7 +139,7 @@ const initChart = async () => {
         }
         if (item) {
           data.push(item);
-          const colors = gradientColors[goodsMap.indexOf(name) % gradientColors.length];
+          const colors = barGradientColors[goodsMap.indexOf(name) % barGradientColors.length];
           bar.push({
             ...serie,
             name: goodsType.value[name],
@@ -235,7 +235,17 @@ const initChart = async () => {
 
 const querySingleData = async id => {
   const { data = {} } = await getDataByTime(id);
-  const { infoList = [] } = data;
+  // const { infoList = [] } = data;
+  const infoList = [
+    {
+      goodsNo: 'ZG_ORE',
+      actualVolume: Math.random() * 3001 + 3000,
+    },
+    {
+      goodsNo: 'ZINC_SUBOXIDE',
+      actualVolume: Math.random() * 3001 + 3000,
+    },
+  ];
   const wareHouseGoodsType = wareHouseGoods.value[id];
   const goodsMap = {};
   infoList.forEach(item => {

@@ -5,7 +5,7 @@
     :data="dataSource"
     v-loading="loading"
     element-loading-background="#0004"
-    :header-row-style="{ background: 'rgba(14, 188, 225, 0.3)' }"
+    :header-row-style="{ background: 'rgba(14, 188, 225, 0.3)', color: 'var(--el-color-primary)' }"
   >
     <el-table-column
       v-for="item in columns"
@@ -53,9 +53,10 @@ const columns = [
 ];
 const dataSource = ref([]);
 let loading = $ref(false);
+let first = true;
 
 const getEventsList = async () => {
-  loading = true;
+  first && (loading = true);
   try {
     // const { data = {} } = await getEvents();
     const { data = [] } = await getAllEvents();
@@ -66,6 +67,7 @@ const getEventsList = async () => {
   } catch (error) {
   } finally {
     loading = false;
+    first = false;
   }
 };
 

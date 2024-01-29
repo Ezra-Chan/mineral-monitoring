@@ -22,7 +22,7 @@ const { toggle, isFullscreen } = useFullscreen(props.el);
   height: 4rem;
 
   .svg-icon .icon {
-    color: #76bbe7;
+    color: rgb(86, 225, 219);
     &:hover {
       color: #409eff;
     }

@@ -17,7 +17,7 @@ const day = useDateFormat(now, 'ddd');
 
 <style lang="less" scoped>
 .real-time {
-  color: #76bbe7;
+  color: rgb(86, 225, 219);
   letter-spacing: 2px;
 }
 </style>

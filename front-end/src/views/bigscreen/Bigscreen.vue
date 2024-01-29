@@ -17,7 +17,7 @@
         {{ globalStore.systemTitle }}
       </el-text>
       <div class="flex items-center gap-10 absolute right-0 self-start p-r-4 h-12.5">
-        <el-select v-model="currentWareHouse">
+        <el-select v-model="currentWareHouse" :teleported="false" style="width: 10rem">
           <el-option
             v-for="item in globalStore.wareHouse"
             :key="item.id"
@@ -25,7 +25,7 @@
             :value="item.id"
           />
         </el-select>
-        <real-time class="color-white" />
+        <real-time />
         <full-screen />
       </div>
     </div>
@@ -41,6 +41,7 @@
               :length="globalStore.wareHouseIdMapCameras[currentWareHouse].length"
               :smooth="true"
               :key="currentWareHouse + ':Carousel'"
+              :showButton="false"
             >
               <template
                 v-for="item in globalStore.wareHouseIdMapCameras[currentWareHouse].length"
@@ -218,6 +219,7 @@ onMounted(() => {
 
 #bigscreen {
   background: url('@/assets/images/bg.png') no-repeat center center;
+  background-color: rgb(10, 28, 50);
   background-size: cover;
   .bigscreen-header {
     background: url('@/assets/images/title-bg.png') no-repeat;

@@ -15,6 +15,7 @@
           format="YYYY-MM-DD"
           style="width: 150px; font-size: 14px"
           size="small"
+          :teleported="false"
           :clearable="false"
           :disabled-date="disabledDate"
           :value-format="format"
@@ -36,7 +37,10 @@
             stripe
             class="goods-inventory w-full h-calc-5"
             :data="dataSource"
-            :header-row-style="{ background: 'rgba(14, 188, 225, 0.3)' }"
+            :header-row-style="{
+              background: 'rgba(14, 188, 225, 0.3)',
+              color: 'var(--el-color-primary)',
+            }"
           >
             <el-table-column
               v-for="item in columns"

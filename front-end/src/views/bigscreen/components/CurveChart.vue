@@ -204,7 +204,17 @@ const initChart = async () => {
 
 const queryInventoryByTime = async time => {
   const { data = {} } = await getDataByTime(globalStore.currentWareHouse, time);
-  const { infoList = [] } = data;
+  // const { infoList = [] } = data;
+  const infoList = [
+    {
+      goodsNo: 'ZG_ORE',
+      actualVolume: Math.random() * 3001 + 3000,
+    },
+    {
+      goodsNo: 'ZINC_SUBOXIDE',
+      actualVolume: Math.random() * 3001 + 3000,
+    },
+  ];
   const wareHouseGoodsType = currentWareHouseInfo.value.goodsType;
   const goodsMap = {};
   infoList.forEach(item => {

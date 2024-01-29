@@ -89,6 +89,6 @@ onBeforeUnmount(() => pause());
 
 <style lang="less" scoped>
 .weather {
-  color: #76bbe7;
+  color: rgb(86, 225, 219);
 }
 </style>
