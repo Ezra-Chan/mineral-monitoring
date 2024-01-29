@@ -11,13 +11,15 @@ export class EventService {
   ) {}
 
   async create(createEventDto: CreateEventDto) {
-    console.log(createEventDto);
-
     const newEvent = this.eventRepository.create(createEventDto);
     return await this.eventRepository.save(newEvent);
   }
 
   async findAll() {
-    return await this.eventRepository.find();
+    return await this.eventRepository.find({
+      order: {
+        eventTime: 'DESC',
+      },
+    });
   }
 }

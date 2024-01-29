@@ -14,7 +14,7 @@ import { vElementSize } from '@vueuse/components';
 import { getDataByTime } from '@/api/radar';
 import { GlobalStore } from '@/store';
 import { toFixed2 } from '@/utils/math';
-import { colors } from '@/utils/constant';
+import { gradientColors } from '@/utils/constant';
 
 const props = defineProps({
   loopTooltip: {
@@ -44,19 +44,22 @@ const goodsType = computed(() => {
 });
 const serie = {
   type: 'bar',
-  stack: 'total',
   label: {
+    show: true,
     color: '#fff',
+    formatter: ({ value }) => value || '',
+    rotate: 90,
   },
   emphasis: {
     focus: 'series',
   },
+  barWidth: 30,
 };
 
 const onResize = () => myChart.value?.resize();
 
 const addListener = (chart, option) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     let zRender = chart.getZr();
     // 鼠标经过清除定时器
     chart.on('mouseover', () => {
@@ -88,29 +91,24 @@ const loopTootip = (chart, option) => {
   } // 清空定时器并再设置一个新的定时器
   let i = 0; // 索引0开始tootip轮播
   let j = 0;
-  let length = option.xAxis.data.length; // 多少个需要轮播
   let seriesLength = option.series.length; // 多少个系列需要轮播
   timer.value = setInterval(() => {
     /**
      * 派发展示tootip事件，第一个系列
      * 派发一次，就弹出tootip
      * */
+    const dataIndex = option.series[i].xAxisIndex;
     chart.dispatchAction({
       type: 'showTip',
-      seriesIndex: j,
-      dataIndex: i,
+      seriesIndex: i,
+      dataIndex,
     });
-    // chart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i }); // 派发高亮此案例用不到
+    chart.dispatchAction({ type: 'highlight', seriesIndex: i, dataIndex });
     /**
      * 当跑到最后一个的时候，再回到第一项
      * */
-    if (i === length - 1) {
+    if (i === seriesLength - 1) {
       i = 0;
-      if (j === seriesLength - 1) {
-        j = 0;
-      } else {
-        j++;
-      }
     } else {
       i++;
     }
@@ -131,17 +129,44 @@ const initChart = async () => {
         }
       });
     });
-    const series = goodsMap.map(key => ({
-      ...serie,
-      name: goodsType.value[key],
-      label: {
-        show: true,
-        formatter: ({ value }) => value || '',
-      },
-      data: list.map((_, i) => toFixed2(values[i][key])),
-    }));
+    const series = [];
+    const dealBar = (arr, name) => {
+      const bar = [];
+      arr.forEach((item, index) => {
+        const data = [];
+        for (let i = 0; i < index; i++) {
+          data.push('');
+        }
+        if (item) {
+          data.push(item);
+          const colors = gradientColors[goodsMap.indexOf(name) % gradientColors.length];
+          bar.push({
+            ...serie,
+            name: goodsType.value[name],
+            xAxisIndex: index,
+            data,
+            itemStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: colors[0],
+                },
+                {
+                  offset: 1,
+                  color: colors[1],
+                },
+              ]),
+              borderRadius: 50,
+            },
+          });
+        }
+      });
+      return bar;
+    };
+    const datas = goodsMap.map(key => list.map((_, i) => toFixed2(values[i][key])));
+    datas.forEach((dt, i) => series.push(...dealBar(dt, goodsMap[i])));
     const options = {
-      color: colors,
+      // color: colors,
       tooltip: {
         trigger: 'item',
         confine: true,
@@ -149,6 +174,9 @@ const initChart = async () => {
         borderColor: 'rgb(8,127,192)',
         textStyle: {
           color: '#fff',
+        },
+        axisPointer: {
+          type: 'shadow',
         },
       },
       grid: { bottom: 30 },
@@ -159,16 +187,21 @@ const initChart = async () => {
           color: '#fff',
         },
       },
-      xAxis: {
-        type: 'category',
-        data: globalStore.wareHouse.map(item => item.fullName),
-        axisLine: {
-          show: true,
-          lineStyle: {
-            color: '#999',
+      xAxis: globalStore.wareHouse.map((item, index) => {
+        const data = Array(globalStore.wareHouse.length).fill('');
+        data[index] = item.fullName;
+        return {
+          type: 'category',
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: '#999',
+            },
           },
-        },
-      },
+          position: 'bottom',
+          data,
+        };
+      }),
       yAxis: {
         type: 'value',
         name: '单位：m³',
@@ -194,6 +227,7 @@ const initChart = async () => {
       loopTootip(myChart.value, options);
     }
   } catch (error) {
+    console.error(error);
   } finally {
     loading = false;
   }

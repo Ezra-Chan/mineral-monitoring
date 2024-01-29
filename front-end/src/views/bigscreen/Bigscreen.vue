@@ -8,7 +8,7 @@
           :city="cities[wareHouseDetail.addressCityDesc]"
         />
         <el-tooltip effect="dark" content="点击跳往可信仓系统" v-if="currentWareHouse">
-          <el-text @click="openRadarSystem" class="color-blue fs-1 p-r-1 cursor-pointer">
+          <el-text @click="openRadarSystem" type="primary" class="fs-1 p-r-1 cursor-pointer">
             {{ wareHouseInfo }}
           </el-text>
         </el-tooltip>
@@ -71,7 +71,7 @@
           </bigscreen-box>
         </el-col>
         <el-col :span="7" class="h-full">
-          <bigscreen-box title="货物存量堆叠柱状图" type="rightTop">
+          <bigscreen-box title="货物存量分组柱状图" type="rightTop">
             <bar-chart v-if="currentWareHouse" />
           </bigscreen-box>
         </el-col>
@@ -81,13 +81,13 @@
           <Inventory :default-date="dayjs().subtract(1, 'day')" type="leftBottom" />
         </el-col>
         <el-col :span="10" class="h-full">
-          <bigscreen-box title="仓库动态" type="centerBottom">
-            <event-list />
+          <bigscreen-box title="货物体积变化曲线图" type="centerBottom">
+            <curve-chart v-if="currentWareHouse" :key="currentWareHouse + ':Curve'" />
           </bigscreen-box>
         </el-col>
         <el-col :span="7" class="h-full">
-          <bigscreen-box title="货物体积变化曲线图" type="rightBottom">
-            <curve-chart v-if="currentWareHouse" :key="currentWareHouse + ':Curve'" />
+          <bigscreen-box title="仓库动态" type="rightBottom">
+            <event-list />
           </bigscreen-box>
         </el-col>
       </el-row>

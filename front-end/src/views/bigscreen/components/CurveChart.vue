@@ -122,7 +122,7 @@ const initChart = async () => {
       }),
       type: 'line',
       smooth: true,
-      symbolSize: 10,
+      symbolSize: 8,
       areaStyle: {
         opacity: 0.8,
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [

@@ -1,4 +1,5 @@
 import * as rawbody from 'raw-body';
+import * as dayjs from 'dayjs';
 import { Controller, Get, Post, Body, Header, Req } from '@nestjs/common';
 import { EventService } from './event.service';
 
@@ -15,9 +16,18 @@ export class EventController {
       const raw = await rawbody(req);
       text = raw.toString().trim();
     }
-    const [ip, time, eventName] = text.split(',');
+    const [, time, eventName] = text.split(',');
+    const regex =
+      /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}\.\d{6})([+-]\d{4})$/;
+    let date = time;
+    const match = time.match(regex);
+    debugger;
+    if (match) {
+      const [, year, month, day, hour, minute, second] = match;
+      date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    }
     return this.eventService.create({
-      eventTime: new Date(time),
+      eventTime: new Date(date),
       eventName,
     });
   }
