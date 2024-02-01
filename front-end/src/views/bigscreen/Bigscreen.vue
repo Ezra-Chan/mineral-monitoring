@@ -58,11 +58,6 @@
                       "
                     />
                   </video>
-                  <!-- <video-monitor
-                    class="w-full h-calc-2"
-                    :src="globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint"
-                    :header="videoHeader"
-                  /> -->
                   <el-text class="fs-1">{{
                     globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].name
                   }}</el-text>
@@ -98,9 +93,8 @@
 
 <script setup>
 import dayjs from 'dayjs';
-import VideoMonitor from '@/components/Video.vue';
 import { getWareHouseList, getWareHouseDetail, getDict } from '@/api/radar';
-import { getCameraList, getLayouts, getBatch } from '@/api/camera';
+import { getCameraList, getLayouts } from '@/api/camera';
 import { GlobalStore } from '@/store';
 import Inventory from './components/Inventory.vue';
 import CurveChart from './components/CurveChart.vue';
@@ -109,10 +103,6 @@ import EventList from './components/EventList.vue';
 import cities from '@/utils/cities.json';
 
 const globalStore = GlobalStore();
-const videoHeader = reactive({
-  Authorization: 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=',
-  'Access-Control-Allow-Origin': '*',
-});
 let cameras = $ref([]);
 const currentWareHouse = ref(globalStore.currentWareHouse);
 let wareHouseDetail = $ref({});
@@ -158,14 +148,6 @@ const getCameraLayout = async () => {
     });
   });
   globalStore.setGlobalState({ wareHouseIdMapCameras });
-  // const details = await Promise.all(
-  //   keys.map(id => getCameraDetail(wareHouseIdMapCameras[id].join(','))),
-  // );
-};
-
-const getCameraDetail = async filter => {
-  const { data = {} } = await getBatch(filter, dayjs().valueOf());
-  return data;
 };
 
 const queryCameraList = async () => {
