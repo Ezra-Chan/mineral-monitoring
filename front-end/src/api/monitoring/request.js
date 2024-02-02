@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 let apiContextPath = '';
-if (import.meta.env.DEV) {
-  apiContextPath = '/api3';
-} else {
-  apiContextPath = 'http://localhost:3000';
-}
+// if (import.meta.env.DEV) {
+apiContextPath = '/api3';
+// } else {
+// apiContextPath = 'http://localhost:3000';
+// }
 
 export const getInstance = (prefix = '') => {
   if (prefix) {

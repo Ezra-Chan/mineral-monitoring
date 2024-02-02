@@ -24,7 +24,7 @@ const title = useTitle();
 
 const getStaticMap = async () => {
   const { data: { radarCameraMap = [], title: systemTitle } = {} } =
-    await axios.get('/public/config.json');
+    await axios.get('/config.json');
   globalStore.setGlobalState({ radarCameraMap, systemTitle });
   title.value = systemTitle;
 };
