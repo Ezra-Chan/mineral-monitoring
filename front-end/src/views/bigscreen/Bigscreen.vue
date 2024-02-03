@@ -1,98 +1,102 @@
 <template>
-  <div id="bigscreen" class="w-full h-full flex flex-col justify-between">
-    <div class="bigscreen-header h-20 flex justify-center items-center select-none">
-      <div class="flex gap-10 self-start absolute left-0">
-        <Weather
-          v-if="wareHouseDetail.addressCityDesc"
-          :key="wareHouseDetail.addressCityDesc"
-          :city="cities[wareHouseDetail.addressCityDesc]"
-        />
-        <el-tooltip effect="dark" content="点击跳往可信仓系统" v-if="currentWareHouse">
-          <el-text @click="openRadarSystem" type="primary" class="fs-1 p-r-1 cursor-pointer">
-            {{ wareHouseInfo }}
-          </el-text>
-        </el-tooltip>
-      </div>
-      <el-text class="letter-spacing-0.5 p-l-5 fs-2.5 color-white fw-bold">
-        {{ globalStore.systemTitle }}
-      </el-text>
-      <div class="flex items-center gap-10 absolute right-0 self-start p-r-4 h-12.5">
-        <el-select v-model="currentWareHouse" :teleported="false" style="width: 10rem">
-          <el-option
-            v-for="item in globalStore.wareHouse"
-            :key="item.id"
-            :label="item.fullName"
-            :value="item.id"
+  <v-scale-screen width="1920" height="1080">
+    <div id="bigscreen" class="w-full h-full flex flex-col justify-between">
+      <div class="bigscreen-header h-20 flex justify-center items-center select-none">
+        <div class="flex gap-10 self-start absolute left-0">
+          <Weather
+            v-if="wareHouseDetail.addressCityDesc"
+            :key="wareHouseDetail.addressCityDesc"
+            :city="cities[wareHouseDetail.addressCityDesc]"
           />
-        </el-select>
-        <real-time />
-        <full-screen />
+          <el-tooltip effect="dark" content="点击跳往可信仓系统" v-if="currentWareHouse">
+            <el-text @click="openRadarSystem" type="primary" class="fs-1 p-r-1 cursor-pointer">
+              {{ wareHouseInfo }}
+            </el-text>
+          </el-tooltip>
+        </div>
+        <el-text class="letter-spacing-0.5 p-l-5 fs-2.5 color-white fw-bold">
+          {{ globalStore.systemTitle }}
+        </el-text>
+        <div class="flex items-center gap-10 absolute right-0 self-start p-r-4 h-12.5">
+          <el-select v-model="currentWareHouse" :teleported="false" style="width: 10rem">
+            <el-option
+              v-for="item in globalStore.wareHouse"
+              :key="item.id"
+              :label="item.fullName"
+              :value="item.id"
+            />
+          </el-select>
+          <real-time />
+          <full-screen />
+        </div>
+      </div>
+      <div class="w-full h-calc-5.5 flex flex-col justify-between items-center gap-2">
+        <el-row class="w-full h-50%" :gutter="8">
+          <el-col :span="7" class="h-full">
+            <Inventory />
+          </el-col>
+          <el-col :span="10" class="h-full">
+            <bigscreen-box title="视频监控" type="center">
+              <Carousel
+                v-if="globalStore.wareHouseIdMapCameras && currentWareHouse"
+                :length="globalStore.wareHouseIdMapCameras[currentWareHouse].length"
+                :smooth="true"
+                :key="currentWareHouse + ':Carousel'"
+                :showButton="false"
+              >
+                <template
+                  v-for="item in globalStore.wareHouseIdMapCameras[currentWareHouse].length"
+                  :key="item"
+                  v-slot:[item]
+                >
+                  <div class="w-full h-full flex flex-col justify-between items-center">
+                    <video class="w-full h-calc-2" muted autoplay controls poster="">
+                      <source
+                        :src="
+                          '/api2/live/media' +
+                          globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1]
+                            .accessPoint +
+                          '?format=mp4'
+                        "
+                      />
+                    </video>
+                    <el-text class="fs-1">{{
+                      globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].name
+                    }}</el-text>
+                  </div>
+                </template>
+              </Carousel>
+            </bigscreen-box>
+          </el-col>
+          <el-col :span="7" class="h-full">
+            <bigscreen-box title="货物存量分组柱状图" type="rightTop">
+              <bar-chart v-if="currentWareHouse" />
+            </bigscreen-box>
+          </el-col>
+        </el-row>
+        <el-row class="w-full h-50%" :gutter="8">
+          <el-col :span="7" class="h-full">
+            <Inventory :default-date="dayjs().subtract(1, 'day')" type="leftBottom" />
+          </el-col>
+          <el-col :span="10" class="h-full">
+            <bigscreen-box title="货物体积变化曲线图" type="centerBottom">
+              <curve-chart v-if="currentWareHouse" :key="currentWareHouse + ':Curve'" />
+            </bigscreen-box>
+          </el-col>
+          <el-col :span="7" class="h-full">
+            <bigscreen-box title="仓库动态" type="rightBottom">
+              <event-list />
+            </bigscreen-box>
+          </el-col>
+        </el-row>
       </div>
     </div>
-    <div class="w-full h-calc-5.5 flex flex-col justify-between items-center gap-2">
-      <el-row class="w-full h-50%" :gutter="8">
-        <el-col :span="7" class="h-full">
-          <Inventory />
-        </el-col>
-        <el-col :span="10" class="h-full">
-          <bigscreen-box title="视频监控" type="center">
-            <Carousel
-              v-if="globalStore.wareHouseIdMapCameras && currentWareHouse"
-              :length="globalStore.wareHouseIdMapCameras[currentWareHouse].length"
-              :smooth="true"
-              :key="currentWareHouse + ':Carousel'"
-              :showButton="false"
-            >
-              <template
-                v-for="item in globalStore.wareHouseIdMapCameras[currentWareHouse].length"
-                :key="item"
-                v-slot:[item]
-              >
-                <div class="w-full h-full flex flex-col justify-between items-center">
-                  <video class="w-full h-calc-2" muted autoplay controls poster="">
-                    <source
-                      :src="
-                        '/api2/live/media' +
-                        globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint +
-                        '?format=mp4'
-                      "
-                    />
-                  </video>
-                  <el-text class="fs-1">{{
-                    globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].name
-                  }}</el-text>
-                </div>
-              </template>
-            </Carousel>
-          </bigscreen-box>
-        </el-col>
-        <el-col :span="7" class="h-full">
-          <bigscreen-box title="货物存量分组柱状图" type="rightTop">
-            <bar-chart v-if="currentWareHouse" />
-          </bigscreen-box>
-        </el-col>
-      </el-row>
-      <el-row class="w-full h-50%" :gutter="8">
-        <el-col :span="7" class="h-full">
-          <Inventory :default-date="dayjs().subtract(1, 'day')" type="leftBottom" />
-        </el-col>
-        <el-col :span="10" class="h-full">
-          <bigscreen-box title="货物体积变化曲线图" type="centerBottom">
-            <curve-chart v-if="currentWareHouse" :key="currentWareHouse + ':Curve'" />
-          </bigscreen-box>
-        </el-col>
-        <el-col :span="7" class="h-full">
-          <bigscreen-box title="仓库动态" type="rightBottom">
-            <event-list />
-          </bigscreen-box>
-        </el-col>
-      </el-row>
-    </div>
-  </div>
+  </v-scale-screen>
 </template>
 
 <script setup>
 import dayjs from 'dayjs';
+import VScaleScreen from 'v-scale-screen';
 import { getWareHouseList, getWareHouseDetail, getDict } from '@/api/radar';
 import { getCameraList, getLayouts } from '@/api/camera';
 import { GlobalStore } from '@/store';

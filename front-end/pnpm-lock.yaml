@@ -41,6 +41,9 @@ dependencies:
   swiper:
     specifier: ^11.0.5
     version: 11.0.5
+  v-scale-screen:
+    specifier: ^2.2.0
+    version: 2.2.0(vue@3.4.5)
   video.js:
     specifier: ^7.21.5
     version: 7.21.5
@@ -2922,6 +2925,14 @@ packages:
 
   /url-toolkit@2.2.5:
     resolution: {integrity: sha512-mtN6xk+Nac+oyJ/PrI7tzfmomRVNFIWKUbG8jdYFt52hxbiReFAXIjYskvu64/dvuW71IcB7lV8l0HvZMac6Jg==}
+    dev: false
+
+  /v-scale-screen@2.2.0(vue@3.4.5):
+    resolution: {integrity: sha512-GHzwRYQwj5MTiYWxtdxI5S6DgEzFjSSMxg53TLddRgXjNSe/dG++Q+6AgrYS3HKDcWzccs19agF6UFcckxn1yA==}
+    peerDependencies:
+      vue: ^3.2.37
+    dependencies:
+      vue: 3.4.5(typescript@5.3.3)
     dev: false
 
   /video.js@7.21.5:
