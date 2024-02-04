@@ -16,20 +16,28 @@ export class EventController {
       const raw = await rawbody(req);
       text = raw.toString().trim();
     }
-    const [, time, eventName] = text.split(',');
-    const regex =
-      /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}\.\d{6})([+-]\d{4})$/;
-    let date = time;
-    const match = time.match(regex);
-    debugger;
-    if (match) {
-      const [, year, month, day, hour, minute, second] = match;
-      date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    try {
+      const [, time, eventName] = text.split(',');
+      const regex =
+        /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}\.\d{6})([+-]\d{4})$/;
+      let date = time;
+      const match = time.match(regex);
+      if (match) {
+        const [, year, month, day, hour, minute, second] = match;
+        date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+      }
+      return this.eventService.create({
+        eventTime: new Date(date),
+        eventName,
+        info: text,
+      });
+    } catch (error) {
+      return this.eventService.create({
+        eventTime: new Date(),
+        eventName: '出错了',
+        info: text,
+      });
     }
-    return this.eventService.create({
-      eventTime: new Date(date),
-      eventName,
-    });
   }
 
   @Get()

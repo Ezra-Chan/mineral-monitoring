@@ -50,7 +50,15 @@
                   v-slot:[item]
                 >
                   <div class="w-full h-full flex flex-col justify-between items-center">
-                    <video class="w-full h-calc-2" muted autoplay controls poster="">
+                    <video
+                      class="w-full h-calc-2"
+                      muted
+                      autoplay
+                      controls
+                      controlslist="nodownload noplaybackrate noremoteplayback"
+                      :disablePictureInPicture="true"
+                      poster=""
+                    >
                       <source
                         :src="
                           '/api2/live/media' +
@@ -60,6 +68,12 @@
                         "
                       />
                     </video>
+                    <!-- <video-player
+                      class="w-full h-calc-2"
+                      :src="
+                        globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint
+                      "
+                    /> -->
                     <el-text class="fs-1">{{
                       globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].name
                     }}</el-text>
@@ -105,6 +119,7 @@ import CurveChart from './components/CurveChart.vue';
 import BarChart from './components/BarChart.vue';
 import EventList from './components/EventList.vue';
 import cities from '@/utils/cities.json';
+import VideoPlayer from '../../components/Video.vue';
 
 const globalStore = GlobalStore();
 let cameras = $ref([]);
@@ -210,6 +225,30 @@ onMounted(() => {
   .bigscreen-header {
     background: url('@/assets/images/title-bg.png') no-repeat;
     background-size: 100% 150%;
+  }
+  //进度条
+  video::-webkit-media-controls-timeline {
+    display: none;
+  }
+  //观看的当前时间
+  video::-webkit-media-controls-current-time-display {
+    display: none;
+  }
+  //剩余时间
+  video::-webkit-media-controls-time-remaining-display {
+    display: none;
+  }
+  //音量按钮
+  video::-webkit-media-controls-mute-button {
+    display: none;
+  }
+  //播放按钮
+  video::-webkit-media-controls-play-button {
+    display: none;
+  }
+  //所有控件
+  video::-webkit-media-controls-enclosure {
+    display: none;
   }
 }
 </style>
