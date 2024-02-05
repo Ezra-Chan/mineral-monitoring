@@ -50,7 +50,7 @@
                   v-slot:[item]
                 >
                   <div class="w-full h-full flex flex-col justify-between items-center">
-                    <video
+                    <!-- <video
                       class="w-full h-calc-2"
                       muted
                       autoplay
@@ -67,13 +67,13 @@
                           '?format=mp4'
                         "
                       />
-                    </video>
-                    <!-- <video-player
+                    </video> -->
+                    <video-player
                       class="w-full h-calc-2"
                       :src="
                         globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint
                       "
-                    /> -->
+                    />
                     <el-text class="fs-1">{{
                       globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].name
                     }}</el-text>

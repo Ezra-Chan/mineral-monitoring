@@ -50,13 +50,15 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  console.log('videoRef', videoRef);
-  // videoRef?.dispose();
+  videoInst.value?.dispose();
 });
 </script>
 
 <style lang="less" scoped>
 :deep(.vjs-big-play-button) {
+  display: none !important;
+}
+:deep(.vjs-control-bar) {
   display: none !important;
 }
 </style>
