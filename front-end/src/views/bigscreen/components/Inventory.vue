@@ -137,8 +137,8 @@ const queryGoodsInventory = async time => {
 };
 
 watch(
-  () => date,
-  time => {
+  () => [date, globalStore.currentWareHouse],
+  ([time]) => {
     queryGoodsInventory(time);
   },
   { immediate: true },

@@ -62,7 +62,7 @@ const getEventsList = async () => {
     const { data = [] } = await getAllEvents();
     dataSource.value = data.map(ev => ({
       ...ev,
-      eventTime: dayjs(ev.eventTime).format('YYYY-MM-DD hh:mm:ss'),
+      eventTime: dayjs(ev.eventTime).format('YYYY-MM-DD HH:mm:ss'),
     }));
   } catch (error) {
   } finally {
