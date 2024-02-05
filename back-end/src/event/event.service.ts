@@ -20,6 +20,7 @@ export class EventService {
       order: {
         eventTime: 'DESC',
       },
+      take: 100,
     });
   }
 }

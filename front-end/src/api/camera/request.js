@@ -1,13 +1,7 @@
 import axios from 'axios';
-// import { getToken } from 'utils/account';
-import { GlobalStore } from '@/store';
 
 let apiContextPath = '';
-// if (import.meta.env.DEV) {
 apiContextPath = '/api2';
-// } else {
-// apiContextPath = 'http://10.1.1.215';
-// }
 
 export const getInstance = prefix => {
   if (prefix) {
