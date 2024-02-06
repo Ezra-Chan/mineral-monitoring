@@ -38,26 +38,11 @@ export const getInstance = (prefix = 'shmanage') => {
       if (data && data.code !== 200 && !(data instanceof Blob)) {
         if (data.code === 401) {
           const globalStore = GlobalStore();
-          if (globalStore?.radarToken) {
-            location.href = '/#/';
-            return Promise.reject(response);
-          }
           if (globalStore?.userInfo) {
             const { username, password } = globalStore.userInfo;
-            const retryNum = Number(localStorage.getItem('retryNum') || 0);
-            if (retryNum < 3) {
-              localStorage.setItem('retryNum', retryNum + 1);
-              await getToken({ username, password });
-              // 将原请求再发一遍
-              const res = await getInstance()[config.method.toLowerCase()](
-                config.url,
-                config.data,
-                config,
-              );
-              return res;
-            } else {
-              localStorage.setItem('retryNum', 0);
-              location.href = '/#/login';
+            const flag = await getToken({ username, password });
+            if (flag) {
+              location.href = '/';
             }
           } else {
             location.href = '/#/login';

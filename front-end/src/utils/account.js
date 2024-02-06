@@ -2,12 +2,15 @@ import dayjs from 'dayjs';
 import { radarToken } from '../api/radar';
 import { GlobalStore } from '@/store';
 
+let isPending = false;
+
 export const getToken = async params => {
   try {
     const radarTokenTime = Number(
       JSON.parse(localStorage.getItem('GlobalState') || '{}')?.radarTokenTime || 0,
     );
-    if (dayjs().valueOf() - radarTokenTime > 24 * 60 * 60 * 1000) {
+    if (dayjs().valueOf() - radarTokenTime > 24 * 60 * 60 * 1000 && !isPending) {
+      isPending = true;
       const { data = {} } = await radarToken(params);
       const { tokenHead, token } = data;
       const globalStore = GlobalStore();
@@ -16,7 +19,10 @@ export const getToken = async params => {
         userInfo: params,
         radarTokenTime: dayjs().valueOf(),
       });
+      isPending = false;
+      return true;
     }
+    return false;
   } catch (error) {
     if (error?.data?.code === 500) {
       ElMessage({ message: error.data.message, type: 'error' });
