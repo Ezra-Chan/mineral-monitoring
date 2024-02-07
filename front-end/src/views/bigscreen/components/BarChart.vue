@@ -204,7 +204,7 @@ const initChart = async () => {
       }),
       yAxis: {
         type: 'value',
-        name: '单位：m³',
+        name: '单位：吨',
         axisLine: {
           show: true,
           lineStyle: {
@@ -253,7 +253,7 @@ const querySingleData = async id => {
     if (!goodsMap[type]) {
       goodsMap[type] = 0;
     }
-    goodsMap[type] += item.actualVolume || 0;
+    goodsMap[type] += item.actualWeight || 0;
   });
   return goodsMap;
 };
