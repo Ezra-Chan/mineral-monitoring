@@ -14,6 +14,7 @@ import { EventModule } from './event/event.module';
       password: process.env.DB_PASSWORD || 'Signage@123',
       database: process.env.DB_DATABASE || 'signage',
       autoLoadEntities: true,
+      // synchronize: true,
     }),
     EventModule,
   ],
