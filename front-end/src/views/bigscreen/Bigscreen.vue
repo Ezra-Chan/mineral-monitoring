@@ -161,7 +161,7 @@ const getCameraLayout = async () => {
     wareHouseIdMapCameras[key] = wareHouseIdMapCameras[key].map(item => {
       const detail = cameras.find(c => c.accessPoint === item);
       return {
-        accessPoint: item.replace('hosts', ''),
+        accessPoint: item.replace('hosts', '').replace(/0$/, '1'),
         name: detail?.displayName || '',
       };
     });
