@@ -22,7 +22,7 @@
         />
         <div class="flex items-center gap-2">
           <el-text class="color-white fs-0.8" v-if="dataTime"> 数据时间：{{ dataTime }} </el-text>
-          <full-screen :el="carouselRef" size="1rem" />
+          <!-- <full-screen :el="carouselRef" size="1rem" /> -->
         </div>
       </div>
       <Carousel class="h-calc-2" noDrag :length="2" :showButton="false" :showSize="1">

@@ -3,6 +3,7 @@
 </template>
 
 <script setup>
+import dayjs from 'dayjs';
 import videojs from 'video.js';
 import lang_zhcn from 'video.js/dist/lang/zh-CN.json';
 import 'video.js/dist/video-js.min.css';
@@ -23,9 +24,12 @@ const props = defineProps({
     required: true,
   },
 });
+const emits = defineEmits(['update']);
 
 const videoRef = $ref();
 const videoInst = shallowRef();
+const visibility = useDocumentVisibility();
+const time = $ref(dayjs().valueOf());
 
 const initVideo = () => {
   videoInst.value = videojs(videoRef, {
@@ -43,7 +47,20 @@ const initVideo = () => {
       },
     ],
   });
+  videoInst.value.on('timeupdate', () => {
+    const videoPlayTime = videoInst.value.currentTime();
+    const current = dayjs().valueOf();
+    if ((current - time) / 1000 - videoPlayTime > 5 * 60) {
+      emits('update', props.src);
+    }
+  });
 };
+
+watch(visibility, (current, previous) => {
+  if (current === 'visible' && previous === 'hidden') {
+    emits('update', props.src);
+  }
+});
 
 onMounted(() => {
   initVideo();

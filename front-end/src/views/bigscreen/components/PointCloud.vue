@@ -36,7 +36,7 @@ const grid = {
     minBeta: 0,
     maxBeta: 90,
     beta: 50,
-    distance: 100,
+    // distance: 50,
   },
 };
 
@@ -179,6 +179,7 @@ const getData = async () => {
     chartOption.zAxis3D.max = houseHight;
     chartOption.grid3D.boxWidth = houseWidth;
     chartOption.grid3D.boxDepth = houseLength;
+    chartOption.grid3D.viewControl.distance = houseLength;
     chartOption.grid3D.boxHeight = houseHight;
     if (isBar) {
       // 堆形图
