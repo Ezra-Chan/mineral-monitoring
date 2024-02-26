@@ -1,5 +1,5 @@
 <template>
-  <bigscreen-box class="" :type="type" title="货物存量">
+  <bigscreen-box :type="type" title="货物存量" ref="carouselRef">
     <template #headerRight>
       <el-radio-group v-model="radarChart">
         <el-radio-button v-for="(type, i) in radarChartTypes" :label="type.value" :key="i">
@@ -20,7 +20,10 @@
           :disabled-date="disabledDate"
           :value-format="format"
         />
-        <el-text class="color-white fs-0.8" v-if="dataTime"> 数据时间：{{ dataTime }} </el-text>
+        <div class="flex items-center gap-2">
+          <el-text class="color-white fs-0.8" v-if="dataTime"> 数据时间：{{ dataTime }} </el-text>
+          <full-screen :el="carouselRef" size="1rem" />
+        </div>
       </div>
       <Carousel class="h-calc-2" noDrag :length="2" :showButton="false" :showSize="1">
         <template #1>
@@ -94,6 +97,7 @@ const radarChart = $ref(radarChartTypes[0].value);
 const dataSource = ref([]);
 const date = $ref(dayjs(props.defaultDate).format(format));
 let dataTime = $ref();
+const carouselRef = $ref();
 const currentWareHouseInfo = computed(() =>
   globalStore.wareHouse.find(item => item.id === globalStore.currentWareHouse),
 );

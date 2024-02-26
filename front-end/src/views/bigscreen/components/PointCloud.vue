@@ -21,6 +21,8 @@ const axis = {
   type: 'value',
   min: 0,
   name: '',
+  axisTick: { show: false },
+  axisLabel: { show: true, margin: 3 },
 };
 const grid = {
   axisLine: {
@@ -34,10 +36,8 @@ const grid = {
     minBeta: 0,
     maxBeta: 90,
     beta: 50,
-    distance: 230,
+    distance: 100,
   },
-  boxDepth: 200,
-  boxHeight: 50,
 };
 
 const barOption = {
@@ -96,7 +96,7 @@ const barOption = {
       label: {
         show: false,
       },
-      barWidth: 30,
+      barSize: 1,
     },
   ],
 };
@@ -177,14 +177,17 @@ const getData = async () => {
     chartOption.xAxis3D.max = houseWidth;
     chartOption.yAxis3D.max = houseLength;
     chartOption.zAxis3D.max = houseHight;
+    chartOption.grid3D.boxWidth = houseWidth;
+    chartOption.grid3D.boxDepth = houseLength;
+    chartOption.grid3D.boxHeight = houseHight;
     if (isBar) {
       // 堆形图
       const s = infoList.map((item, i) => {
         return {
           ...barOption.series[0],
           itemStyle: {
-            color: barColors[i % barColors.length],
-            opacity: 0.8,
+            color: barColors[0 % barColors.length],
+            // opacity: 0.8,
           },
           name: item.goodsNo ? goodsType.value[item.goodsNo] : wareHouse.goodsTypeDesc,
           data: item.goodsData,

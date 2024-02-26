@@ -6,20 +6,29 @@
   >
     <svg-icon
       :icon-class="isFullscreen ? 'icon-fullscreen-exit' : 'icon-fullscreen'"
-      size="2.2rem"
+      :size="size"
     />
   </div>
 </template>
 
 <script setup>
-const props = defineProps(['el']);
+const props = defineProps({
+  el: {
+    type: Object,
+    default: void 0,
+  },
+  size: {
+    type: String,
+    default: '2.2rem',
+  },
+});
 const { toggle, isFullscreen } = useFullscreen(props.el);
 </script>
 
 <style lang="less">
 .fullscreen {
-  width: 4rem;
-  height: 4rem;
+  // width: 4rem;
+  // height: 4rem;
 
   .svg-icon .icon {
     color: rgb(86, 225, 219);
