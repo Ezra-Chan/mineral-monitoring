@@ -187,7 +187,7 @@ const getData = async () => {
         return {
           ...barOption.series[0],
           itemStyle: {
-            color: barColors[0 % barColors.length],
+            color: barColors[i % barColors.length],
             // opacity: 0.8,
           },
           name: item.goodsNo ? goodsType.value[item.goodsNo] : wareHouse.goodsTypeDesc,
