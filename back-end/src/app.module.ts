@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventModule } from './event/event.module';
+import { ScheduleService } from './schedule/schedule.service';
 
 @Module({
   imports: [
@@ -16,9 +18,10 @@ import { EventModule } from './event/event.module';
       autoLoadEntities: true,
       // synchronize: true,
     }),
+    ScheduleModule.forRoot(),
     EventModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ScheduleService],
 })
 export class AppModule {}

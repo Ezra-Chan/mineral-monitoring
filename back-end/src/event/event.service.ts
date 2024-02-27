@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
@@ -21,6 +21,12 @@ export class EventService {
         eventTime: 'DESC',
       },
       take: 100,
+    });
+  }
+
+  async deleteByTime(eventTime: Date) {
+    return await this.eventRepository.delete({
+      eventTime: LessThanOrEqual(eventTime),
     });
   }
 }
