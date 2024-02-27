@@ -6,22 +6,17 @@
   >
     <svg-icon
       :icon-class="isFullscreen ? 'icon-fullscreen-exit' : 'icon-fullscreen'"
-      :size="size"
+      :size="iconSize"
     />
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
-  el: {
-    type: Object,
-    default: void 0,
-  },
-  size: {
-    type: String,
-    default: '2.2rem',
-  },
-});
+import { computed } from 'vue';
+
+const props = defineProps(['el', 'size']);
+const iconSize = computed(() => props.size || '2.2rem');
+console.log(props.el);
 const { toggle, isFullscreen } = useFullscreen(props.el);
 </script>
 

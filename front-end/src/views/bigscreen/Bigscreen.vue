@@ -73,6 +73,13 @@
                       :src="
                         globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint
                       "
+                      :key="
+                        globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint +
+                        videoKeys[
+                          globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].accessPoint
+                        ]
+                      "
+                      @update="updateVideo"
                     />
                     <el-text class="fs-1">{{
                       globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1].name
@@ -125,6 +132,7 @@ const globalStore = GlobalStore();
 let cameras = $ref([]);
 const currentWareHouse = ref(globalStore.currentWareHouse);
 let wareHouseDetail = $ref({});
+const videoKeys = $ref([]);
 const wareHouseInfo = computed(
   () =>
     `${wareHouseDetail.houseTypeDesc || '平房仓'}(长:${wareHouseDetail.houseLength || 0}米，宽:${
@@ -160,8 +168,10 @@ const getCameraLayout = async () => {
   keys.forEach(key => {
     wareHouseIdMapCameras[key] = wareHouseIdMapCameras[key].map(item => {
       const detail = cameras.find(c => c.accessPoint === item);
+      const accessPoint = item.replace('hosts', '').replace(/0$/, '1');
+      videoKeys[accessPoint] = dayjs().valueOf();
       return {
-        accessPoint: item.replace('hosts', '').replace(/0$/, '1'),
+        accessPoint,
         name: detail?.displayName || '',
       };
     });
@@ -192,6 +202,10 @@ const openRadarSystem = () => {
   const { houseHight, houseLength, houseWidth } = wareHouseInfo;
   const url = `https://app.or-intech.com/#/wms/wmsInfo?id=${id}&houseHight=${houseHight}&houseLength=${houseLength}&houseWidth=${houseWidth}&isQuick=true`;
   window.open(url);
+};
+
+const updateVideo = key => {
+  videoKeys[key] = dayjs().valueOf();
 };
 
 watch(
