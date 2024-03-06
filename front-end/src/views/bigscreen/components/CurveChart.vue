@@ -197,6 +197,7 @@ const initChart = async () => {
       loopTootip(myChart.value, options);
     }
   } catch (error) {
+    console.error('曲线图发生错误', error);
   } finally {
     loading = false;
   }

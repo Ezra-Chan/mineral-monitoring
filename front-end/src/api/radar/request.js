@@ -1,4 +1,5 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { getToken } from 'utils/account';
 import { GlobalStore } from '@/store';
 
@@ -75,7 +76,36 @@ export const sendRequest = (url, params = {}, options = {}) => {
     return getInstance()
       [options.method.toLowerCase()](url, params, options)
       .then(res => {
-        localStorage.setItem(key, JSON.stringify({ data: res.data }));
+        if (res.data && res.data.fileUpdateTime) {
+          try {
+            localStorage.setItem(key, JSON.stringify({ data: res.data }));
+          } catch (error) {
+            const keys = Object.keys(localStorage);
+            const regex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/;
+            keys.forEach(key => {
+              const match = key.match(regex);
+              if (match) {
+                const time = dayjs(match[0]);
+                // 判断time是否是合法时间
+                if (time.isValid()) {
+                  // 判断time是否是7天前或者是2天前的不一定需要的大内存数据
+                  if (
+                    time.isBefore(dayjs().subtract(7, 'day')) ||
+                    (!key.includes('findWarehouseGoodsPointCloudDataHistogram') &&
+                      time.isBefore(dayjs().subtract(2, 'day')))
+                  ) {
+                    localStorage.removeItem(key);
+                  }
+                }
+              }
+            });
+            try {
+              localStorage.setItem(key, JSON.stringify({ data: res.data }));
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        }
         return res;
       })
       .catch(err => {
