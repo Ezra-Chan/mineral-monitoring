@@ -15,7 +15,7 @@ import { vElementSize } from '@vueuse/components';
 import { radarChartTypes, barColors } from '@/utils/constant';
 import { toFixed2 } from '@/utils/math';
 import { getCloudPointData } from '@/api/radar';
-import { GlobalStore } from '@/store';
+import { useGlobalStore } from '@/store/global';
 
 const axis = {
   type: 'value',
@@ -143,7 +143,7 @@ const props = defineProps({
     default: '',
   },
 });
-const globalStore = GlobalStore();
+const globalStore = useGlobalStore();
 
 const chartRef = ref();
 let myChart = shallowRef();

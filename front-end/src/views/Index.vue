@@ -12,15 +12,18 @@
 <script setup>
 import { RouterView } from 'vue-router';
 import { getUserInfo } from '@/api/radar';
+import { LOGIN_URL } from '@/config';
 
 let loading = $ref(false);
 
 const judgeLoginStatus = async () => {
-  if (location.pathname === '/login') {
+  if (location.pathname === LOGIN_URL) {
     loading = false;
     return;
   }
-  await getUserInfo();
+  try {
+    await getUserInfo();
+  } catch (error) {}
   loading = false;
 };
 

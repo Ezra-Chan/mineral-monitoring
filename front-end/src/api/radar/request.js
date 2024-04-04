@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { getToken } from 'utils/account';
-import { GlobalStore } from '@/store';
+import { useUserStore } from '@/store/user';
 
 let apiContextPath = '';
 if (import.meta.env.DEV) {
@@ -19,8 +19,8 @@ export const getInstance = (prefix = 'shmanage') => {
     baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
-    headers: localStorage.getItem('GlobalState')
-      ? { Authorization: JSON.parse(localStorage.getItem('GlobalState')).radarToken }
+    headers: localStorage.getItem('user-state')
+      ? { Authorization: JSON.parse(localStorage.getItem('user-state')).radarToken }
       : {},
   });
 
@@ -38,9 +38,9 @@ export const getInstance = (prefix = 'shmanage') => {
       }
       if (data && data.code !== 200 && !(data instanceof Blob)) {
         if (data.code === 401) {
-          const globalStore = GlobalStore();
-          if (globalStore?.userInfo) {
-            const { username, password } = globalStore.userInfo;
+          const userStore = useUserStore();
+          if (userStore?.userInfo) {
+            const { username, password } = userStore.userInfo;
             const flag = await getToken({ username, password });
             if (flag) {
               location.href = '/';

@@ -1,4 +1,4 @@
-import { defineStore, createPinia } from 'pinia';
+import { createPinia } from 'pinia';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 /**
@@ -7,7 +7,7 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
  * @param {Array} paths 需要持久化的 state name
  * @return persist
  * */
-const piniaPersistConfig = (key, paths) => {
+export const piniaPersistConfig = (key, paths) => {
   const persist = {
     key,
     storage: localStorage,
@@ -16,28 +16,6 @@ const piniaPersistConfig = (key, paths) => {
   };
   return persist;
 };
-
-export const GlobalStore = defineStore({
-  id: 'globalState',
-  state: () => ({
-    systemTitle: '数字仓储管理平台',
-    radarToken: '',
-    userInfo: void 0,
-    wareHouse: [],
-    currentWareHouse: void 0,
-    goodsType: [],
-    houseType: [],
-    radarCameraMap: [],
-    wareHouseIdMapCameras: void 0,
-  }),
-  getters: {},
-  actions: {
-    setGlobalState(state) {
-      this.$patch(state);
-    },
-  },
-  persist: piniaPersistConfig('GlobalState'),
-});
 
 // piniaPersist(持久化)
 const store = createPinia();

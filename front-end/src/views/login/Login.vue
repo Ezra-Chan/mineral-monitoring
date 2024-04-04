@@ -11,8 +11,9 @@
       size="large"
       :model="loginForm"
       :rules="rules"
+      @keyup.enter.native="login(loginFormRef)"
     >
-      <el-text type="primary" tag="div" class="font-size-7 text-center m-b-8">
+      <el-text type="primary" tag="div" class="font-size-7! text-center m-b-8!">
         {{ globalStore.systemTitle }}
       </el-text>
       <el-form-item prop="username">
@@ -43,15 +44,17 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import { User, Lock } from '@element-plus/icons-vue';
 import { getToken } from '@/utils/account';
-import { GlobalStore } from '@/store';
+import { useGlobalStore } from '@/store/global';
 
 defineProps({
   msg: String,
 });
 
-const globalStore = GlobalStore();
+const router = useRouter();
+const globalStore = useGlobalStore();
 const loginFormRef = ref();
 const loginForm = reactive({
   username: '',
@@ -70,12 +73,14 @@ const login = async formEl => {
       try {
         loading = true;
         await getToken(loginForm);
-        loading = false;
         ElMessage({ type: 'success', message: '登录成功' });
         setTimeout(() => {
-          location.href = '/';
+          router.push('/');
         }, 1500);
       } catch (error) {
+        ElMessage({ type: 'error', message: '登录失败' });
+        console.error('登录失败', error);
+      } finally {
         loading = false;
       }
     }

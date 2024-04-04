@@ -13,7 +13,7 @@ import * as echarts from 'echarts';
 import dayjs from 'dayjs';
 import { vElementSize } from '@vueuse/components';
 import { getDataByTime } from '@/api/radar';
-import { GlobalStore } from '@/store';
+import { useGlobalStore } from '@/store/global';
 import { toFixed2 } from '@/utils/math';
 import { gradientColors, colors } from '@/utils/constant';
 
@@ -24,7 +24,7 @@ const props = defineProps({
   },
 });
 
-const globalStore = GlobalStore();
+const globalStore = useGlobalStore();
 const chartRef = ref(null);
 const myChart = shallowRef();
 let loading = $ref(false);

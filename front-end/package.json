@@ -18,6 +18,7 @@
     "echarts": "^5.4.3",
     "echarts-gl": "^2.0.9",
     "element-plus": "^2.4.4",
+    "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "querystringify": "^2.2.0",

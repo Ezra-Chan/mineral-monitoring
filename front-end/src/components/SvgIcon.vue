@@ -17,11 +17,9 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: 'var(--ework-text-color)',
   },
   hoverColor: {
     type: String,
-    default: 'var(--ework-text-color-hover)',
   },
   needHover: {
     type: Boolean,

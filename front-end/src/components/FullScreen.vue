@@ -7,6 +7,8 @@
     <svg-icon
       :icon-class="isFullscreen ? 'icon-fullscreen-exit' : 'icon-fullscreen'"
       :size="iconSize"
+      :color="color"
+      :hoverColor="hoverColor"
     />
   </div>
 </template>
@@ -14,22 +16,10 @@
 <script setup>
 import { computed } from 'vue';
 
-const props = defineProps(['el', 'size']);
+const props = defineProps(['el', 'size', 'color', 'hoverColor']);
 const iconSize = computed(() => props.size || '2.2rem');
-console.log(props.el);
+const color = computed(() => props.color || 'rgb(86, 225, 219)');
+const hoverColor = computed(() => props.hoverColor || '#409eff');
+
 const { toggle, isFullscreen } = useFullscreen(props.el);
 </script>
-
-<style lang="less">
-.fullscreen {
-  // width: 4rem;
-  // height: 4rem;
-
-  .svg-icon .icon {
-    color: rgb(86, 225, 219);
-    &:hover {
-      color: #409eff;
-    }
-  }
-}
-</style>

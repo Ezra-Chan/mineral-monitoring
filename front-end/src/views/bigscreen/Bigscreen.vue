@@ -120,7 +120,7 @@ import dayjs from 'dayjs';
 import VScaleScreen from 'v-scale-screen';
 import { getWareHouseList, getWareHouseDetail, getDict } from '@/api/radar';
 import { getCameraList, getLayouts } from '@/api/camera';
-import { GlobalStore } from '@/store';
+import { useGlobalStore } from '@/store/global';
 import Inventory from './components/Inventory.vue';
 import CurveChart from './components/CurveChart.vue';
 import BarChart from './components/BarChart.vue';
@@ -128,7 +128,7 @@ import EventList from './components/EventList.vue';
 import cities from '@/utils/cities.json';
 import VideoPlayer from '../../components/Video.vue';
 
-const globalStore = GlobalStore();
+const globalStore = useGlobalStore();
 let cameras = $ref([]);
 const currentWareHouse = ref(globalStore.currentWareHouse);
 let wareHouseDetail = $ref({});

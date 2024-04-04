@@ -61,7 +61,7 @@
 
 <script setup>
 import dayjs from 'dayjs';
-import { GlobalStore } from '@/store';
+import { useGlobalStore } from '@/store/global';
 import { getDataByTime } from '@/api/radar';
 import PointCloud from './PointCloud.vue';
 import { radarChartTypes } from '@/utils/constant';
@@ -77,7 +77,7 @@ const props = defineProps({
   },
   cb: Function,
 });
-const globalStore = GlobalStore();
+const globalStore = useGlobalStore();
 const columns = [
   {
     prop: 'type',

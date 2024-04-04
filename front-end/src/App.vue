@@ -8,16 +8,14 @@
 import axios from 'axios';
 import zhCN from 'element-plus/dist/locale/zh-cn.mjs';
 import Index from './views/Index.vue';
-import { GlobalStore } from '@/store';
+import { useGlobalStore } from '@/store/global';
 
-const globalStore = GlobalStore();
-const title = useTitle();
+const globalStore = useGlobalStore();
 
 const getStaticMap = async () => {
   const { data: { radarCameraMap = [], title: systemTitle } = {} } =
     await axios.get('/config.json');
   globalStore.setGlobalState({ radarCameraMap, systemTitle });
-  title.value = systemTitle;
 };
 
 onMounted(() => {
