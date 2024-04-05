@@ -2,7 +2,7 @@
   <div class="tool-bar-ri">
     <div class="header-icon">
       <Message id="message" />
-      <full-screen size="30px" color="inherit" hoverColor="inherit" />
+      <full-screen-button size="30px" color="inherit" hoverColor="inherit" />
     </div>
     <span class="username">{{ username }}</span>
     <Avatar />

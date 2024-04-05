@@ -10,6 +10,7 @@ import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import DefineOptions from 'unplugin-vue-define-options/vite';
 import UnoCSS from 'unocss/vite';
+import VueDevTools from 'vite-plugin-vue-devtools';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -27,6 +28,7 @@ export default defineConfig(({ mode }) => {
       extensions: ['.js', '.json', '.ts', '.vue'],
     },
     plugins: [
+      VueDevTools(),
       vue(),
       DefineOptions(),
       ReactivityTransform(),

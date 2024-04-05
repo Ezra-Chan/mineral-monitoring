@@ -14,6 +14,8 @@ export const useGlobalStore = defineStore('globalState', {
     isCollapse: false,
     // 面包屑导航
     breadcrumb: true,
+    // 当前页面是否全屏
+    maximize: false,
   }),
   getters: {},
   actions: {

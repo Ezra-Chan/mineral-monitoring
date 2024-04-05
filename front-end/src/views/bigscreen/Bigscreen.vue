@@ -27,7 +27,7 @@
             />
           </el-select>
           <real-time />
-          <full-screen />
+          <full-screen-button />
         </div>
       </div>
       <div class="w-full h-calc-5.5 flex flex-col justify-between items-center gap-2">

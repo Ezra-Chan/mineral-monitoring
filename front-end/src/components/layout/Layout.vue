@@ -42,6 +42,7 @@ import { useGlobalStore } from '@/store/global';
 import ToolBarLeft from '@/components/layout/Header/ToolBarLeft.vue';
 import ToolBarRight from '@/components/layout/Header/ToolBarRight.vue';
 import SubMenu from '@/components/layout/SubMenu.vue';
+import Main from '@/components/layout/Main/Main.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();

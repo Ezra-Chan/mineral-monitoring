@@ -1,4 +1,6 @@
-<template>22222</template>
+<template>
+  <div id=""></div>
+</template>
 
 <script setup></script>
 
