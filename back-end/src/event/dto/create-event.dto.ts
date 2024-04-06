@@ -5,7 +5,7 @@ export class CreateEventDto {
 
   licensePlate?: string;
 
-  detail?: string;
+  position?: string;
 
   info: string;
 }

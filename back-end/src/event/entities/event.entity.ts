@@ -15,7 +15,7 @@ export class Event {
   licensePlate: string;
 
   @Column({ type: 'varchar', length: 255, default: null, nullable: true })
-  detail: string;
+  position: string;
 
   @Column({ type: 'varchar', length: 2550 })
   info: string;
