@@ -16,7 +16,6 @@
             :default-active="activeMenu"
             :collapse="isCollapse"
             :router="false"
-            :unique-opened="true"
             :collapse-transition="false"
             class="w-full overflow-x-hidden border-r-none!"
           >

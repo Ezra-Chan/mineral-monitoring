@@ -1,10 +1,9 @@
 <template>
-  <div class="tool-bar-ri">
-    <div class="header-icon">
-      <Message id="message" />
-      <full-screen-button size="30px" color="inherit" hoverColor="inherit" />
-    </div>
-    <span class="username">{{ username }}</span>
+  <div class="tool-bar-ri flex items-center justify-center gap-5 p-r-6">
+    <theme-switch />
+    <Message id="message" />
+    <full-screen-button size="30px" color="inherit" hoverColor="inherit" />
+    <span class="username fs-1">{{ username }}</span>
     <Avatar />
   </div>
 </template>
@@ -13,6 +12,7 @@
 import { useUserStore } from '@/store/user';
 import Message from '@/components/layout/Header/components/StationMessage.vue';
 import Avatar from '@/components/layout/Header/components/Avatar.vue';
+import ThemeSwitch from '@/components/layout/Header/components/ThemeSwitch.vue';
 
 const userStore = useUserStore();
 const username = computed(() => userStore.userInfo.username);
@@ -24,16 +24,6 @@ const username = computed(() => userStore.userInfo.username);
   align-items: center;
   justify-content: center;
   padding-right: 25px;
-  .header-icon {
-    display: flex;
-    align-items: center;
-    & > * {
-      margin-left: 21px;
-    }
-  }
-  .username {
-    margin: 0 20px;
-    font-size: 15px;
-  }
+  gap: 20px;
 }
 </style>

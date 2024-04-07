@@ -16,7 +16,7 @@ export class EventController {
       text = raw.toString().trim();
     }
     try {
-      const [position, time] = text.split(',');
+      const [cameraId, position, time] = text.split(',');
       const eventName = text.substring(text.lastIndexOf(',') + 1);
       const regex =
         /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}\.\d{6})([+-]\d{4})$/;
@@ -30,6 +30,7 @@ export class EventController {
         eventTime: new Date(date),
         eventName,
         position,
+        cameraId,
         info: text,
       });
     } catch (error) {

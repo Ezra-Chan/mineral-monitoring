@@ -19,4 +19,7 @@ export class Event {
 
   @Column({ type: 'varchar', length: 2550 })
   info: string;
+
+  @Column({ type: 'varchar', length: 255, default: null, nullable: true })
+  cameraId: string;
 }

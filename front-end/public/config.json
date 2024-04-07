@@ -1,5 +1,6 @@
 {
   "title": "数字储运智慧监管平台",
+  "cameraIp": "http://10.1.1.215",
   "radarCameraMap": [
     {
       "wareHouseId": "114",

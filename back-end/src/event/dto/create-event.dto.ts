@@ -8,4 +8,6 @@ export class CreateEventDto {
   position?: string;
 
   info: string;
+
+  cameraId?: string;
 }
