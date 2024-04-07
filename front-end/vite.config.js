@@ -81,7 +81,7 @@ export default defineConfig(({ mode }) => {
           rewrite: path => path.replace('/api2', ''),
         },
         '/api3': {
-          target: 'http://localhost:3000',
+          target: 'http://10.1.1.220:3000',
           changeOrigin: true,
           rewrite: path => path.replace('/api3', ''),
         },

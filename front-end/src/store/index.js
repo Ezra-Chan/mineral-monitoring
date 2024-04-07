@@ -21,6 +21,7 @@ export const GlobalStore = defineStore({
   id: 'globalState',
   state: () => ({
     systemTitle: '数字仓储管理平台',
+    cameraIp: 'http://10.1.1.215',
     radarToken: '',
     userInfo: void 0,
     wareHouse: [],
