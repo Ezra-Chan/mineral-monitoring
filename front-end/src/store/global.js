@@ -4,6 +4,7 @@ import { piniaPersistConfig } from '@/store';
 export const useGlobalStore = defineStore('globalState', {
   state: () => ({
     systemTitle: '数字储运智慧监管平台',
+    abbreviation: '数字储运',
     cameraIp: 'http://10.1.1.215',
     wareHouse: [],
     currentWareHouse: void 0,

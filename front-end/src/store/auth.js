@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAuthMenuListApi } from '@/api/platform';
+import { getAuthMenuListApi, getAuthButtonListApi } from '@/api/platform';
 import { getFlatMenuList, getShowMenuList, getAllBreadcrumbList } from '@/utils';
 
 export const useAuthStore = defineStore('auth', {
@@ -25,8 +25,8 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async getAuthButtonList() {
-      // const { data } = await getAuthButtonListApi();
-      // this.authButtonList = data;
+      const { data } = await getAuthButtonListApi();
+      this.authButtonList = data;
     },
     async getAuthMenuList() {
       const { data } = await getAuthMenuListApi();

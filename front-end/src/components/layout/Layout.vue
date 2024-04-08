@@ -6,9 +6,12 @@
         :style="{ width: isCollapse ? '65px' : '210px' }"
       >
         <div class="flex items-center justify-center gap-4 h-13.75">
-          <img class="w8 object-contain" src="@/assets/images/Logo.png" alt="logo" />
-          <span v-show="!isCollapse" class="fs-1.5 font-bold whitespace-nowrap logo-text">
-            数字储运
+          <img class="w8 object-contain" src="@/assets/images/logo.png" alt="logo" />
+          <span
+            v-show="!isCollapse"
+            class="fs-1.5 font-bold whitespace-nowrap select-none logo-text"
+          >
+            {{ globalStore.abbreviation }}
           </span>
         </div>
         <el-scrollbar class="h-calc-3.43!">

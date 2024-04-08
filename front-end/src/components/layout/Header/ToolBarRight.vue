@@ -17,13 +17,3 @@ import ThemeSwitch from '@/components/layout/Header/components/ThemeSwitch.vue';
 const userStore = useUserStore();
 const username = computed(() => userStore.userInfo.username);
 </script>
-
-<style scoped lang="less">
-.tool-bar-ri {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-right: 25px;
-  gap: 20px;
-}
-</style>

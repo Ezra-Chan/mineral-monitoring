@@ -1,11 +1,10 @@
 <template>
   <el-dropdown trigger="click" :teleported="false">
-    <el-button size="small" type="primary">
-      <span>更多</span>
-      <el-icon class="el-icon--right">
+    <div class="more-button h-full w-10 flex items-center justify-center b-l cursor-pointer">
+      <el-icon>
         <arrow-down />
       </el-icon>
-    </el-button>
+    </div>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item @click="refresh">
@@ -16,6 +15,12 @@
         </el-dropdown-item>
         <el-dropdown-item divided @click="closeCurrentTab">
           <el-icon><Remove /></el-icon>关闭当前
+        </el-dropdown-item>
+        <el-dropdown-item @click="tabStore.closeTabsOnSide(route.fullPath, 'left')">
+          <el-icon><DArrowLeft /></el-icon>关闭左侧
+        </el-dropdown-item>
+        <el-dropdown-item @click="tabStore.closeTabsOnSide(route.fullPath, 'right')">
+          <el-icon><DArrowRight /></el-icon>关闭右侧
         </el-dropdown-item>
         <el-dropdown-item @click="closeOtherTab">
           <el-icon><CircleClose /></el-icon>关闭其它
@@ -78,4 +83,11 @@ const closeAllTab = () => {
 
 <style scoped lang="less">
 @import './index.less';
+.more-button {
+  border-left: 1px solid var(--el-border-color-light);
+
+  &:hover {
+    background-color: var(--el-color-info-light-9);
+  }
+}
 </style>

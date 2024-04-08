@@ -29,14 +29,16 @@
     </el-table-column>
   </el-table>
   <el-dialog v-model="dialogVisible" title="关键画面" width="1000" :before-close="handleClose">
-    <img
-      v-if="imgSrc"
-      ref="imgRef"
-      alt=""
-      class="w-full h-xl object-contain"
-      :src="imgSrc"
-      @dblclick="toggle"
-    />
+    <div class="w-full h-xl" v-loading="imgLoading" element-loading-background="rgba(0, 0, 0, 0.8)">
+      <img
+        v-if="imgSrc"
+        ref="imgRef"
+        alt=""
+        class="w-full h-full object-contain"
+        :src="imgSrc"
+        @dblclick="toggle"
+      />
+    </div>
   </el-dialog>
 </template>
 
@@ -66,6 +68,7 @@ const columns = [
 const dataSource = ref([]);
 const imgRef = ref(null);
 let loading = $ref(false);
+let imgLoading = $ref(false);
 let dialogVisible = $ref(false);
 let imgSrc = $ref('');
 let first = true;
@@ -95,19 +98,45 @@ const getEventsList = async () => {
   }
 };
 
+const checkImage = (urls, i, callback) => {
+  fetch(urls[i], {
+    headers: {
+      Authorization: 'Basic ' + btoa('root:Hhszcy@12345'),
+    },
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.blob(); // 将响应转换为 Blob 对象
+    })
+    .then(blob => {
+      // 在这里处理 Blob 对象，例如显示图片
+      const imageUrl = URL.createObjectURL(blob);
+      callback(true, imageUrl);
+    })
+    .catch(() => {
+      if (i === 0) {
+        checkImage(urls, 1, callback);
+      } else {
+        callback(false);
+      }
+    });
+};
+
 const handleView = row => {
   dialogVisible = true;
+  imgLoading = true;
   const { cameraId, eventTime } = row;
   const time = dayjs(eventTime).subtract(8, 'hours').format('YYYYMMDDTHHmmss');
   const src = `${globalStore.cameraIp}/archive/media${cameraId.replace('hosts', '')}/${time}`;
-  const img = new Image();
-  img.onload = function () {
-    imgSrc = src;
-  };
-  img.onerror = function () {
-    imgSrc = src.replace(':0:0', ':0:1');
-  };
-  img.src = src;
+  const srcArr = [src, src.replace(':0:0', ':0:1')];
+  checkImage(srcArr, 0, (flag, data) => {
+    if (flag) {
+      imgSrc = data;
+    }
+    imgLoading = false;
+  });
 };
 
 const handleClose = () => {

@@ -14,7 +14,7 @@
             </el-text>
           </el-tooltip>
         </div>
-        <el-text class="letter-spacing-0.5 p-l-5 fs-2.5 color-white fw-bold">
+        <el-text class="letter-spacing-0.5 p-l-5 fs-2.5! color-white fw-bold">
           {{ globalStore.systemTitle }}
         </el-text>
         <div class="flex items-center gap-10 absolute right-0 self-start p-r-4 h-12.5">

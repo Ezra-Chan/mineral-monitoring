@@ -10,7 +10,7 @@
           :closable="item.close"
         >
           <template #label>
-            <el-icon v-show="item.icon" class="tabs-icon">
+            <el-icon v-if="item.icon" class="tabs-icon">
               <component :is="item.icon"></component>
             </el-icon>
             {{ item.title }}
@@ -25,7 +25,6 @@
 <script setup>
 import Sortable from 'sortablejs';
 import { useRoute, useRouter } from 'vue-router';
-import { useGlobalStore } from '@/store/global';
 import { useTabsStore } from '@/store/tabs';
 import { useAuthStore } from '@/store/auth';
 import { useKeepAliveStore } from '@/store/keepAlive';
@@ -35,7 +34,6 @@ const route = useRoute();
 const router = useRouter();
 const tabStore = useTabsStore();
 const authStore = useAuthStore();
-const globalStore = useGlobalStore();
 const keepAliveStore = useKeepAliveStore();
 
 const tabsMenuValue = ref(route.fullPath);
@@ -58,6 +56,7 @@ watch(
       path: route.fullPath,
       name: route.name,
       close: !route.meta.isAffix,
+      isKeepAlive: route.meta.isKeepAlive,
     };
     tabStore.addTabs(tabsParams);
     route.meta.isKeepAlive && keepAliveStore.addKeepAliveName(route.name);
@@ -89,6 +88,7 @@ const initTabs = () => {
         path: item.path,
         name: item.name,
         close: !item.meta.isAffix,
+        isKeepAlive: item.meta.isKeepAlive,
       };
       tabStore.addTabs(tabsParams);
     }
@@ -103,7 +103,7 @@ const tabClick = tabItem => {
 const tabRemove = fullPath => {
   const name = tabStore.tabsMenuList.filter(item => item.path == fullPath)[0].name || '';
   keepAliveStore.removeKeepAliveName(name);
-  tabStore.removeTabs(fullPath, fullPath == route.fullPath);
+  tabStore.removeTabs(fullPath, fullPath === route.fullPath);
 };
 </script>
 
