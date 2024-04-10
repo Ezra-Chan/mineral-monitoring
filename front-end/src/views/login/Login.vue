@@ -44,7 +44,6 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
 import { User, Lock } from '@element-plus/icons-vue';
 import { getToken } from '@/utils/account';
 import { useGlobalStore } from '@/store/global';

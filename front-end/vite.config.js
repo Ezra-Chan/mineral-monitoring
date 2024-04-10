@@ -1,6 +1,7 @@
 import path from 'path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import vueJsx from '@vitejs/plugin-vue-jsx';
 import viteCompression from 'vite-plugin-compression';
 import ReactivityTransform from '@vue-macros/reactivity-transform/dist/vite';
 import Icons from 'unplugin-icons/vite';
@@ -30,6 +31,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       VueDevTools(),
       vue(),
+      vueJsx(),
       DefineOptions(),
       ReactivityTransform(),
       AutoImport({

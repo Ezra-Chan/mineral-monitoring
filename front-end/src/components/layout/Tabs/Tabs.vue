@@ -24,7 +24,6 @@
 
 <script setup>
 import Sortable from 'sortablejs';
-import { useRoute, useRouter } from 'vue-router';
 import { useTabsStore } from '@/store/tabs';
 import { useAuthStore } from '@/store/auth';
 import { useKeepAliveStore } from '@/store/keepAlive';

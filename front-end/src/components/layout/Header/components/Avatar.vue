@@ -17,7 +17,6 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
 import { LOGIN_URL } from '@/config';
 import { useUserStore } from '@/store/user';
 

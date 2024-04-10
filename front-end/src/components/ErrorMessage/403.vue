@@ -10,7 +10,6 @@
 </template>
 
 <script setup name="403">
-import { useRouter } from 'vue-router';
 import { HOME_URL } from '@/config';
 const router = useRouter();
 </script>

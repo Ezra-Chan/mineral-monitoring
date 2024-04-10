@@ -218,7 +218,6 @@ const clearSelection = () => tableRef.value.clearSelection();
 
 // 初始化表格数据 && 拖拽排序
 onMounted(() => {
-  dragSort();
   props.requestAuto && getTableList();
   props.data && (pageable.value.total = props.data.length);
 });
@@ -321,20 +320,6 @@ const _search = () => {
 const _reset = () => {
   reset();
   emit('reset');
-};
-
-// 拖拽排序
-const dragSort = () => {
-  const tbody = document.querySelector('.el-table__body-wrapper tbody');
-  Sortable.create(tbody, {
-    handle: '.move',
-    animation: 300,
-    onEnd({ newIndex, oldIndex }) {
-      const [removedItem] = processTableData.value.splice(oldIndex, 1);
-      processTableData.value.splice(newIndex, 0, removedItem);
-      emit('dargSort', { newIndex, oldIndex });
-    },
-  });
 };
 
 // 暴露给父组件的参数和方法 (外部需要什么，都可以从这里暴露出去)
