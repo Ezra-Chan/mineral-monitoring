@@ -5,7 +5,7 @@
     </div>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item @click="openDialog('infoRef')">
+        <el-dropdown-item @click="router.push('/self')">
           <el-icon><User /></el-icon>个人中心
         </el-dropdown-item>
         <el-dropdown-item divided @click="logout">

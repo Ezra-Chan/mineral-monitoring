@@ -103,5 +103,12 @@ export default defineConfig(({ mode }) => {
       target: 'es2015',
       sourcemap: isDEV ? 'inline' : false,
     },
+    css: {
+      preprocessorOptions: {
+        less: {
+          additionalData: '@import "./src/assets/css/common.less";',
+        },
+      },
+    },
   };
 });

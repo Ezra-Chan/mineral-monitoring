@@ -8,7 +8,7 @@
           v-bind="getResponsive(item)"
           :index="index"
         >
-          <el-form-item>
+          <el-form-item :label-width="150">
             <template #label>
               <el-space :size="4">
                 <span>{{ `${item.search?.label ?? item.label}` }}</span>

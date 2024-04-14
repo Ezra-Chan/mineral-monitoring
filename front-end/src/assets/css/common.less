@@ -53,6 +53,16 @@ body,
   transform: translateX(10px);
 }
 
+.card {
+  box-sizing: border-box;
+  padding: 20px;
+  overflow-x: hidden;
+  background-color: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgb(0 0 0 / 5%);
+}
+
 /* proTable */
 .table-box,
 .table-main {
@@ -107,10 +117,8 @@ body,
     }
     .el-table__header th {
       height: 45px;
-      font-size: 15px;
-      font-weight: bold;
       color: var(--el-text-color-primary);
-      background: var(--el-fill-color-light);
+      background: var(--el-fill-color-light) !important;
     }
     .el-table__row {
       height: 45px;
@@ -136,6 +144,7 @@ body,
       left: 50%;
       transform: translate(-50%, -50%);
       .table-empty {
+        user-select: none;
         line-height: 30px;
       }
     }
