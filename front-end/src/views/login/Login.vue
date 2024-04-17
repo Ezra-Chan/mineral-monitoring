@@ -47,6 +47,8 @@
 import { User, Lock } from '@element-plus/icons-vue';
 import { getToken } from '@/utils/account';
 import { useGlobalStore } from '@/store/global';
+import { useUserStore } from '@/store/user';
+import { Encrypt } from '@/utils/AES';
 
 defineProps({
   msg: String,
@@ -54,6 +56,8 @@ defineProps({
 
 const router = useRouter();
 const globalStore = useGlobalStore();
+const userStore = useUserStore();
+
 const loginFormRef = ref();
 const loginForm = reactive({
   username: '',
@@ -71,7 +75,7 @@ const login = async formEl => {
     if (valid) {
       try {
         loading = true;
-        await getToken(loginForm);
+        await getToken({ username: loginForm.username, password: Encrypt(loginForm.password) });
         ElMessage({ type: 'success', message: '登录成功' });
         setTimeout(() => {
           router.push('/');
@@ -85,6 +89,10 @@ const login = async formEl => {
     }
   });
 };
+
+onMounted(() => {
+  userStore.setToken('');
+});
 </script>
 
 <style scoped lang="less">

@@ -16,7 +16,9 @@ export const getInstance = (prefix = '') => {
     baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
-    headers: {},
+    headers: localStorage.getItem('user-state')
+      ? { Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user-state')).token }
+      : {},
   });
 
   instance.defaults.headers.post['Content-Type'] = 'application/json';
@@ -34,11 +36,7 @@ export const getInstance = (prefix = '') => {
       if (status !== 200 && !(data instanceof Blob)) {
         return Promise.reject(response);
       }
-      if (data instanceof Blob) {
-        response.data = data;
-        return response;
-      }
-      response.data = data && data.data;
+      response.data = data;
       return response;
     },
     error => {

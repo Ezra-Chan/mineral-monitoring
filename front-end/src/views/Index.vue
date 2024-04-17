@@ -10,19 +10,17 @@
 </template>
 
 <script setup>
-import { RouterView } from 'vue-router';
-import { getUserInfo } from '@/api/radar';
+import { getCurrentUserApi } from '@/api/platform';
 import { LOGIN_URL } from '@/config';
 
 let loading = $ref(false);
-
 const judgeLoginStatus = async () => {
-  if (location.pathname === LOGIN_URL) {
+  if (location.hash === '#' + LOGIN_URL) {
     loading = false;
     return;
   }
   try {
-    await getUserInfo();
+    await getCurrentUserApi();
   } catch (error) {}
   loading = false;
 };

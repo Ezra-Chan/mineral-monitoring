@@ -9,14 +9,14 @@ import request, { sendRequest } from './request';
  * @param {string} params.password 密码
  * @returns
  */
-export const radarToken = params => request.post('admin/getToken', params);
+export const getRadarToken = params => request.post('admin/getToken', params);
 export const radarLogin = params => request.post('admin/login', params);
 
 /**
  * 获取用户信息
  * @returns
  */
-export const getUserInfo = () => request.get('admin/info');
+export const getRadarUserInfo = () => request.get('admin/info');
 
 /**
  * 获取仓库列表

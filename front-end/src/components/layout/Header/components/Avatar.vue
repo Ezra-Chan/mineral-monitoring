@@ -18,10 +18,9 @@
 
 <script setup>
 import { LOGIN_URL } from '@/config';
-import { useUserStore } from '@/store/user';
+import { logoutMonitoring } from '@/utils/account';
 
 const router = useRouter();
-const userStore = useUserStore();
 
 // 退出登录
 const logout = () => {
@@ -31,16 +30,11 @@ const logout = () => {
     type: 'warning',
   }).then(async () => {
     // 1.执行退出登录接口
-    // await logoutApi();
+    await logoutMonitoring();
 
-    // 2.清除 Token
-    userStore.setToken('');
-
-    // 3.重定向到登陆页
+    // 2.重定向到登录页
     router.replace(LOGIN_URL);
     ElMessage.success('退出登录成功！');
   });
 };
 </script>
-
-<style lang="less" scoped></style>

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { getToken } from 'utils/account';
-import { useUserStore } from '@/store/user';
+import { kexinLogin } from '@/utils/account';
 
 let apiContextPath = '';
 if (import.meta.env.DEV) {
@@ -28,7 +27,7 @@ export const getInstance = (prefix = 'shmanage') => {
 
   instance.interceptors.response.use(
     async response => {
-      let { data, request = {}, config = {} } = response;
+      let { data, request = {} } = response;
       if (request.responseType === 'arraybuffer') {
         response.data = data;
         return response;
@@ -38,15 +37,9 @@ export const getInstance = (prefix = 'shmanage') => {
       }
       if (data && data.code !== 200 && !(data instanceof Blob)) {
         if (data.code === 401) {
-          const userStore = useUserStore();
-          if (userStore?.userInfo) {
-            const { username, password } = userStore.userInfo;
-            const flag = await getToken({ username, password });
-            if (flag) {
-              location.href = '/';
-            }
-          } else {
-            location.href = '/#/login';
+          const flag = await kexinLogin();
+          if (flag) {
+            location.reload();
           }
         }
         return Promise.reject(response);
