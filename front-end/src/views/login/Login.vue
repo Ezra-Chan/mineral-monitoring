@@ -54,7 +54,6 @@ defineProps({
   msg: String,
 });
 
-const router = useRouter();
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
 
@@ -78,8 +77,8 @@ const login = async formEl => {
         await getToken({ username: loginForm.username, password: Encrypt(loginForm.password) });
         ElMessage({ type: 'success', message: '登录成功' });
         setTimeout(() => {
-          router.push('/');
-        }, 1500);
+          location.href = '/';
+        }, 1000);
       } catch (error) {
         ElMessage({ type: 'error', message: '登录失败' });
         console.error('登录失败', error);

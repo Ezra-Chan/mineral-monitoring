@@ -10,15 +10,17 @@ export const useUserStore = defineStore('user', {
     userInfo: void 0,
     radarToken: '',
     radarUser: void 0,
+    monitorUser: void 0,
   }),
   getters: {},
   actions: {
     setToken(token, refreshToken) {
-      this.token = token;
       if (token) {
-        refreshToken && (this.refreshToken = refreshToken);
+        this.token = 'Bearer ' + token;
+        refreshToken && (this.refreshToken = 'Bearer ' + refreshToken);
         this.tokenTime = dayjs().valueOf();
       } else {
+        this.token = '';
         this.refreshToken = '';
         this.tokenTime = 0;
         this.radarToken = '';
@@ -32,6 +34,9 @@ export const useUserStore = defineStore('user', {
     },
     setRadarUser(radarUser) {
       this.radarUser = radarUser;
+    },
+    setMonitorUser(monitorUser) {
+      this.monitorUser = monitorUser;
     },
   },
   persist: piniaPersistConfig('user-state'),

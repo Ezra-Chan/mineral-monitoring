@@ -10,7 +10,7 @@ export const refreshTokenApi = () =>
     {},
     {
       headers: {
-        Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user-state'))?.refreshToken,
+        Authorization: JSON.parse(localStorage.getItem('user-state'))?.refreshToken,
       },
     },
   );
@@ -22,7 +22,7 @@ export const revokeAccessApi = params => request.delete('/auth/revoke_access', p
 export const revokeRefreshApi = () =>
   request.delete('/auth/revoke_refresh', {
     headers: {
-      Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user-state'))?.refreshToken,
+      Authorization: JSON.parse(localStorage.getItem('user-state'))?.refreshToken,
     },
   });
 

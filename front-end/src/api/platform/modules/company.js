@@ -1,7 +1,7 @@
 import request from '../request';
 
 // 获取公司列表
-export const getCompanyListApi = params => request.get('/api/v1/company', params);
+export const getCompanyListApi = params => request.get('/api/v1/company', { params, data: params });
 
 // 查询指定公司
 export const getCompanyApi = id => request.get(`/api/v1/company/${id}`);

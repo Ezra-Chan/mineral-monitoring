@@ -70,7 +70,7 @@ export const kexinLogin = async () => {
 };
 
 // 登录，获取token
-export const getToken = async (params = {}) => {
+export const getToken = async (params = {}, flag) => {
   try {
     if (!isPending) {
       const userStore = useUserStore();
@@ -82,7 +82,7 @@ export const getToken = async (params = {}) => {
         await afterLogin();
       }
       // token已失效
-      else if (dayjs().valueOf() - tokenTime > 24 * 60 * 60 * 1000) {
+      else if (dayjs().valueOf() - tokenTime > 24 * 60 * 60 * 1000 || flag) {
         // 用 refreshToken 获取新的token
         await Promise.all([refreshMonitoringToken(), kexinLogin()]);
         await afterLogin();
@@ -97,6 +97,11 @@ export const getToken = async (params = {}) => {
       throw new Error(error.data.message);
     }
     throw new Error(error);
+  } finally {
+    const timer = setTimeout(() => {
+      isPending = false;
+      clearTimeout(timer);
+    }, 2000);
   }
 };
 

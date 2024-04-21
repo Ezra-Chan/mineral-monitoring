@@ -8,6 +8,7 @@ import * as Icons from '@element-plus/icons-vue';
 import './assets/js/iconfont.js';
 import 'virtual:uno.css';
 import 'element-plus/theme-chalk/dark/css-vars.css';
+import 'element-plus/dist/index.css';
 
 const app = createApp(App);
 

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { getToken } from '@/utils/account';
+import { LOGIN_URL } from '@/config';
 
 let apiContextPath = '';
 // if (import.meta.env.DEV) {
@@ -17,7 +19,7 @@ export const getInstance = (prefix = '') => {
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
     headers: localStorage.getItem('user-state')
-      ? { Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user-state')).token }
+      ? { Authorization: JSON.parse(localStorage.getItem('user-state')).token }
       : {},
   });
 
@@ -39,8 +41,18 @@ export const getInstance = (prefix = '') => {
       response.data = data;
       return response;
     },
-    error => {
-      if (error.response && error.response.code === 401) {
+    async error => {
+      if (error.response && error.response.status === 401) {
+        if (error.config.url === '/auth/refresh') {
+          ElMessage.error('登录状态过期，请重新登录');
+          window.location.href = '/#' + LOGIN_URL;
+        } else {
+          const flag = await getToken(undefined, true);
+          if (flag) {
+            ElMessage.warning('登录状态过期，已重新登录');
+            window.location.href = '/';
+          }
+        }
         return;
       }
       return Promise.reject(error.response);

@@ -1,26 +1,47 @@
 <template>
   <div class="table-box">
-    <ProTable ref="proTable" :columns="columns" :request-api="getTableList">
+    <ProTable
+      ref="proTable"
+      :columns="columns"
+      :request-api="getCompanyListApi"
+      :data-callback="transformData"
+    >
       <template #tableHeader>
         <el-button v-auth="'add'" type="primary" :icon="Plus" @click="openDrawer('新增')">
           新增
         </el-button>
       </template>
+      <template #operation="scope">
+        <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">
+          查看
+        </el-button>
+        <el-button type="primary" link :icon="EditPen" @click="openDrawer('编辑', scope.row)">
+          编辑
+        </el-button>
+        <el-button type="primary" link :icon="Delete" @click="deleteAccount(scope.row)">
+          删除
+        </el-button>
+      </template>
     </ProTable>
+    <ProDrawer ref="drawerRef" />
   </div>
 </template>
 
 <script setup>
-import { Plus } from '@element-plus/icons-vue';
+import dayjs from 'dayjs';
+import { Plus, View, EditPen, Delete } from '@element-plus/icons-vue';
+import { getCompanyListApi, createCompanyApi, updateCompanyApi } from '@/api/platform';
+import { objOmit } from '@/utils';
 
 const router = useRouter();
 const proTable = ref();
+const drawerRef = ref();
 const columns = reactive([
   {
     prop: 'name',
     label: '公司名称',
     search: { el: 'input', props: { placeholder: '请输入公司名称' } },
-    minWidth: 150,
+    minWidth: 250,
   },
   {
     prop: 'abbreviation',
@@ -31,13 +52,13 @@ const columns = reactive([
     prop: 'address',
     label: '公司地址',
     search: { el: 'input', props: { placeholder: '请输入公司地址' } },
-    minWidth: 150,
+    minWidth: 250,
   },
   {
-    prop: 'creditCode',
+    prop: 'credit_code',
     label: '统一社会信用代码',
     search: { el: 'input', props: { placeholder: '请输入统一社会信用代码' } },
-    minWidth: 150,
+    minWidth: 200,
   },
   {
     prop: 'manager.name',
@@ -46,9 +67,11 @@ const columns = reactive([
     minWidth: 100,
   },
   {
-    prop: 'createTime',
-    label: '成立时间',
+    prop: 'establishment_time',
+    label: '成立日期',
     minWidth: 150,
+    render: ({ row }) =>
+      row.establishment_time ? dayjs(row.establishment_time).format('YYYY-MM-DD') : null,
   },
   {
     prop: 'status',
@@ -56,12 +79,179 @@ const columns = reactive([
     search: { el: 'input', props: { placeholder: '请输入公司状态' } },
     minWidth: 100,
   },
-  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 200 },
+  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
 ]);
+const formColumns = markRaw([
+  {
+    formItem: {
+      label: '公司名称',
+      prop: 'name',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入公司名称',
+    },
+  },
+  {
+    formItem: {
+      label: '公司简称',
+      prop: 'abbreviation',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入公司简称',
+    },
+  },
+  {
+    formItem: {
+      label: '公司地址',
+      prop: 'address',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入公司地址',
+    },
+  },
+  {
+    formItem: {
+      label: '统一社会信用代码',
+      prop: 'credit_code',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入统一社会信用代码',
+    },
+  },
+  {
+    formItem: {
+      label: '成立日期',
+      prop: 'establishment_time',
+    },
+    component: 'el-date-picker',
+    attrs: {
+      clearable: true,
+      placeholder: '请选择成立日期',
+      valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      style: {
+        width: '100%',
+      },
+    },
+  },
+  {
+    formItem: {
+      label: '公司状态',
+      prop: 'status',
+    },
+    component: 'el-select',
+    attrs: {
+      clearable: true,
+      placeholder: '请选择公司状态',
+    },
+  },
+  {
+    formItem: {
+      label: '可信仓账号',
+      prop: 'kexin_user',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入可信仓账号',
+    },
+  },
+  {
+    formItem: {
+      label: '可信仓密码',
+      prop: 'kexin_pwd',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入可信仓密码',
+    },
+  },
+  {
+    formItem: {
+      label: '监控平台账号',
+      prop: 'monitor_user',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入监控平台账号',
+    },
+  },
+  {
+    formItem: {
+      label: '监控平台密码',
+      prop: 'monitor_pwd',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入监控平台密码',
+    },
+  },
+]);
+const rules = reactive({
+  name: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
+  kexin_user: [{ required: true, message: '请输入可信仓账号', trigger: 'blur' }],
+  kexin_pwd: [{ required: true, message: '请输入可信仓密码', trigger: 'blur' }],
+  monitor_user: [{ required: true, message: '请输入监控平台账号', trigger: 'blur' }],
+  monitor_pwd: [{ required: true, message: '请输入监控平台密码', trigger: 'blur' }],
+});
 
-const getTableList = async params => {
-  return [];
+const createCompany = async row => {
+  try {
+    await createCompanyApi(row);
+    ElMessage.success('新增成功');
+    drawerRef.value.close();
+    proTable.value.search();
+  } catch (error) {
+    ElMessage.error('新增失败');
+  }
 };
+
+const updateCompany = async row => {
+  try {
+    await updateCompanyApi(row.id, objOmit(row, ['id']));
+    ElMessage.success('编辑成功');
+    drawerRef.value.close();
+    proTable.value.search();
+  } catch (error) {
+    ElMessage.error('编辑失败');
+  }
+};
+
+const openDrawer = (type, row) => {
+  const isAdd = type === '新增';
+  const isEdit = type === '编辑';
+  const isView = type === '查看';
+  drawerRef.value.acceptParams({
+    isView,
+    size: '500px',
+    title: type + '公司',
+    data: row || {},
+    formOptions: {
+      labelWidth: '10rem',
+      labelSuffix: ' :',
+      class: 'overflow-y-auto p-r-8 h-full',
+      rules,
+      disabled: isView,
+    },
+    formColumns,
+    onSubmit: isAdd ? data => createCompany(data) : data => updateCompany(data),
+  });
+};
+
+const transformData = data => ({
+  list: data.results,
+  total: data.total,
+});
 </script>
 
 <style lang="less" scoped></style>

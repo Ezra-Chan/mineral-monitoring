@@ -65,16 +65,16 @@
         >
           <template #default="scope">
             <!-- expand -->
-            <template v-if="item.type == 'expand'">
+            <template v-if="item.type === 'expand'">
               <component :is="item.render" v-bind="scope" v-if="item.render" />
               <slot v-else :name="item.type" v-bind="scope" />
             </template>
             <!-- radio -->
-            <el-radio v-if="item.type == 'radio'" v-model="radio" :label="scope.row[rowKey]">
+            <el-radio v-if="item.type === 'radio'" v-model="radio" :label="scope.row[rowKey]">
               <i></i>
             </el-radio>
             <!-- sort -->
-            <el-tag v-if="item.type == 'sort'" class="move">
+            <el-tag v-if="item.type === 'sort'" class="move">
               <el-icon><DCaret /></el-icon>
             </el-tag>
           </template>

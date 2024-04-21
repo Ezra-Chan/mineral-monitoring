@@ -2,7 +2,7 @@
   <el-form v-bind="form" :model="modelValue" ref="formRef">
     <el-collapse v-if="form.group" v-model="activeNames">
       <el-collapse-item
-        v-for="group in (columns as IGroup[])"
+        v-for="group in columns"
         :key="group.title"
         :title="group.title"
         :name="group.title"
@@ -18,7 +18,7 @@
         </template>
       </el-collapse-item>
     </el-collapse>
-    <template v-else v-for="item in (columns as IColumn[])" :key="item.prop">
+    <template v-else v-for="item in columns" :key="item.prop">
       <el-form-item v-bind="item.formItem">
         <component
           :is="item.component"

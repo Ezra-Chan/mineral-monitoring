@@ -88,6 +88,13 @@ export function filterEnum(callValue, enumData, fieldNames, type) {
 }
 
 /**
+ * @description:  是否为数组
+ */
+export function isArray(val) {
+  return val && Array.isArray(val);
+}
+
+/**
  * @description 处理 ProTable 值为数组 || 无数据
  * @param {*} callValue 需要处理的值
  * @returns {String}
@@ -109,3 +116,28 @@ export function handleRowAccordingToProp(row, prop) {
   prop.split('.').forEach(item => (row = row[item] ?? '--'));
   return row;
 }
+
+/**
+ * 从obj中拿出keys里的所有属性，返回一个新对象
+ * @param {Object} obj 原始对象
+ * @param {Array} keys 需要取出的key值集合
+ * @returns Object 新对象
+ */
+export const objPick = (obj = {}, keys = []) => {
+  return keys.reduce((acc, cur) => {
+    if (obj && obj.hasOwnProperty(cur)) {
+      acc[cur] = obj[cur];
+    }
+    return acc;
+  }, {});
+};
+
+// 从obj中剔除掉keys数组里的元素对应的属性,返回一个新对象
+export const objOmit = (obj = {}, keys = []) => {
+  return Object.keys(obj)
+    .filter(key => !keys.includes(key))
+    .reduce((acc, cur) => {
+      acc[cur] = obj[cur];
+      return acc;
+    }, {});
+};

@@ -57,8 +57,8 @@ export const useTable = (api, initParam = {}, isPageable = true, dataCallBack, r
       state.tableData = isPageable ? data.list : data;
       // 解构后台返回的分页数据 (如果有分页更新分页信息)
       if (isPageable) {
-        const { pageNum, pageSize, total } = data;
-        updatePageable({ pageNum, pageSize, total });
+        const { total } = data;
+        updatePageable({ total });
       }
     } catch (error) {
       requestError && requestError(error);
