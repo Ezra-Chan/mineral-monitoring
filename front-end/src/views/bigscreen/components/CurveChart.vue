@@ -137,6 +137,7 @@ const initChart = async () => {
         ]),
       },
     }));
+    const minVal = Math.min(...series.map(s => s.data).flat());
     const options = {
       color: colors,
       tooltip: {
@@ -188,6 +189,8 @@ const initChart = async () => {
             type: 'dashed',
           },
         },
+        min: minVal * 0.95,
+        splitNumber: 10,
       },
       series,
     };
