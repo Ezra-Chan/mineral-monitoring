@@ -8,7 +8,9 @@
     />
     <template #footer>
       <el-button @click="drawerVisible = false">取消</el-button>
-      <el-button v-show="!drawerProps.isView" type="primary" @click="handleSubmit">确定</el-button>
+      <el-button v-show="!drawerProps.isView" type="primary" @click="handleSubmit(formRef)">
+        确定
+      </el-button>
     </template>
   </el-drawer>
 </template>
@@ -25,8 +27,12 @@ const acceptParams = params => {
 
 const close = () => (drawerVisible = false);
 
-const handleSubmit = async () => {
-  drawerProps.onSubmit?.(drawerProps.data);
+const handleSubmit = async formEl => {
+  if (!formEl) return;
+  formEl.validate(async valid => {
+    if (!valid) return;
+    drawerProps.onSubmit?.(drawerProps.data);
+  });
 };
 
 defineExpose({

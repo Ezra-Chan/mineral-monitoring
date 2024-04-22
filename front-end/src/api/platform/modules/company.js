@@ -1,7 +1,8 @@
 import request from '../request';
 
 // 获取公司列表
-export const getCompanyListApi = params => request.get('/api/v1/company', { params, data: params });
+export const getCompanyListApi = (params, data) =>
+  request.post('/api/v1/companylist', data, { params });
 
 // 查询指定公司
 export const getCompanyApi = id => request.get(`/api/v1/company/${id}`);
@@ -31,7 +32,7 @@ export const deleteUserFromCompanyApi = (id, userIds) =>
 export const getCurrentUserApi = () => request.get('/api/v1/current_user');
 
 // 获取所有用户
-export const getAllUsersApi = () => request.get('/api/v1/users');
+export const getAllUsersApi = (params, data) => request.post('/api/v1/userlist', data, { params });
 
 // 获取指定用户
 export const getUserApi = id => request.get(`/api/v1/users/${id}`);
@@ -44,3 +45,6 @@ export const updateUserApi = (id, data) => request.put(`/api/v1/users/${id}`, da
 
 // 删除用户
 export const deleteUserApi = id => request.delete(`/api/v1/users/${id}`);
+
+// 修改密码
+export const updatePasswordApi = data => request.put(`/api/v1/current_user`, data);

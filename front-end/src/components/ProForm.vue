@@ -13,7 +13,11 @@
               :is="item.component"
               v-bind="item.attrs"
               v-model="modelValue[item.formItem.prop]"
-            />
+            >
+              <template v-if="item.children" v-for="(child, index) in item.children" :key="index">
+                <component :is="child.component" v-bind="child.attrs" />
+              </template>
+            </component>
           </el-form-item>
         </template>
       </el-collapse-item>
@@ -24,7 +28,11 @@
           :is="item.component"
           v-bind="item.attrs"
           v-model="modelValue[item.formItem.prop]"
-        />
+        >
+          <template v-if="item.children" v-for="(child, index) in item.children" :key="index">
+            <component :is="child.component" v-bind="child.attrs" />
+          </template>
+        </component>
       </el-form-item>
     </template>
     <el-form-item>
@@ -51,6 +59,7 @@ const props = defineProps({
 
 const formRef = $ref();
 let activeNames = $ref([]);
+const instance = getCurrentInstance();
 
 onMounted(() => {
   const { form } = props;
@@ -61,5 +70,11 @@ onMounted(() => {
       activeNames = form.expandItem;
     }
   }
+  const entries = Object.entries(formRef.$.exposed);
+  for (const [key, value] of entries) {
+    instance.exposed[key] = value;
+  }
 });
+
+defineExpose({ ...instance.exposed });
 </script>

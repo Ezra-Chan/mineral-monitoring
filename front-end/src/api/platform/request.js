@@ -35,7 +35,7 @@ export const getInstance = (prefix = '') => {
       if (typeof data === 'string') {
         data = JSON.parse(data);
       }
-      if (status !== 200 && !(data instanceof Blob)) {
+      if (!(status >= 200 && status < 300) && !(data instanceof Blob)) {
         return Promise.reject(response);
       }
       response.data = data;

@@ -1,3 +1,5 @@
+import { EMAIL_SUFFIX } from './constant';
+
 /**
  * @description 使用递归过滤出需要渲染在左侧菜单的列表 (需剔除 isHide === true 的菜单)
  * @param {Array} menuList 菜单列表
@@ -95,6 +97,17 @@ export function isArray(val) {
 }
 
 /**
+ * @description 递归查找 callValue 对应的 enum 值
+ * */
+export function findItemNested(enumData, callValue, value, children) {
+  return enumData.reduce((accumulator, current) => {
+    if (accumulator) return accumulator;
+    if (current[value] === callValue) return current;
+    if (current[children]) return findItemNested(current[children], callValue, value, children);
+  }, null);
+}
+
+/**
  * @description 处理 ProTable 值为数组 || 无数据
  * @param {*} callValue 需要处理的值
  * @returns {String}
@@ -140,4 +153,24 @@ export const objOmit = (obj = {}, keys = []) => {
       acc[cur] = obj[cur];
       return acc;
     }, {});
+};
+
+/**
+ * 判断queryStr内是否含有@符号，且@后有任意字符，如果有则返回[]，否则返回EMAIL_SUFFIX中符合的邮箱后缀
+ * @param queryStr
+ * @param cb
+ */
+export const querySearch = (queryStr, cb) => {
+  const reg = /@.+/;
+  if (reg.test(queryStr)) {
+    cb([]);
+  } else {
+    if (queryStr.endsWith('@')) {
+      queryStr = queryStr.slice(0, -1);
+    }
+    const results = EMAIL_SUFFIX.map(item => ({
+      value: queryStr + item,
+    }));
+    cb(results);
+  }
 };

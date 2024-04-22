@@ -1,7 +1,7 @@
 <template>
   <div class="tool-bar-ri flex items-center justify-center gap-5 p-r-6">
     <theme-switch />
-    <Message id="message" />
+    <Message />
     <full-screen-button size="30px" color="inherit" hoverColor="inherit" />
     <span class="username fs-1">{{ username }}</span>
     <Avatar />

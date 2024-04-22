@@ -52,7 +52,8 @@ export const useTable = (api, initParam = {}, isPageable = true, dataCallBack, r
     try {
       // 先把初始化参数和分页参数放到总参数里面
       Object.assign(state.totalParam, initParam, isPageable ? pageParam.value : {});
-      let { data } = await api({ ...state.searchInitParam, ...state.totalParam });
+      const { pageNum, pageSize, ...params } = { ...state.searchInitParam, ...state.totalParam };
+      let { data } = await api({ page: pageNum, per_page: pageSize }, params);
       dataCallBack && (data = dataCallBack(data));
       state.tableData = isPageable ? data.list : data;
       // 解构后台返回的分页数据 (如果有分页更新分页信息)

@@ -30,8 +30,14 @@
 <script setup>
 import dayjs from 'dayjs';
 import { Plus, View, EditPen, Delete } from '@element-plus/icons-vue';
-import { getCompanyListApi, createCompanyApi, updateCompanyApi } from '@/api/platform';
+import {
+  getCompanyListApi,
+  createCompanyApi,
+  updateCompanyApi,
+  deleteCompanyApi,
+} from '@/api/platform';
 import { objOmit } from '@/utils';
+import { CompanyStatus } from '@/utils/constant';
 
 const router = useRouter();
 const proTable = ref();
@@ -46,6 +52,7 @@ const columns = reactive([
   {
     prop: 'abbreviation',
     label: '公司简称',
+    search: { el: 'input', props: { placeholder: '请输入公司简称' } },
     minWidth: 100,
   },
   {
@@ -61,9 +68,8 @@ const columns = reactive([
     minWidth: 200,
   },
   {
-    prop: 'manager.name',
+    prop: 'manager_id',
     label: '公司管理员',
-    search: { el: 'input', props: { placeholder: '请输入公司管理员' } },
     minWidth: 100,
   },
   {
@@ -76,7 +82,8 @@ const columns = reactive([
   {
     prop: 'status',
     label: '公司状态',
-    search: { el: 'input', props: { placeholder: '请输入公司状态' } },
+    enum: CompanyStatus,
+    search: { el: 'select', props: { placeholder: '请选择公司状态', filterable: true } },
     minWidth: 100,
   },
   { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
@@ -150,7 +157,12 @@ const formColumns = markRaw([
     attrs: {
       clearable: true,
       placeholder: '请选择公司状态',
+      filterable: true,
     },
+    children: CompanyStatus.map(item => ({
+      component: 'el-option',
+      attrs: item,
+    })),
   },
   {
     formItem: {
@@ -224,6 +236,21 @@ const updateCompany = async row => {
     proTable.value.search();
   } catch (error) {
     ElMessage.error('编辑失败');
+  }
+};
+
+const deleteAccount = async row => {
+  try {
+    await ElMessageBox.confirm(`确定要删除公司【${row.name}】吗？`, '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    });
+    await deleteCompanyApi(row.id);
+    ElMessage.success('删除成功');
+    proTable.value.search();
+  } catch (error) {
+    ElMessage.error('删除失败');
   }
 };
 

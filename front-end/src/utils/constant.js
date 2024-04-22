@@ -30,3 +30,34 @@ export const barGradientColors = [
   ['rgba(55, 162, 255, 0.8)', 'rgba(55, 162, 255, 0.1)'],
   ['rgba(30, 200, 90, 0.8)', 'rgba(30, 200, 90, 0.2)'],
 ];
+
+export const CompanyStatus = [
+  {
+    label: '营业中',
+    value: 1,
+  },
+  {
+    label: '已注销',
+    value: 0,
+  },
+];
+
+export const Gender = [
+  {
+    label: '男',
+    value: 1,
+  },
+  {
+    label: '女',
+    value: 0,
+  },
+];
+
+export const EMAIL_SUFFIX = [
+  '@qq.com',
+  '@163.com',
+  '@gmail.com',
+  '@126.com',
+  '@sina.com',
+  '@foxmail.com',
+];

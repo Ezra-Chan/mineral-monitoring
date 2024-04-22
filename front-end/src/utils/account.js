@@ -25,11 +25,10 @@ const afterLogin = async () => {
 // 登录本平台
 const monitoringLogin = async (params = {}) => {
   const userStore = useUserStore();
-  const userInfo = { ...params, password: Decrypt(params.password) };
-  const { data = {} } = await loginApi(userInfo);
+  const info = { ...params, password: Decrypt(params.password) };
+  const { data = {} } = await loginApi(info);
   const { access_token, refresh_token } = data;
   userStore.setToken(access_token, refresh_token);
-  userStore.setUserInfo(params);
 };
 
 // 刷新token

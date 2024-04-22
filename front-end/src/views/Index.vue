@@ -12,15 +12,19 @@
 <script setup>
 import { getCurrentUserApi } from '@/api/platform';
 import { LOGIN_URL } from '@/config';
+import { useUserStore } from '@/store/user';
 
 let loading = $ref(false);
+const userStore = useUserStore();
+
 const judgeLoginStatus = async () => {
   if (location.hash === '#' + LOGIN_URL) {
     loading = false;
     return;
   }
   try {
-    await getCurrentUserApi();
+    const { data = {} } = await getCurrentUserApi();
+    userStore.setUserInfo(data.user);
   } catch (error) {}
   loading = false;
 };
