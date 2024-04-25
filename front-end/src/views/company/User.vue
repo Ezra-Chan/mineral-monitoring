@@ -24,11 +24,15 @@
         >
           编辑
         </el-button>
-        <el-popconfirm title="确认删除吗？" v-auth="'delete'" @confirm="deleteUser(scope.row)">
-          <template #reference>
-            <el-button type="primary" link :icon="Delete"> 删除 </el-button>
-          </template>
-        </el-popconfirm>
+        <el-button
+          v-auth="'delete'"
+          type="primary"
+          link
+          :icon="Delete"
+          @click="deleteUser(scope.row)"
+        >
+          删除
+        </el-button>
       </template>
     </ProTable>
     <ProDrawer ref="drawerRef" />
@@ -235,6 +239,11 @@ const updateUser = async row => {
 
 const deleteUser = async row => {
   try {
+    await ElMessageBox.confirm(`确定要删除用户【${row.name}】吗？`, '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    });
     await deleteUserApi(row.id);
     ElMessage.success('删除成功');
     proTable.value.search();
