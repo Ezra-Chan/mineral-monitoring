@@ -24,15 +24,11 @@
         >
           编辑
         </el-button>
-        <el-button
-          v-auth="'delete'"
-          type="primary"
-          link
-          :icon="Delete"
-          @click="deleteUser(scope.row)"
-        >
-          删除
-        </el-button>
+        <el-popconfirm title="确认删除吗？" v-auth="'delete'" @confirm="deleteUser(scope.row)">
+          <template #reference>
+            <el-button type="primary" link :icon="Delete"> 删除 </el-button>
+          </template>
+        </el-popconfirm>
       </template>
     </ProTable>
     <ProDrawer ref="drawerRef" />
@@ -63,7 +59,7 @@ const columns = reactive([
     search: { el: 'select', props: { placeholder: '请选择性别', filterable: true } },
   },
   {
-    prop: 'idCard',
+    prop: 'id_card',
     label: '身份证号',
     search: { el: 'input', props: { placeholder: '请输入身份证号' } },
     minWidth: 150,
@@ -124,7 +120,7 @@ const formColumns = markRaw([
   {
     formItem: {
       label: '身份证号',
-      prop: 'idCard',
+      prop: 'id_card',
     },
     component: 'el-input',
     attrs: {

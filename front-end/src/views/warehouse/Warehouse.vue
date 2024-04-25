@@ -24,15 +24,11 @@
         >
           编辑
         </el-button>
-        <el-button
-          v-auth="'delete'"
-          type="primary"
-          link
-          :icon="Delete"
-          @click="deleteWarehouse(scope.row)"
-        >
-          删除
-        </el-button>
+        <el-popconfirm title="确认删除吗？" v-auth="'delete'" @confirm="deleteWarehouse(scope.row)">
+          <template #reference>
+            <el-button type="primary" link :icon="Delete"> 删除 </el-button>
+          </template>
+        </el-popconfirm>
       </template>
     </ProTable>
     <ProDrawer ref="drawerRef" />

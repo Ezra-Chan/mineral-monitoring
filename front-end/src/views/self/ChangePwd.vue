@@ -55,9 +55,9 @@ const rules = reactive({
   ],
 });
 
-const confirm = async () => {
+const confirm = () => {
   if (!formRef) return;
-  await formRef.validate(async valid => {
+  formRef.validate(async valid => {
     if (valid) {
       loading = true;
       try {
@@ -73,6 +73,7 @@ const confirm = async () => {
         ElMessage.success('修改成功!');
       } catch (error) {
         console.error(error);
+        ElMessage.error('修改失败');
       } finally {
         loading = false;
         formRef.resetFields();
