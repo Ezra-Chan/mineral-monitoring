@@ -42,6 +42,17 @@ export const CompanyStatus = [
   },
 ];
 
+export const WarehouseStatus = [
+  {
+    label: '使用中',
+    value: 1,
+  },
+  {
+    label: '已废弃',
+    value: 0,
+  },
+];
+
 export const Gender = [
   {
     label: '男',

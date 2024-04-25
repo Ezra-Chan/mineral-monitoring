@@ -17,60 +17,48 @@ const formOptions = markRaw({
   inline: true,
   labelWidth: '10rem',
   class: 'overflow-y-auto p-r-8',
-  group: true,
-  defaultExpandAll: true,
 });
 const formColumns = markRaw([
   {
-    title: '个人信息',
-    children: [
-      {
-        formItem: {
-          label: '姓名',
-          prop: 'name',
-        },
-        component: 'el-input',
-        attrs: {
-          clearable: true,
-          placeholder: '请输入姓名',
-        },
-      },
-      {
-        formItem: {
-          label: '性别',
-          prop: 'sex',
-        },
-        component: 'el-select',
-        attrs: {
-          clearable: true,
-          placeholder: '性别',
-          filterable: true,
-        },
-        children: Gender.map(item => ({
-          component: 'el-option',
-          attrs: item,
-        })),
-      },
-    ],
+    formItem: {
+      label: '姓名',
+      prop: 'name',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入姓名',
+    },
   },
   {
-    title: '学历信息',
-    children: [
-      {
-        formItem: {
-          label: '邮箱',
-          prop: 'email',
-        },
-        component: 'el-autocomplete',
-        attrs: {
-          clearable: true,
-          placeholder: '请输入邮箱',
-          fetchSuggestions: querySearch,
-          class: 'w-100%',
-          triggerOnFocus: false,
-        },
-      },
-    ],
+    formItem: {
+      label: '性别',
+      prop: 'sex',
+    },
+    component: 'el-select',
+    attrs: {
+      clearable: true,
+      placeholder: '性别',
+      filterable: true,
+    },
+    children: Gender.map(item => ({
+      component: 'el-option',
+      attrs: item,
+    })),
+  },
+  {
+    formItem: {
+      label: '邮箱',
+      prop: 'email',
+    },
+    component: 'el-autocomplete',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入邮箱',
+      fetchSuggestions: querySearch,
+      class: 'w-100%',
+      triggerOnFocus: false,
+    },
   },
 ]);
 

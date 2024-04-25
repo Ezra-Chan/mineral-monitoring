@@ -32,7 +32,7 @@ export const deleteUserFromCompanyApi = (id, userIds) =>
 export const getCurrentUserApi = () => request.get('/api/v1/current_user');
 
 // 获取所有用户
-export const getAllUsersApi = (params, data) => request.post('/api/v1/userlist', data, { params });
+export const getUserListApi = (params, data) => request.post('/api/v1/userlist', data, { params });
 
 // 获取指定用户
 export const getUserApi = id => request.get(`/api/v1/users/${id}`);

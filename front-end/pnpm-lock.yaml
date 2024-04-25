@@ -33,8 +33,8 @@ dependencies:
     specifier: ^2.0.9
     version: 2.0.9(echarts@5.4.3)
   element-plus:
-    specifier: ^2.4.4
-    version: 2.4.4(react@18.2.0)(vue@3.4.5)
+    specifier: ^2.7.1
+    version: 2.7.1(react@18.2.0)(vue@3.4.5)
   nprogress:
     specifier: ^0.2.0
     version: 0.2.0
@@ -1849,8 +1849,8 @@ packages:
   /electron-to-chromium@1.4.623:
     resolution: {integrity: sha512-lKoz10iCYlP1WtRYdh5MvocQPWVRoI7ysp6qf18bmeBgR8abE6+I2CsfyNKztRDZvhdWc+krKT6wS7Neg8sw3A==}
 
-  /element-plus@2.4.4(react@18.2.0)(vue@3.4.5):
-    resolution: {integrity: sha512-TlKubXJgxwhER0dw+8ULn9hr9kZjraV4R6Q/eidwWUwCKxwXYPBGmMKsZ/85tlxlhMYbcLZd/YZh6G3QkHX4fg==}
+  /element-plus@2.7.1(react@18.2.0)(vue@3.4.5):
+    resolution: {integrity: sha512-yk/vXFwJp0flMrd2kfcR0XlumhwtPjB19HJvwcf0n3DvRE7UK8LeSK14LVghSzk0TzPsFFElweMnZEEv7+MYuQ==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:

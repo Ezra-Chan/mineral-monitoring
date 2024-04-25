@@ -24,7 +24,8 @@ const judgeLoginStatus = async () => {
   }
   try {
     const { data = {} } = await getCurrentUserApi();
-    userStore.setUserInfo(data.user);
+    const { user = {} } = data;
+    userStore.setUserInfo({ ...user, sex: Number(user.sex) });
   } catch (error) {}
   loading = false;
 };

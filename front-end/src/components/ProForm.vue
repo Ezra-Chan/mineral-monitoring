@@ -1,5 +1,5 @@
 <template>
-  <el-form v-bind="form" :model="modelValue" ref="formRef">
+  <el-form v-bind="form" :model="modelValue" ref="formRef" class="pro-form">
     <el-collapse v-if="form.group" v-model="activeNames">
       <el-collapse-item
         v-for="group in columns"
@@ -31,6 +31,9 @@
         >
           <template v-if="item.children" v-for="(child, index) in item.children" :key="index">
             <component :is="child.component" v-bind="child.attrs" />
+          </template>
+          <template v-if="item.component === 'el-cascader'" #default="{ data }">
+            <span>{{ data.name }}</span>
           </template>
         </component>
       </el-form-item>
@@ -78,3 +81,11 @@ onMounted(() => {
 
 defineExpose({ ...instance.exposed });
 </script>
+
+<style lang="less">
+.pro-form {
+  .el-input-number .el-input__inner {
+    text-align: left;
+  }
+}
+</style>
