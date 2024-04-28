@@ -108,3 +108,9 @@ export const getToken = async (params = {}, flag) => {
 export const logoutMonitoring = async () => {
   await Promise.all([revokeAccessApi(), revokeRefreshApi()]);
 };
+
+export const isAdmin = username => {
+  if (username) return username === 'admin';
+  const userStore = useUserStore();
+  return userStore.userInfo?.username === 'admin';
+};

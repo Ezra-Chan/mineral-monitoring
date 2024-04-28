@@ -23,6 +23,7 @@
 
 <script setup>
 import { updatePasswordApi } from '@/api/platform';
+import { passwordValidate } from '@/utils/validate';
 // import { encrypt } from '@/utils/AES';
 
 const pwdForm = $ref({
@@ -36,7 +37,10 @@ const rules = reactive({
   oldPwd: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
   newPwd: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, message: '长度不能少于6个字符', trigger: 'blur' },
+    {
+      validator: passwordValidate,
+      trigger: ['blur', 'change'],
+    },
   ],
   confirmPwd: [
     { required: true, message: '请再次输入新密码', trigger: 'blur' },

@@ -50,10 +50,6 @@ import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { Encrypt } from '@/utils/AES';
 
-defineProps({
-  msg: String,
-});
-
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
 

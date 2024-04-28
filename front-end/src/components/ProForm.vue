@@ -23,7 +23,7 @@
       </el-collapse-item>
     </el-collapse>
     <template v-else v-for="item in columns" :key="item.prop">
-      <el-form-item v-bind="item.formItem">
+      <el-form-item v-if="!item.hide" v-bind="item.formItem">
         <component
           :is="item.component"
           v-bind="item.attrs"

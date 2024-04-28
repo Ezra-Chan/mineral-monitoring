@@ -1,5 +1,5 @@
 <template>
-  <ProForm ref="formRef" v-model="userInfo" :form="formOptions" :columns="formColumns" />
+  <ProForm ref="formRef" v-model="info" :form="formOptions" :columns="formColumns" />
   <div class="flex items-center justify-center gap-8 p-t-8 p-r-8">
     <el-button type="primary" @click="onSubmit" :loading="loading">提交</el-button>
   </div>
@@ -9,16 +9,13 @@
 import { querySearch } from '@/utils';
 import { useUserStore } from '@/store/user';
 import { Gender } from '@/utils/constant';
+import { phoneValidate } from '@/utils/validate';
 
 const userStore = useUserStore();
 const { userInfo } = $(userStore);
+const { cloned: info } = useCloned(userInfo);
 const formRef = ref();
 let loading = $ref(false);
-const formOptions = markRaw({
-  inline: true,
-  labelWidth: '10rem',
-  class: 'overflow-y-auto p-r-8',
-});
 const formColumns = markRaw([
   {
     formItem: {
@@ -122,6 +119,29 @@ const formColumns = markRaw([
     },
   },
 ]);
+const rules = reactive({
+  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+  phone: [
+    { required: true, message: '请输入电话号码', trigger: 'blur' },
+    {
+      validator: phoneValidate,
+      trigger: 'blur',
+    },
+  ],
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    {
+      type: 'email',
+      message: '请输入正确的邮箱地址',
+      trigger: ['blur', 'change'],
+    },
+  ],
+});
+const formOptions = markRaw({
+  labelWidth: '10rem',
+  class: 'overflow-y-auto p-r-8',
+  rules,
+});
 
 const onSubmit = () => {
   if (!formRef) return;
@@ -129,7 +149,7 @@ const onSubmit = () => {
     if (valid) {
       loading = true;
       try {
-        await updateUserApi(userInfo.id, userInfo);
+        await updateUserApi(info.id, info);
         // TODO: 请求后的信息处理
         ElMessage.success('修改成功');
       } catch (error) {

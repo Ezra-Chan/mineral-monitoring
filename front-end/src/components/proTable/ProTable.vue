@@ -162,6 +162,11 @@ const props = defineProps({
     type: [Boolean, Array],
     default: true,
   },
+  // 是否显示表格功能按钮 ==> 非必传（默认为true）
+  showSearch: {
+    type: Boolean,
+    default: true,
+  },
   // 行数据的 Key，用来优化 Table 的渲染，当表格数据多选时，所指定的 id ==> 非必传（默认为 id）
   rowKey: {
     type: String,
@@ -181,7 +186,7 @@ const tableRef = ref();
 const columnTypes = ['selection', 'radio', 'index', 'expand', 'sort'];
 
 // 是否显示搜索模块
-const isShowSearch = ref(true);
+const isShowSearch = ref(props.showSearch);
 
 // 控制 ToolButton 显示
 const showToolButton = key => {

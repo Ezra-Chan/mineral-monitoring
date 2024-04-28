@@ -26,7 +26,7 @@
         </el-button>
         <el-button
           v-auth="'delete'"
-          type="primary"
+          type="danger"
           link
           :icon="Delete"
           @click="deleteWarehouse(scope.row)"
@@ -296,19 +296,22 @@ const updateWarehouse = async row => {
   }
 };
 
-const deleteWarehouse = async row => {
-  try {
-    await ElMessageBox.confirm(`确定要删除仓库【${row.name}】吗？`, '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    });
-    await deleteWarehouseApi(row.id);
-    ElMessage.success('删除成功');
-    proTable.value.search();
-  } catch (error) {
-    ElMessage.error('删除失败');
-  }
+const deleteWarehouse = row => {
+  ElMessageBox.confirm(`确定要删除仓库【${row.name}】吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      try {
+        await deleteWarehouseApi(row.id);
+        ElMessage.success('删除成功');
+        proTable.value.search();
+      } catch (error) {
+        ElMessage.error('删除失败');
+      }
+    })
+    .catch(() => {});
 };
 
 const openDrawer = (type, row) => {

@@ -26,7 +26,7 @@
         </el-button>
         <el-button
           v-auth="'delete'"
-          type="primary"
+          type="danger"
           link
           :icon="Delete"
           @click="deleteUser(scope.row)"
@@ -44,6 +44,7 @@ import { Plus, View, EditPen, Delete } from '@element-plus/icons-vue';
 import { getUserListApi, createUserApi, updateUserApi, deleteUserApi } from '@/api/platform';
 import { objOmit, querySearch } from '@/utils';
 import { Gender } from '@/utils/constant';
+import { phoneValidate, passwordValidate } from '@/utils/validate';
 
 const router = useRouter();
 const proTable = ref();
@@ -93,126 +94,34 @@ const columns = reactive([
   },
   { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
 ]);
-const formColumns = markRaw([
-  {
-    formItem: {
-      label: '用户名称',
-      prop: 'name',
-    },
-    component: 'el-input',
-    attrs: {
-      clearable: true,
-      placeholder: '请输入用户名称',
-    },
-  },
-  {
-    formItem: {
-      label: '性别',
-      prop: 'sex',
-    },
-    component: 'el-select',
-    attrs: {
-      clearable: true,
-      placeholder: '请选择性别',
-      filterable: true,
-    },
-    children: Gender.map(item => ({
-      component: 'el-option',
-      attrs: item,
-    })),
-  },
-  {
-    formItem: {
-      label: '身份证号',
-      prop: 'id_card',
-    },
-    component: 'el-input',
-    attrs: {
-      clearable: true,
-      placeholder: '请输入身份证号',
-    },
-  },
-  {
-    formItem: {
-      label: '电话号码',
-      prop: 'phone',
-    },
-    component: 'el-input',
-    attrs: {
-      clearable: true,
-      placeholder: '请输入电话号码',
-    },
-  },
-  {
-    formItem: {
-      label: '邮箱',
-      prop: 'email',
-    },
-    component: 'el-autocomplete',
-    attrs: {
-      clearable: true,
-      placeholder: '请输入邮箱',
-      fetchSuggestions: querySearch,
-      class: 'w-100%',
-      triggerOnFocus: false,
-    },
-  },
-  {
-    formItem: {
-      label: '角色',
-      prop: 'role',
-    },
-    component: 'el-select',
-    attrs: {
-      clearable: true,
-      filterable: true,
-      placeholder: '请选择角色',
-    },
-  },
-  {
-    formItem: {
-      label: '所属公司',
-      prop: 'company',
-    },
-    component: 'el-select',
-    attrs: {
-      clearable: true,
-      filterable: true,
-      placeholder: '请选择所属公司',
-    },
-  },
-  {
-    formItem: {
-      label: '登录名',
-      prop: 'username',
-    },
-    component: 'el-input',
-    attrs: {
-      clearable: true,
-      placeholder: '请输入登录名',
-    },
-  },
-  {
-    formItem: {
-      label: '密码',
-      prop: 'password',
-    },
-    component: 'el-input',
-    attrs: {
-      clearable: true,
-      placeholder: '请输入密码',
-      type: 'password',
-      showPassword: true,
-    },
-  },
-]);
 
 const rules = reactive({
   name: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
   username: [{ required: true, message: '请输入登录名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  phone: [{ required: true, message: '请输入电话号码', trigger: 'blur' }],
-  email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    {
+      validator: passwordValidate,
+      trigger: ['blur', 'change'],
+    },
+  ],
+  phone: [
+    { required: true, message: '请输入电话号码', trigger: 'blur' },
+    {
+      validator: phoneValidate,
+      trigger: ['blur', 'change'],
+    },
+  ],
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    {
+      type: 'email',
+      message: '请输入正确的邮箱地址',
+      trigger: ['blur', 'change'],
+    },
+  ],
+  company: [{ required: true, message: '请选择所属公司', trigger: 'blur' }],
+  role: [{ required: true, message: '请选择角色', trigger: 'blur' }],
 });
 
 const createUser = async row => {
@@ -237,25 +146,142 @@ const updateUser = async row => {
   }
 };
 
-const deleteUser = async row => {
-  try {
-    await ElMessageBox.confirm(`确定要删除用户【${row.name}】吗？`, '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    });
-    await deleteUserApi(row.id);
-    ElMessage.success('删除成功');
-    proTable.value.search();
-  } catch (error) {
-    ElMessage.error('删除失败');
-  }
+const deleteUser = row => {
+  ElMessageBox.confirm(`确定要删除用户【${row.name}】吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      try {
+        await deleteUserApi(row.id);
+        ElMessage.success('删除成功');
+        proTable.value.search();
+      } catch (error) {
+        ElMessage.error('删除失败');
+      }
+    })
+    .catch(() => {});
 };
 
 const openDrawer = (type, row) => {
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
+  const formColumns = [
+    {
+      formItem: {
+        label: '用户名称',
+        prop: 'name',
+      },
+      component: 'el-input',
+      attrs: {
+        clearable: true,
+        placeholder: '请输入用户名称',
+      },
+    },
+    {
+      formItem: {
+        label: '性别',
+        prop: 'sex',
+      },
+      component: 'el-select',
+      attrs: {
+        clearable: true,
+        placeholder: '请选择性别',
+        filterable: true,
+      },
+      children: Gender.map(item => ({
+        component: 'el-option',
+        attrs: item,
+      })),
+    },
+    {
+      formItem: {
+        label: '身份证号',
+        prop: 'id_card',
+      },
+      component: 'el-input',
+      attrs: {
+        clearable: true,
+        placeholder: '请输入身份证号',
+      },
+    },
+    {
+      formItem: {
+        label: '电话号码',
+        prop: 'phone',
+      },
+      component: 'el-input',
+      attrs: {
+        clearable: true,
+        placeholder: '请输入电话号码',
+      },
+    },
+    {
+      formItem: {
+        label: '邮箱',
+        prop: 'email',
+      },
+      component: 'el-autocomplete',
+      attrs: {
+        clearable: true,
+        placeholder: '请输入邮箱',
+        fetchSuggestions: querySearch,
+        class: 'w-100%',
+        triggerOnFocus: false,
+      },
+    },
+    {
+      formItem: {
+        label: '角色',
+        prop: 'role',
+      },
+      component: 'el-select',
+      attrs: {
+        clearable: true,
+        filterable: true,
+        placeholder: '请选择角色',
+      },
+    },
+    {
+      formItem: {
+        label: '所属公司',
+        prop: 'company',
+      },
+      component: 'el-select',
+      attrs: {
+        clearable: true,
+        filterable: true,
+        placeholder: '请选择所属公司',
+      },
+    },
+    {
+      formItem: {
+        label: '登录名',
+        prop: 'username',
+      },
+      component: 'el-input',
+      attrs: {
+        clearable: true,
+        placeholder: '请输入登录名',
+      },
+    },
+    {
+      formItem: {
+        label: '密码',
+        prop: 'password',
+      },
+      component: 'el-input',
+      attrs: {
+        clearable: true,
+        placeholder: '请输入密码',
+        type: 'password',
+        showPassword: true,
+      },
+      hide: isEdit || isView,
+    },
+  ];
 
   drawerRef.value.acceptParams({
     isView,

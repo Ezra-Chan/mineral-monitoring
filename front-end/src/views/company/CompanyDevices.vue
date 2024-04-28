@@ -14,6 +14,7 @@
 import { Plus } from '@element-plus/icons-vue';
 
 const router = useRouter();
+const route = useRoute();
 const proTable = ref();
 const columns = reactive([
   {
@@ -30,7 +31,7 @@ const columns = reactive([
   {
     prop: 'belong',
     label: '所属仓库',
-    search: { el: 'input', props: { placeholder: '请选择所属仓库' } },
+    search: { el: 'select', props: { placeholder: '请选择所属仓库' } },
     minWidth: 150,
   },
   {

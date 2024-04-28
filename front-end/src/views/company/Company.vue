@@ -5,6 +5,8 @@
       :columns="columns"
       :request-api="getCompanyListApi"
       :data-callback="transformData"
+      :showSearch="showSearch"
+      :toolButton="toolButton"
     >
       <template #tableHeader>
         <el-button v-auth="'add'" type="primary" :icon="Plus" @click="openDrawer('新增')">
@@ -12,6 +14,15 @@
         </el-button>
       </template>
       <template #operation="scope">
+        <el-button
+          v-auth="'deviceList'"
+          type="primary"
+          link
+          :icon="Monitor"
+          @click="deviceList(scope.row)"
+        >
+          设备列表
+        </el-button>
         <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">
           查看
         </el-button>
@@ -26,7 +37,7 @@
         </el-button>
         <el-button
           v-auth="'delete'"
-          type="primary"
+          type="danger"
           link
           :icon="Delete"
           @click="deleteAccount(scope.row)"
@@ -41,7 +52,7 @@
 
 <script setup>
 import dayjs from 'dayjs';
-import { Plus, View, EditPen, Delete } from '@element-plus/icons-vue';
+import { Plus, View, EditPen, Delete, Monitor } from '@element-plus/icons-vue';
 import {
   getCompanyListApi,
   createCompanyApi,
@@ -49,11 +60,14 @@ import {
   deleteCompanyApi,
 } from '@/api/platform';
 import { objOmit } from '@/utils';
+import { isAdmin } from '@/utils/account';
 import { CompanyStatus } from '@/utils/constant';
 
 const router = useRouter();
 const proTable = ref();
 const drawerRef = ref();
+const showSearch = isAdmin();
+const toolButton = showSearch ? ["refresh", "setting", "search"] : ["refresh", "setting"]
 const columns = reactive([
   {
     prop: 'name',
@@ -98,7 +112,7 @@ const columns = reactive([
     search: { el: 'select', props: { placeholder: '请选择公司状态', filterable: true } },
     minWidth: 100,
   },
-  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
+  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 320 },
 ]);
 const formColumns = markRaw([
   {
@@ -229,6 +243,12 @@ const rules = reactive({
   monitor_pwd: [{ required: true, message: '请输入监控平台密码', trigger: 'blur' }],
 });
 
+const deviceList = row => {
+  router.push({
+    path: `/company/${row.id}/deviceList`,
+  });
+};
+
 const createCompany = async row => {
   try {
     await createCompanyApi(row);
@@ -251,19 +271,22 @@ const updateCompany = async row => {
   }
 };
 
-const deleteAccount = async row => {
-  try {
-    await ElMessageBox.confirm(`确定要删除公司【${row.name}】吗？`, '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    });
-    await deleteCompanyApi(row.id);
-    ElMessage.success('删除成功');
-    proTable.value.search();
-  } catch (error) {
-    ElMessage.error('删除失败');
-  }
+const deleteAccount = row => {
+  ElMessageBox.confirm(`确定要删除公司【${row.name}】吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      try {
+        await deleteCompanyApi(row.id);
+        ElMessage.success('删除成功');
+        proTable.value.search();
+      } catch (error) {
+        ElMessage.error('删除失败');
+      }
+    })
+    .catch(() => {});
 };
 
 const openDrawer = (type, row) => {
