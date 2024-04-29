@@ -18,12 +18,22 @@ export const getInstance = (prefix = 'shmanage') => {
     baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
-    headers: localStorage.getItem('user-state')
-      ? { Authorization: JSON.parse(localStorage.getItem('user-state')).radarToken }
-      : {},
   });
 
   instance.defaults.headers.post['Content-Type'] = 'application/json';
+
+  instance.interceptors.request.use(config => {
+    if (!config.headers) config.headers = {};
+    if (!config.headers.Authorization) {
+      config.headers = localStorage.getItem('user-state')
+        ? {
+            ...config.headers,
+            Authorization: JSON.parse(localStorage.getItem('user-state')).radarToken,
+          }
+        : config.headers;
+    }
+    return config;
+  });
 
   instance.interceptors.response.use(
     async response => {

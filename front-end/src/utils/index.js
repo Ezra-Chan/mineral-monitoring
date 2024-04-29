@@ -174,3 +174,41 @@ export const querySearch = (queryStr, cb) => {
     cb(results);
   }
 };
+
+// 获取权限树勾选的节点，将未勾选的按钮剔除
+export const getCheckedNodes = selectedNodes => {
+  const nodes = JSON.parse(JSON.stringify(selectedNodes));
+  nodes.forEach(node => {
+    if (node.path && node.buttons) {
+      node.buttons = node.buttons.filter(button => nodes.find(n => n.id === button.id));
+    }
+  });
+  return nodes.filter(node => node.path);
+};
+
+// 将保存的权限回显到树
+export const setCheckedNodes = selectedNodes => {
+  const selectedKeys = [];
+  selectedNodes.forEach(node => {
+    if (node.buttons) {
+      node.buttons.forEach(button => {
+        selectedKeys.push(button.id);
+      });
+    } else {
+      selectedKeys.push(node.id);
+    }
+  });
+  return selectedKeys;
+};
+
+// 将保存的权限格式化成按钮和菜单
+export const formatMenuAndButton = menus => {
+  const buttons = {};
+  menus.forEach(node => {
+    if (node.buttons) {
+      buttons[node.name] = node.buttons.map(button => button.name);
+      delete node.buttons;
+    }
+  });
+  return { buttons, menus };
+};

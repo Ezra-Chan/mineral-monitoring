@@ -62,7 +62,7 @@ const columns = reactive([
     minWidth: 250,
   },
   {
-    prop: 'company',
+    prop: 'company_name',
     label: '所属公司',
     search: { el: 'select', props: { placeholder: '请输入所属公司' } },
     minWidth: 100,
@@ -242,7 +242,7 @@ const formColumns = markRaw([
   {
     formItem: {
       label: '所属公司',
-      prop: 'company',
+      prop: 'company_id',
     },
     component: 'el-select',
     attrs: {
@@ -272,6 +272,7 @@ const rules = reactive({
   length: [{ required: true, message: '请输入仓库长度', trigger: 'blur' }],
   capacity: [{ required: true, message: '请输入仓库容量', trigger: 'blur' }],
   stacking_limit: [{ required: true, message: '请输入堆放限高', trigger: 'blur' }],
+  company: [{ required: true, message: '请输入堆放限高', trigger: 'blur' }],
 });
 
 const createWarehouse = async row => {

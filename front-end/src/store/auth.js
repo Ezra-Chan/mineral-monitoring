@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia';
-import { getAuthMenuListApi, getAuthButtonListApi } from '@/api/platform';
-import { getFlatMenuList, getShowMenuList, getAllBreadcrumbList } from '@/utils';
+import { getAuthMenuListApi } from '@/api/platform';
+import {
+  getFlatMenuList,
+  getShowMenuList,
+  getAllBreadcrumbList,
+  formatMenuAndButton,
+} from '@/utils';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -24,16 +29,21 @@ export const useAuthStore = defineStore('auth', {
     breadcrumbListGet: state => getAllBreadcrumbList(state.authMenuList),
   },
   actions: {
-    async getAuthButtonList() {
-      const { data } = await getAuthButtonListApi();
-      this.authButtonList = data.data;
-    },
-    async getAuthMenuList() {
-      const { data } = await getAuthMenuListApi();
-      this.authMenuList = data.data;
-    },
     async setRouteName(name) {
       this.routeName = name;
+    },
+    async getAuthPermission() {
+      const { data } = await getAuthMenuListApi();
+      const { menus, buttons } = formatMenuAndButton(data.data);
+      this.authButtonList = buttons;
+      this.authMenuList = menus;
+    },
+    hasPermission(modules) {
+      if (modules === 'bigscreen') {
+        return this.authMenuList.find(menu => menu.name === modules);
+      } else {
+        return this.authMenuList.length > 1;
+      }
     },
   },
 });

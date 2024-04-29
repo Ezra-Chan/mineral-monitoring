@@ -11,12 +11,9 @@
 </template>
 
 <script setup>
-import { useUserStore } from '@/store/user';
 import ChangePwd from './ChangePwd.vue';
 import SelfInfo from './SelfInfo.vue';
 
-const userStore = useUserStore();
-const { userInfo } = $(userStore);
 const tabs = markRaw([
   {
     label: '个人信息',

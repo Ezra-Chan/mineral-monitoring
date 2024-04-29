@@ -23,7 +23,10 @@ export const useUserStore = defineStore('user', {
         this.token = '';
         this.refreshToken = '';
         this.tokenTime = 0;
+        this.userInfo = void 0;
         this.radarToken = '';
+        this.radarUser = void 0;
+        this.monitorUser = void 0;
       }
     },
     setRadarToken(token) {

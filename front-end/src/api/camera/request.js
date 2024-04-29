@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Decrypt } from '@/utils/AES';
 
 let apiContextPath = '';
 apiContextPath = '/api2';
@@ -12,10 +13,20 @@ export const getInstance = prefix => {
     baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
-    headers: { Authorization: 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=' },
   });
 
   instance.defaults.headers.post['Content-Type'] = 'application/json';
+
+  instance.interceptors.request.use(config => {
+    if (!config.headers) config.headers = {};
+    if (!config.headers.Authorization) {
+      if (localStorage.getItem('user-state')) {
+        const { monitorUser: { u, p } = {} } = JSON.parse(localStorage.getItem('user-state'));
+        config.headers.Authorization = `Basic ${btoa(`${u}:${Decrypt(p)}`)}`;
+      }
+    }
+    return config;
+  });
 
   instance.interceptors.response.use(
     async response => {

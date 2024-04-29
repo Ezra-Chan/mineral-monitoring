@@ -10,23 +10,17 @@
 </template>
 
 <script setup>
-import { getCurrentUserApi } from '@/api/platform';
 import { LOGIN_URL } from '@/config';
-import { useUserStore } from '@/store/user';
+import { getCurrentUser } from '@/utils/account';
 
 let loading = $ref(false);
-const userStore = useUserStore();
 
 const judgeLoginStatus = async () => {
   if (location.hash === '#' + LOGIN_URL) {
     loading = false;
     return;
   }
-  try {
-    const { data = {} } = await getCurrentUserApi();
-    const { user = {} } = data;
-    userStore.setUserInfo({ ...user, sex: Number(user.sex) });
-  } catch (error) {}
+  await getCurrentUser();
   loading = false;
 };
 

@@ -2,10 +2,6 @@
   "title": "数智储运管理平台",
   "abbreviation": "数智储运",
   "cameraIp": "http://10.1.1.215",
-  "radarUser": {
-    "username": "shdz2023",
-    "password": "U1W3Ebjk/a//0HnCYpH6LOCOjSF6zZD0Z9K39lA4atk="
-  },
   "radarCameraMap": [
     {
       "wareHouseId": "114",

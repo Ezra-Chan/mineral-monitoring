@@ -3,7 +3,7 @@
     <ProTable
       ref="proTable"
       :columns="columns"
-      :request-api="getCompanyListApi"
+      :request-api="queryCompany"
       :data-callback="transformData"
       :showSearch="showSearch"
       :toolButton="toolButton"
@@ -58,16 +58,20 @@ import {
   createCompanyApi,
   updateCompanyApi,
   deleteCompanyApi,
+  getCompanyApi,
 } from '@/api/platform';
 import { objOmit } from '@/utils';
 import { isAdmin } from '@/utils/account';
 import { CompanyStatus } from '@/utils/constant';
+import { useUserStore } from '@/store/user';
 
 const router = useRouter();
+const userStore = useUserStore();
+const { userInfo } = $(userStore);
 const proTable = ref();
 const drawerRef = ref();
 const showSearch = isAdmin();
-const toolButton = showSearch ? ["refresh", "setting", "search"] : ["refresh", "setting"]
+const toolButton = showSearch ? ['refresh', 'setting', 'search'] : ['refresh', 'setting'];
 const columns = reactive([
   {
     prop: 'name',
@@ -249,6 +253,20 @@ const deviceList = row => {
   });
 };
 
+const queryCompany = async (params, data) => {
+  if (showSearch) {
+    return await getCompanyListApi(params, data);
+  } else {
+    const { data = {} } = await getCompanyApi(userInfo.company_id);
+    return {
+      data: {
+        results: [data.company],
+        total: 1,
+      },
+    };
+  }
+};
+
 const createCompany = async row => {
   try {
     await createCompanyApi(row);
@@ -297,7 +315,9 @@ const openDrawer = (type, row) => {
     isView,
     size: '500px',
     title: type + '公司',
-    data: row || {},
+    data: row || {
+      status: 1,
+    },
     formOptions: {
       labelWidth: '10rem',
       labelSuffix: ' :',

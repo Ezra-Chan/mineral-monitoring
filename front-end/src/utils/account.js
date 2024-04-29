@@ -1,6 +1,12 @@
 import dayjs from 'dayjs';
 import { getRadarToken } from '@/api/radar';
-import { loginApi, refreshTokenApi, revokeAccessApi, revokeRefreshApi } from '@/api/platform';
+import {
+  loginApi,
+  refreshTokenApi,
+  revokeAccessApi,
+  revokeRefreshApi,
+  getCurrentUserApi,
+} from '@/api/platform';
 import { useUserStore } from '@/store/user';
 import { useTabsStore } from '@/store/tabs';
 import { useKeepAliveStore } from '@/store/keepAlive';
@@ -23,7 +29,7 @@ const afterLogin = async () => {
 };
 
 // 登录本平台
-const monitoringLogin = async (params = {}) => {
+export const monitoringLogin = async (params = {}) => {
   const userStore = useUserStore();
   const info = { ...params, password: Decrypt(params.password) };
   const { data = {} } = await loginApi(info);
@@ -45,17 +51,19 @@ export const kexinLogin = async () => {
     if (!kexinPending) {
       kexinPending = true;
       const userStore = useUserStore();
-      const { radarUser = {} } = userStore;
-      const radarUserInfo = {
-        username: radarUser.username,
-        password: Decrypt(radarUser.password),
-      };
-      const { data = {} } = await getRadarToken(radarUserInfo);
-      const { tokenHead, token } = data;
-      userStore.setRadarToken(tokenHead + token);
+      const { radarUser } = userStore;
+      if (radarUser) {
+        const radarUserInfo = {
+          username: radarUser.u,
+          password: Decrypt(radarUser.p),
+        };
+        const { data = {} } = await getRadarToken(radarUserInfo);
+        const { tokenHead, token } = data;
+        userStore.setRadarToken(tokenHead + token);
 
-      kexinPending = false;
-      return true;
+        kexinPending = false;
+        return true;
+      }
     }
     return false;
   } catch (error) {
@@ -113,4 +121,13 @@ export const isAdmin = username => {
   if (username) return username === 'admin';
   const userStore = useUserStore();
   return userStore.userInfo?.username === 'admin';
+};
+
+export const getCurrentUser = async () => {
+  const userStore = useUserStore();
+  try {
+    const { data = {} } = await getCurrentUserApi();
+    const { user = {} } = data;
+    userStore.setUserInfo({ ...user, sex: Number(user.sex) });
+  } catch (error) {}
 };

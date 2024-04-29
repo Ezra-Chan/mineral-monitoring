@@ -31,9 +31,3 @@ export const getAuthMenuListApi = () =>
   request.get('/menu/list', {
     baseURL: '/api5',
   });
-
-// 获取按钮权限
-export const getAuthButtonListApi = () =>
-  request.get('/auth/buttons', {
-    baseURL: '/api5',
-  });
