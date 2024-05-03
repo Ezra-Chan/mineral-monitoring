@@ -27,6 +27,7 @@
         <component
           :is="item.component"
           v-bind="item.attrs"
+          v-on="item.listeners || {}"
           v-model="modelValue[item.formItem.prop]"
         >
           <template v-if="item.children" v-for="(child, index) in item.children" :key="index">

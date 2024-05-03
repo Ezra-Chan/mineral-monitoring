@@ -24,11 +24,15 @@
         >
           编辑
         </el-button>
-        <el-popconfirm title="确认删除吗？" v-auth="'delete'" @confirm="deleteRole(scope.row)">
-          <template #reference>
-            <el-button type="primary" link :icon="Delete"> 删除 </el-button>
-          </template>
-        </el-popconfirm>
+        <el-button
+          v-auth="'delete'"
+          type="primary"
+          link
+          :icon="Delete"
+          @click="deleteRole(scope.row)"
+        >
+          删除
+        </el-button>
       </template>
     </ProTable>
     <ProDrawer ref="drawerRef" />
@@ -40,21 +44,6 @@ import { Plus, View, EditPen, Delete } from '@element-plus/icons-vue';
 const proTable = ref();
 const drawerRef = ref();
 
-const formColumns = markRaw([
-  {
-    formItem: {
-      label: '角色',
-      prop: 'role',
-    },
-    component: 'el-select',
-    attrs: {
-      clearable: true,
-      filterable: true,
-      placeholder: '请选择角色',
-    },
-  },
-]);
-
 const tableColumns = reactive([
   {
     prop: 'name',
@@ -62,15 +51,29 @@ const tableColumns = reactive([
     minWidth: 150,
   },
   {
-    prop: 'company',
+    prop: 'permissions',
     label: '角色权限',
     minWidth: 500,
   },
   { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
 ]);
 
+const formColumns = markRaw([
+  {
+    formItem: {
+      label: '角色名称',
+      prop: 'name',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入角色名称',
+    },
+  },
+]);
+
 const rules = reactive({
-  role: [{ required: true, message: '请选择角色', trigger: 'blur' }],
+  name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
 });
 
 const getRoleListApi = () => {
@@ -78,6 +81,7 @@ const getRoleListApi = () => {
 };
 
 const openDrawer = (type, row) => {
+  const { cloned: record } = useCloned(row || {});
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
@@ -87,7 +91,7 @@ const openDrawer = (type, row) => {
     size: '500px',
     title: type + '角色',
     data: row
-      ? { ...row, location: row?.location ? row.location.split('/') : [] }
+      ? record
       : {
           status: 1,
         },
@@ -112,7 +116,21 @@ const updateRole = data => {
 };
 
 const deleteRole = row => {
-  // 删除角色
+  ElMessageBox.confirm(`确定要删除角色【${row.name}】吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      try {
+        // await deleteCompanyApi(row.id);
+        ElMessage.success('删除成功');
+        proTable.value.search();
+      } catch (error) {
+        ElMessage.error('删除失败');
+      }
+    })
+    .catch(() => {});
 };
 
 const transformData = data => ({

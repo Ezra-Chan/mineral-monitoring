@@ -16,6 +16,15 @@
           查看
         </el-button>
         <el-button
+          v-auth="'resetPwd'"
+          type="primary"
+          link
+          :icon="Refresh"
+          @click="resetPwd(scope.row)"
+        >
+          重置密码
+        </el-button>
+        <el-button
           v-auth="'edit'"
           type="primary"
           link
@@ -40,15 +49,23 @@
 </template>
 
 <script setup>
-import { Plus, View, EditPen, Delete } from '@element-plus/icons-vue';
-import { getUserListApi, createUserApi, updateUserApi, deleteUserApi } from '@/api/platform';
+import { Plus, View, EditPen, Delete, Refresh } from '@element-plus/icons-vue';
+import {
+  getUserListApi,
+  createUserApi,
+  updateUserApi,
+  deleteUserApi,
+  resetPwdApi,
+} from '@/api/platform';
 import { objOmit, querySearch } from '@/utils';
 import { Gender } from '@/utils/constant';
+import { getCompany } from '@/utils/company';
 import { phoneValidate, passwordValidate } from '@/utils/validate';
 
 const router = useRouter();
 const proTable = ref();
 const drawerRef = ref();
+const companies = ref([]);
 const columns = reactive([
   {
     prop: 'name',
@@ -82,9 +99,9 @@ const columns = reactive([
     minWidth: 100,
   },
   {
-    prop: 'company',
+    prop: 'company_name',
     label: '所属公司',
-    minWidth: 150,
+    minWidth: 200,
   },
   {
     prop: 'username',
@@ -92,7 +109,7 @@ const columns = reactive([
     search: { el: 'input', props: { placeholder: '请输入登录名' } },
     minWidth: 100,
   },
-  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
+  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 310 },
 ]);
 
 const rules = reactive({
@@ -120,7 +137,7 @@ const rules = reactive({
       trigger: ['blur', 'change'],
     },
   ],
-  company: [{ required: true, message: '请选择所属公司', trigger: 'blur' }],
+  company_id: [{ required: true, message: '请选择所属公司', trigger: 'blur' }],
   role: [{ required: true, message: '请选择角色', trigger: 'blur' }],
 });
 
@@ -164,7 +181,26 @@ const deleteUser = row => {
     .catch(() => {});
 };
 
+const resetPwd = row => {
+  ElMessageBox.confirm(`确定要重置用户【${row.name}】的密码吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      try {
+        await resetPwdApi(row.id);
+        ElMessage.success('重置成功');
+        proTable.value.search();
+      } catch (error) {
+        ElMessage.error('重置失败');
+      }
+    })
+    .catch(() => {});
+};
+
 const openDrawer = (type, row) => {
+  const { cloned: record } = useCloned(row || {});
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
@@ -247,13 +283,25 @@ const openDrawer = (type, row) => {
     {
       formItem: {
         label: '所属公司',
-        prop: 'company',
+        prop: 'company_id',
       },
       component: 'el-select',
       attrs: {
         clearable: true,
         filterable: true,
         placeholder: '请选择所属公司',
+      },
+      children: companies.value?.map(item => ({
+        component: 'el-option',
+        attrs: {
+          label: item.name,
+          value: item.id,
+        },
+      })),
+      listeners: {
+        change: val => {
+          record.company_name = val ? companies.value?.find(item => item.id === val)?.name : '';
+        },
       },
     },
     {
@@ -287,10 +335,12 @@ const openDrawer = (type, row) => {
     isView,
     size: '500px',
     title: type + '用户',
-    data: row || {
-      sex: 1,
-      password: '123456',
-    },
+    data: row
+      ? record
+      : {
+          sex: 1,
+          password: '123456',
+        },
     formOptions: {
       labelWidth: '10rem',
       labelSuffix: ' :',
@@ -306,6 +356,15 @@ const openDrawer = (type, row) => {
 const transformData = data => ({
   list: data.results,
   total: data.total,
+});
+
+const queryCompany = async () => {
+  const res = await getCompany();
+  companies.value = res;
+};
+
+onMounted(() => {
+  queryCompany();
 });
 </script>
 

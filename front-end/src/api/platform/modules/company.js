@@ -48,3 +48,6 @@ export const deleteUserApi = id => request.delete(`/api/v1/users/${id}`);
 
 // 修改密码
 export const updatePasswordApi = data => request.put(`/api/v1/current_user`, data);
+
+// 重置密码
+export const resetPwdApi = id => request.put(`/api/v1/users/${id}/reset_password`);

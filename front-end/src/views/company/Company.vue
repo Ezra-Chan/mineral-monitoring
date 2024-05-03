@@ -308,6 +308,7 @@ const deleteAccount = row => {
 };
 
 const openDrawer = (type, row) => {
+  const { cloned: record } = useCloned(row || {});
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
@@ -315,9 +316,11 @@ const openDrawer = (type, row) => {
     isView,
     size: '500px',
     title: type + '公司',
-    data: row || {
-      status: 1,
-    },
+    data: row
+      ? record
+      : {
+          status: 1,
+        },
     formOptions: {
       labelWidth: '10rem',
       labelSuffix: ' :',

@@ -316,6 +316,7 @@ const deleteWarehouse = row => {
 };
 
 const openDrawer = (type, row) => {
+  const { cloned: record } = useCloned(row || {});
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
@@ -324,7 +325,7 @@ const openDrawer = (type, row) => {
     size: '500px',
     title: type + '仓库',
     data: row
-      ? { ...row, location: row?.location ? row.location.split('/') : [] }
+      ? { ...record, location: record.location ? record.location.split('/') : [] }
       : {
           status: 1,
         },

@@ -1,5 +1,5 @@
 <template>
-  <el-drawer v-bind="drawerProps" v-model="drawerVisible">
+  <el-drawer v-bind="drawerProps" v-model="drawerVisible" destroy-on-close>
     <ProForm
       ref="formRef"
       v-model="drawerProps.data"
