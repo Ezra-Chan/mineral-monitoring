@@ -12,6 +12,7 @@ import { useTabsStore } from '@/store/tabs';
 import { useKeepAliveStore } from '@/store/keepAlive';
 import { initDynamicRouter } from '@/router/dynamicRouter';
 import { Decrypt } from '@/utils/AES';
+import { encrypt } from '@/utils/rsa';
 
 let isPending = false;
 let kexinPending = false;
@@ -31,7 +32,7 @@ const afterLogin = async () => {
 // 登录本平台
 export const monitoringLogin = async (params = {}) => {
   const userStore = useUserStore();
-  const info = { ...params, password: Decrypt(params.password) };
+  const info = { ...params, password: encrypt(Decrypt(params.password)) };
   const { data = {} } = await loginApi(info);
   const { access_token, refresh_token } = data;
   userStore.setToken(access_token, refresh_token);

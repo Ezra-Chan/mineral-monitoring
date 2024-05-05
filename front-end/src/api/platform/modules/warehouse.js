@@ -15,3 +15,6 @@ export const deleteWarehouseApi = id => request.delete(`/api/v1/warehouse/${id}`
 
 // 获取仓库详情
 export const getWarehouseDetailApi = id => request.get(`/api/v1/warehouse/${id}`);
+
+// 同步仓库
+export const syncWarehouseApi = data => request.post(`/api/v1/warehouse_sync`, data)

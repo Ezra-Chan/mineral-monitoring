@@ -15,8 +15,8 @@ export const emailValidate = (_, value, callback) => {
 };
 
 export const passwordValidate = (_, value, callback) => {
-  // 密码长度要求6-20位字符，必须包含数字和字母
-  if (!/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,20}$/.test(value)) {
+  // 密码长度要求6-20位字符，必须包含数字和字母,可以有其他字符
+  if (!/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{6,20}$/.test(value)) {
     callback(new Error('密码长度要求6-20位字符，必须包含数字和字母'));
   } else {
     callback();

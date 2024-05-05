@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia';
-import { getAuthMenuListApi } from '@/api/platform';
+import { getAuthMenuListApi, getRoleApi } from '@/api/platform';
 import {
   getFlatMenuList,
   getShowMenuList,
   getAllBreadcrumbList,
   formatMenuAndButton,
 } from '@/utils';
+import { useUserStore } from '@/store/user';
+import { getCurrentUser } from '@/utils/account';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -33,8 +35,12 @@ export const useAuthStore = defineStore('auth', {
       this.routeName = name;
     },
     async getAuthPermission() {
-      const { data } = await getAuthMenuListApi();
-      const { menus, buttons } = formatMenuAndButton(data.data);
+      const userStore = useUserStore();
+      if (!userStore.userInfo?.role_id) {
+        await getCurrentUser();
+      }
+      const { data } = await getRoleApi(userStore.userInfo?.role_id);
+      const { menus, buttons } = formatMenuAndButton(JSON.parse(data.role?.permissions || '[]'));
       this.authButtonList = buttons;
       this.authMenuList = menus;
     },

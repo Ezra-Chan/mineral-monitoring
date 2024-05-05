@@ -14,8 +14,6 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-
 const props = defineProps(['el', 'size', 'color', 'hoverColor']);
 const iconSize = computed(() => props.size || '2.2rem');
 const color = computed(() => props.color || 'rgb(86, 225, 219)');

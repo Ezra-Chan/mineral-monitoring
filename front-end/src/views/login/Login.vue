@@ -85,22 +85,29 @@ let bigscreenLoading = $ref(false);
 
 const login = async formEl => {
   if (!formEl) return;
-  const valid = await formEl.validate();
-  if (valid) {
-    try {
-      await monitoringLogin({
-        username: loginForm.username,
-        password: Encrypt(loginForm.password),
-      });
-    } catch (error) {
-      ElMessage({ type: 'error', message: '账号或密码有误，登录失败' });
-      console.error('登录失败', error);
+  try {
+    const valid = await formEl.validate();
+    if (valid) {
+      try {
+        await monitoringLogin({
+          username: loginForm.username,
+          password: Encrypt(loginForm.password),
+        });
+        return true;
+      } catch (error) {
+        ElMessage({ type: 'error', message: '账号或密码有误，登录失败' });
+        systemloading = false;
+        bigscreenLoading = false;
+        console.error('登录失败', error);
+      }
     }
+  } catch (error) {
+    systemloading = false;
+    bigscreenLoading = false;
   }
 };
 
 const getOtherPlatformInfo = async () => {
-  await getCurrentUser();
   const { company_id } = userStore.userInfo;
   const { data = {} } = await getCompanyApi(company_id);
   const { kexin_user, kexin_pwd, monitor_user, monitor_pwd } = data.company || {};
@@ -118,38 +125,44 @@ const getOtherPlatformInfo = async () => {
 
 const systemLogin = async formEl => {
   systemloading = true;
-  await login(formEl, true);
-  await initDynamicRouter();
-  if (isAdmin(loginForm.username)) {
-    await getCurrentUser();
-    ElMessage({ type: 'success', message: '登录成功' });
-    setTimeout(() => {
-      router.push('/');
-    }, 1000);
-  } else {
-    try {
-      await initDynamicRouter();
-      if (authStore.hasPermission('system')) {
-        await getOtherPlatformInfo();
-        setTimeout(() => {
-          const menu = authStore.authMenuList[0];
-          router.push(menu.path);
-        }, 1000);
-      } else {
-        ElMessage({ type: 'warning', message: '您没有访问后台的权限，请联系管理员' });
+  const flag = await login(formEl, true);
+  if (!flag) return;
+  try {
+    await initDynamicRouter();
+    if (isAdmin(loginForm.username)) {
+      await getCurrentUser();
+      ElMessage({ type: 'success', message: '登录成功' });
+      setTimeout(() => {
+        router.push('/');
+      }, 1000);
+    } else {
+      try {
+        if (authStore.hasPermission('system')) {
+          await getOtherPlatformInfo();
+          setTimeout(() => {
+            const menu = authStore.authMenuList[0];
+            router.push(menu.path);
+          }, 1000);
+        } else {
+          ElMessage({ type: 'warning', message: '您没有访问后台的权限，请联系管理员' });
+          userStore.setToken('');
+        }
+      } catch (error) {
+        ElMessage({ type: 'error', message: '获取权限失败' });
+        console.error('获取权限失败', error);
         userStore.setToken('');
       }
-    } catch (error) {
-      ElMessage({ type: 'error', message: '获取权限失败' });
-      console.error('获取权限失败', error);
-      userStore.setToken('');
     }
+  } catch (error) {
+    systemloading = false;
+    bigscreenLoading = false;
   }
 };
 
 const bigscreenLogin = async formEl => {
   bigscreenLoading = true;
-  await login(formEl);
+  const flag = await login(formEl);
+  if (!flag) return;
   if (isAdmin(loginForm.username)) {
     ElMessage({ type: 'warning', message: '请从后台访问大屏' });
     userStore.setToken('');

@@ -176,7 +176,7 @@ export const querySearch = (queryStr, cb) => {
 };
 
 // 获取权限树勾选的节点，将未勾选的按钮剔除
-export const getCheckedNodes = selectedNodes => {
+export const getCheckedNodes = (selectedNodes = []) => {
   const nodes = JSON.parse(JSON.stringify(selectedNodes));
   nodes.forEach(node => {
     if (node.path && node.buttons) {
@@ -187,7 +187,7 @@ export const getCheckedNodes = selectedNodes => {
 };
 
 // 将保存的权限回显到树
-export const setCheckedNodes = selectedNodes => {
+export const setCheckedNodes = (selectedNodes = []) => {
   const selectedKeys = [];
   selectedNodes.forEach(node => {
     if (node.buttons) {
@@ -202,7 +202,7 @@ export const setCheckedNodes = selectedNodes => {
 };
 
 // 将保存的权限格式化成按钮和菜单
-export const formatMenuAndButton = menus => {
+export const formatMenuAndButton = (menus = []) => {
   const buttons = {};
   menus.forEach(node => {
     if (node.buttons) {

@@ -23,7 +23,13 @@
         >
           设备列表
         </el-button>
-        <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">
+        <el-button
+          v-auth="'view'"
+          type="primary"
+          link
+          :icon="View"
+          @click="openDrawer('查看', scope.row)"
+        >
           查看
         </el-button>
         <el-button

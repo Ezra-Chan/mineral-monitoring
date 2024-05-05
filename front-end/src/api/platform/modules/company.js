@@ -1,4 +1,6 @@
 import request from '../request';
+import { defaultPwd } from '@/utils/constant';
+import { encrypt } from '@/utils/rsa';
 
 // 获取公司列表
 export const getCompanyListApi = (params, data) =>
@@ -47,7 +49,8 @@ export const updateUserApi = (id, data) => request.put(`/api/v1/users/${id}`, da
 export const deleteUserApi = id => request.delete(`/api/v1/users/${id}`);
 
 // 修改密码
-export const updatePasswordApi = data => request.put(`/api/v1/current_user`, data);
+export const updatePasswordApi = data => request.post(`/api/v1/modify_password`, data);
 
 // 重置密码
-export const resetPwdApi = id => request.put(`/api/v1/users/${id}/reset_password`);
+export const resetPwdApi = id =>
+  request.put(`/api/v1/users/${id}`, { password: encrypt(defaultPwd) });

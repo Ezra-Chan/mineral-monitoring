@@ -3,7 +3,7 @@
     <ProTable
       ref="proTable"
       :columns="columns"
-      :request-api="getUserListApi"
+      :request-api="getUsers"
       :data-callback="transformData"
     >
       <template #tableHeader>
@@ -12,7 +12,13 @@
         </el-button>
       </template>
       <template #operation="scope">
-        <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">
+        <el-button
+          v-auth="'view'"
+          type="primary"
+          link
+          :icon="View"
+          @click="openDrawer('查看', scope.row)"
+        >
           查看
         </el-button>
         <el-button
@@ -50,23 +56,21 @@
 
 <script setup>
 import { Plus, View, EditPen, Delete, Refresh } from '@element-plus/icons-vue';
-import {
-  getUserListApi,
-  createUserApi,
-  updateUserApi,
-  deleteUserApi,
-  resetPwdApi,
-} from '@/api/platform';
+import { createUserApi, updateUserApi, deleteUserApi, resetPwdApi } from '@/api/platform';
 import { objOmit, querySearch } from '@/utils';
-import { Gender } from '@/utils/constant';
+import { Gender, defaultPwd } from '@/utils/constant';
+import { getUsers } from '@/utils/user';
 import { getCompany } from '@/utils/company';
+import { getRoles } from '@/utils/role';
 import { phoneValidate, passwordValidate } from '@/utils/validate';
+import { encrypt } from '@/utils/rsa';
 
 const router = useRouter();
 const proTable = ref();
 const drawerRef = ref();
 const companies = ref([]);
-const columns = reactive([
+const roles = ref([]);
+const columns = computed(() => [
   {
     prop: 'name',
     label: '用户名称',
@@ -93,10 +97,11 @@ const columns = reactive([
     minWidth: 150,
   },
   {
-    prop: 'role',
+    prop: 'role_name',
     label: '角色',
-    search: { el: 'input', props: { placeholder: '请选择角色' } },
+    search: { el: 'select', props: { placeholder: '请选择角色', filterable: true } },
     minWidth: 100,
+    enum: queryRoles,
   },
   {
     prop: 'company_name',
@@ -143,7 +148,7 @@ const rules = reactive({
 
 const createUser = async row => {
   try {
-    await createUserApi(row);
+    await createUserApi({ ...row, password: encrypt(row.password) });
     ElMessage.success('新增成功');
     drawerRef.value.close();
     proTable.value.search();
@@ -200,7 +205,7 @@ const resetPwd = row => {
 };
 
 const openDrawer = (type, row) => {
-  const { cloned: record } = useCloned(row || {});
+  const { cloned: record } = useCloned(row || { sex: 1, password: defaultPwd });
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
@@ -271,13 +276,26 @@ const openDrawer = (type, row) => {
     {
       formItem: {
         label: '角色',
-        prop: 'role',
+        prop: 'role_id',
       },
       component: 'el-select',
       attrs: {
         clearable: true,
         filterable: true,
         placeholder: '请选择角色',
+      },
+      children: roles.value?.map(item => ({
+        component: 'el-option',
+        attrs: {
+          label: item.name,
+          value: item.id,
+        },
+      })),
+      listeners: {
+        change: val =>
+          drawerRef.value.modifyFormData({
+            role_name: val ? roles.value?.find(item => item.id === val)?.name : '',
+          }),
       },
     },
     {
@@ -299,9 +317,10 @@ const openDrawer = (type, row) => {
         },
       })),
       listeners: {
-        change: val => {
-          record.company_name = val ? companies.value?.find(item => item.id === val)?.name : '';
-        },
+        change: val =>
+          drawerRef.value.modifyFormData({
+            company_name: val ? companies.value?.find(item => item.id === val)?.name : '',
+          }),
       },
     },
     {
@@ -335,12 +354,7 @@ const openDrawer = (type, row) => {
     isView,
     size: '500px',
     title: type + '用户',
-    data: row
-      ? record
-      : {
-          sex: 1,
-          password: '123456',
-        },
+    data: record,
     formOptions: {
       labelWidth: '10rem',
       labelSuffix: ' :',
@@ -363,8 +377,20 @@ const queryCompany = async () => {
   companies.value = res;
 };
 
+const queryRoles = async () => {
+  const res = await getRoles();
+  roles.value = res;
+  return {
+    data: res.map(item => ({
+      label: item.name,
+      value: item.name,
+    })),
+  };
+};
+
 onMounted(() => {
   queryCompany();
+  queryRoles();
 });
 </script>
 

@@ -6,17 +6,23 @@
 </template>
 
 <script setup>
-import { querySearch } from '@/utils';
+import { querySearch, objPick } from '@/utils';
 import { useUserStore } from '@/store/user';
 import { Gender } from '@/utils/constant';
+import { getCompany } from '@/utils/company';
+import { getRoles } from '@/utils/role';
+import { getCurrentUser } from '@/utils/account';
 import { phoneValidate } from '@/utils/validate';
+import { updateUserApi } from '@/api/platform'
 
 const userStore = useUserStore();
 const { userInfo } = $(userStore);
 const { cloned: info } = useCloned(userInfo);
 const formRef = ref();
+const companies = ref([]);
+const roles = ref([]);
 let loading = $ref(false);
-const formColumns = markRaw([
+const formColumns = computed(() => [
   {
     formItem: {
       label: '姓名',
@@ -83,7 +89,7 @@ const formColumns = markRaw([
   {
     formItem: {
       label: '角色',
-      prop: 'role',
+      prop: 'role_id',
     },
     component: 'el-select',
     attrs: {
@@ -92,11 +98,18 @@ const formColumns = markRaw([
       placeholder: '请选择角色',
       disabled: true,
     },
+    children: roles.value?.map(item => ({
+        component: 'el-option',
+        attrs: {
+          label: item.name,
+          value: item.id,
+        },
+      })),
   },
   {
     formItem: {
       label: '所属公司',
-      prop: 'company',
+      prop: 'company_id',
     },
     component: 'el-select',
     attrs: {
@@ -105,6 +118,13 @@ const formColumns = markRaw([
       placeholder: '请选择所属公司',
       disabled: true,
     },
+    children: companies.value?.map(item => ({
+        component: 'el-option',
+        attrs: {
+          label: item.name,
+          value: item.id,
+        },
+      })),
   },
   {
     formItem: {
@@ -149,10 +169,11 @@ const onSubmit = () => {
     if (valid) {
       loading = true;
       try {
-        await updateUserApi(info.id, info);
-        // TODO: 请求后的信息处理
+        await updateUserApi(info.value.id, objPick(info.value, ['name', 'sex', 'id_card', 'phone', 'email']));
+        getCurrentUser()
         ElMessage.success('修改成功');
       } catch (error) {
+        console.error(error);
         ElMessage.error('修改失败');
       } finally {
         loading = false;
@@ -163,6 +184,27 @@ const onSubmit = () => {
     }
   });
 };
+
+const queryCompany = async () => {
+  const res = await getCompany();
+  companies.value = res;
+};
+
+const queryRoles = async () => {
+  const res = await getRoles();
+  roles.value = res;
+  return {
+    data: res.map(item => ({
+      label: item.name,
+      value: item.name,
+    })),
+  };
+};
+
+onMounted(() => {
+  queryCompany();
+  queryRoles();
+});
 </script>
 
 <style lang="less" scoped></style>

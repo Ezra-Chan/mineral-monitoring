@@ -24,7 +24,7 @@
 <script setup>
 import { updatePasswordApi } from '@/api/platform';
 import { passwordValidate } from '@/utils/validate';
-// import { encrypt } from '@/utils/AES';
+import { encrypt } from '@/utils/rsa';
 
 const pwdForm = $ref({
   oldPwd: '',
@@ -67,8 +67,8 @@ const confirm = () => {
       try {
         const { oldPwd, newPwd } = pwdForm;
         const { success, message } = await updatePasswordApi({
-          oldPwd: oldPwd,
-          newPwd: newPwd,
+          old_password: encrypt(oldPwd),
+          new_password: encrypt(newPwd),
         });
         if (!success) {
           ElMessage.error(message);

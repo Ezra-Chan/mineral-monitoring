@@ -3,7 +3,7 @@
     <theme-switch />
     <Message />
     <full-screen-button size="30px" color="inherit" hoverColor="inherit" />
-    <span class="username fs-1">{{ username }}</span>
+    <span class="username fs-1">{{ name }}</span>
     <Avatar />
   </div>
 </template>
@@ -15,5 +15,5 @@ import Avatar from '@/components/layout/Header/components/Avatar.vue';
 import ThemeSwitch from '@/components/layout/Header/components/ThemeSwitch.vue';
 
 const userStore = useUserStore();
-const username = computed(() => userStore.userInfo.username);
+const name = computed(() => userStore.userInfo.name);
 </script>

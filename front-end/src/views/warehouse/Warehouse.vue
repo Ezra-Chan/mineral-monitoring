@@ -7,6 +7,9 @@
       :data-callback="transformData"
     >
       <template #tableHeader>
+        <el-button v-auth="'sync'" type="primary" :icon="Refresh" @click="syncWarehouse">
+          同步
+        </el-button>
         <el-button v-auth="'add'" type="primary" :icon="Plus" @click="openDrawer('新增')">
           新增
         </el-button>
@@ -40,20 +43,25 @@
 </template>
 
 <script setup>
-import { Plus, View, EditPen, Delete } from '@element-plus/icons-vue';
+import { Plus, View, EditPen, Delete, Refresh } from '@element-plus/icons-vue';
 import {
   getWarehouseListApi,
   createWarehouseApi,
   updateWarehouseApi,
   deleteWarehouseApi,
+  syncWarehouseApi,
 } from '@/api/platform';
 import { objOmit } from '@/utils';
 import { WarehouseStatus } from '@/utils/constant';
 import cities from '@/utils/pca-code.json';
+import { getCompany } from '@/utils/company';
+import { useUserStore } from '@/store/user';
 
 const router = useRouter();
+const userStore = useUserStore();
 const proTable = ref();
 const drawerRef = ref();
+const companies = ref([]);
 const columns = reactive([
   {
     prop: 'name',
@@ -64,14 +72,7 @@ const columns = reactive([
   {
     prop: 'company_name',
     label: '所属公司',
-    search: { el: 'select', props: { placeholder: '请输入所属公司' } },
     minWidth: 100,
-  },
-  {
-    prop: 'manager',
-    label: '管理员',
-    search: { el: 'select', props: { placeholder: '请输入管理员' } },
-    minWidth: 120,
   },
   {
     prop: 'location',
@@ -250,19 +251,26 @@ const formColumns = markRaw([
       filterable: true,
       placeholder: '请选择所属公司',
     },
+    children: companies.value?.map(item => ({
+      component: 'el-option',
+      attrs: {
+        label: item.name,
+        value: item.id,
+      },
+    })),
   },
-  {
-    formItem: {
-      label: '仓库管理员',
-      prop: 'manager',
-    },
-    component: 'el-select',
-    attrs: {
-      clearable: true,
-      filterable: true,
-      placeholder: '请选择仓库管理员',
-    },
-  },
+  // {
+  //   formItem: {
+  //     label: '仓库管理员',
+  //     prop: 'manager',
+  //   },
+  //   component: 'el-select',
+  //   attrs: {
+  //     clearable: true,
+  //     filterable: true,
+  //     placeholder: '请选择仓库管理员',
+  //   },
+  // },
 ]);
 const rules = reactive({
   name: [{ required: true, message: '请输入仓库名称', trigger: 'blur' }],
@@ -274,6 +282,21 @@ const rules = reactive({
   stacking_limit: [{ required: true, message: '请输入堆放限高', trigger: 'blur' }],
   company: [{ required: true, message: '请输入堆放限高', trigger: 'blur' }],
 });
+
+const syncWarehouse = async () => {
+  const { company_id, company_name } = userStore.userInfo || {};
+  try {
+    const { data } = await syncWarehouseApi([
+      {
+        company_id,
+        company_name,
+        kx_token: userStore.radarToken,
+      },
+    ]);
+    console.log('data', data);
+    ElMessage.success('同步成功');
+  } catch (error) {}
+};
 
 const createWarehouse = async row => {
   try {
@@ -344,6 +367,15 @@ const openDrawer = (type, row) => {
 const transformData = data => ({
   list: data.results,
   total: data.total,
+});
+
+const queryCompany = async () => {
+  const res = await getCompany();
+  companies.value = res;
+};
+
+onMounted(() => {
+  queryCompany();
 });
 </script>
 
