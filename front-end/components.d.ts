@@ -90,6 +90,7 @@ declare module 'vue' {
     ToolBarLeft: typeof import('./src/components/layout/Header/ToolBarLeft.vue')['default']
     ToolBarRight: typeof import('./src/components/layout/Header/ToolBarRight.vue')['default']
     Video: typeof import('./src/components/Video.vue')['default']
+    WarehouseTree: typeof import('./src/components/WarehouseTree.vue')['default']
     Weather: typeof import('./src/components/Weather.vue')['default']
   }
   export interface ComponentCustomProperties {

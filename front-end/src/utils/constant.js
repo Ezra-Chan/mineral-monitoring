@@ -44,12 +44,16 @@ export const CompanyStatus = [
 
 export const WarehouseStatus = [
   {
-    label: '使用中',
-    value: 1,
+    label: '未启用',
+    value: '301',
   },
   {
-    label: '已废弃',
-    value: 0,
+    label: '使用中',
+    value: '302',
+  },
+  {
+    label: '已停用',
+    value: '303',
   },
 ];
 
@@ -97,9 +101,10 @@ export const ROLE_PERMISSIONS = [
     component: '/bigscreen/Bigscreen',
     title: '大屏',
     meta: {
+      icon: 'Histogram',
       title: '大屏',
       isLink: '',
-      isHide: true,
+      isHide: false,
       isFull: true,
       isAffix: false,
       isKeepAlive: false,
@@ -339,3 +344,14 @@ export const ROLE_PERMISSIONS = [
 ];
 
 export const defaultPwd = '3er4#ER$';
+
+export const SYSTEM_ROLES_MAP = {
+  ADMIN: 1,
+  COMPANY_ADMIN: 2,
+  COMPANY_USER: 3,
+  WAREHOUSE_ADMIN: 4,
+  WAREHOUSE_USER: 5,
+  BIGSCREEN_USER: 6,
+};
+
+export const SYSTEM_ROLES = Object.values(SYSTEM_ROLES_MAP);

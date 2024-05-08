@@ -104,11 +104,6 @@ const columns = reactive([
     minWidth: 200,
   },
   {
-    prop: 'manager_id',
-    label: '公司管理员',
-    minWidth: 100,
-  },
-  {
     prop: 'establishment_time',
     label: '成立日期',
     minWidth: 150,

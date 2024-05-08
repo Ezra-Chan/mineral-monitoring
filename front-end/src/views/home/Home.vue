@@ -1,7 +1,22 @@
 <template>
-  <div id="">1111</div>
+  <div class="home card">
+    <img class="home-bg" src="@/assets/images/welcome.png" alt="welcome" />
+  </div>
 </template>
 
 <script setup></script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  .home-bg {
+    width: 70%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+  }
+}
+</style>

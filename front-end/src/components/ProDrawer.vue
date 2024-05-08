@@ -52,10 +52,19 @@ const modifyFormData = data => {
   }
 };
 
+const updateFormColumns = columns => {
+  drawerProps.formColumns = columns;
+};
+
+const getFormData = () => {
+  return drawerProps.data;
+};
+
 defineExpose({
   acceptParams,
   close,
   modifyFormData,
+  updateFormColumns,
 });
 </script>
 

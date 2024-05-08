@@ -3,11 +3,17 @@
     <ProTable
       ref="proTable"
       :columns="columns"
-      :request-api="getWarehouseListApi"
+      :request-api="getWarehouseList"
       :data-callback="transformData"
     >
       <template #tableHeader>
-        <el-button v-auth="'sync'" type="primary" :icon="Refresh" @click="syncWarehouse">
+        <el-button
+          v-auth="'sync'"
+          type="primary"
+          :icon="Refresh"
+          :loading="syncLoding"
+          @click="syncWarehouse"
+        >
           同步
         </el-button>
         <el-button v-auth="'add'" type="primary" :icon="Plus" @click="openDrawer('新增')">
@@ -45,7 +51,6 @@
 <script setup>
 import { Plus, View, EditPen, Delete, Refresh } from '@element-plus/icons-vue';
 import {
-  getWarehouseListApi,
   createWarehouseApi,
   updateWarehouseApi,
   deleteWarehouseApi,
@@ -55,24 +60,25 @@ import { objOmit } from '@/utils';
 import { WarehouseStatus } from '@/utils/constant';
 import cities from '@/utils/pca-code.json';
 import { getCompany } from '@/utils/company';
+import { getWarehouseList } from '@/utils/warehouse';
 import { useUserStore } from '@/store/user';
 
-const router = useRouter();
 const userStore = useUserStore();
 const proTable = ref();
 const drawerRef = ref();
+let syncLoding = $ref(false);
 const companies = ref([]);
 const columns = reactive([
   {
     prop: 'name',
     label: '仓库名称',
     search: { el: 'input', props: { placeholder: '请输入仓库名称' } },
-    minWidth: 250,
+    minWidth: 200,
   },
   {
     prop: 'company_name',
     label: '所属公司',
-    minWidth: 100,
+    minWidth: 250,
   },
   {
     prop: 'location',
@@ -81,27 +87,22 @@ const columns = reactive([
   },
   {
     prop: 'width',
-    label: '仓库宽度',
+    label: '仓库宽度(m)',
     minWidth: 120,
   },
   {
     prop: 'height',
-    label: '仓库高度',
+    label: '仓库高度(m)',
     minWidth: 120,
   },
   {
     prop: 'length',
-    label: '仓库长度',
+    label: '仓库长度(m)',
     minWidth: 120,
   },
   {
     prop: 'capacity',
-    label: '仓库容量',
-    minWidth: 120,
-  },
-  {
-    prop: 'stacking_limit',
-    label: '仓库堆放限高',
+    label: '仓库容量(吨)',
     minWidth: 120,
   },
   {
@@ -113,7 +114,7 @@ const columns = reactive([
   },
   { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
 ]);
-const formColumns = markRaw([
+const formColumns = computed(() => [
   {
     formItem: {
       label: '仓库名称',
@@ -156,7 +157,7 @@ const formColumns = markRaw([
   },
   {
     formItem: {
-      label: '仓库宽度',
+      label: '仓库宽度(m)',
       prop: 'width',
     },
     component: 'el-input-number',
@@ -170,7 +171,7 @@ const formColumns = markRaw([
   },
   {
     formItem: {
-      label: '仓库高度',
+      label: '仓库高度(m)',
       prop: 'height',
     },
     component: 'el-input-number',
@@ -184,7 +185,7 @@ const formColumns = markRaw([
   },
   {
     formItem: {
-      label: '仓库长度',
+      label: '仓库长度(m)',
       prop: 'length',
     },
     component: 'el-input-number',
@@ -198,27 +199,13 @@ const formColumns = markRaw([
   },
   {
     formItem: {
-      label: '仓库容量',
+      label: '仓库容量(吨)',
       prop: 'capacity',
     },
     component: 'el-input-number',
     attrs: {
       clearable: true,
       placeholder: '请输入仓库容量',
-      controlsPosition: 'right',
-      class: 'w-100%!',
-      precision: 2,
-    },
-  },
-  {
-    formItem: {
-      label: '堆放限高',
-      prop: 'stacking_limit',
-    },
-    component: 'el-input-number',
-    attrs: {
-      clearable: true,
-      placeholder: '请输入堆放限高',
       controlsPosition: 'right',
       class: 'w-100%!',
       precision: 2,
@@ -279,23 +266,28 @@ const rules = reactive({
   height: [{ required: true, message: '请输入仓库高度', trigger: 'blur' }],
   length: [{ required: true, message: '请输入仓库长度', trigger: 'blur' }],
   capacity: [{ required: true, message: '请输入仓库容量', trigger: 'blur' }],
-  stacking_limit: [{ required: true, message: '请输入堆放限高', trigger: 'blur' }],
-  company: [{ required: true, message: '请输入堆放限高', trigger: 'blur' }],
+  company_id: [{ required: true, message: '请选择所属公司', trigger: 'blur' }],
 });
 
 const syncWarehouse = async () => {
   const { company_id, company_name } = userStore.userInfo || {};
   try {
-    const { data } = await syncWarehouseApi([
+    syncLoding = true;
+    await syncWarehouseApi([
       {
         company_id,
         company_name,
         kx_token: userStore.radarToken,
       },
     ]);
-    console.log('data', data);
+    proTable.value.search();
     ElMessage.success('同步成功');
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+    ElMessage.error('同步失败');
+  } finally {
+    syncLoding = false;
+  }
 };
 
 const createWarehouse = async row => {
@@ -348,9 +340,9 @@ const openDrawer = (type, row) => {
     size: '500px',
     title: type + '仓库',
     data: row
-      ? { ...record, location: record.location ? record.location.split('/') : [] }
+      ? { ...record.value, location: record.value.location ? record.value.location.split('/') : [] }
       : {
-          status: 1,
+          status: '302',
         },
     formOptions: {
       labelWidth: '10rem',

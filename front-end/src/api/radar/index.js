@@ -63,3 +63,27 @@ export const getDataByTime = (id, timestamp) => {
 
 // 获取字典
 export const getDict = () => request.get('/store/enums/list?name=FoodstuffTypeEnum,HouseTypeEnum');
+
+// 获取仓库绑定的设备信息
+export const getDevicesByWarehouseId = id =>
+  request.post('/store/api/getWarehouseEquipmentsInfo', { warehouseId: id });
+
+// 获取设备连接状态
+export const getDeviceConnectStatus = id =>
+  request.post('/store/api/getEquipmentConnectStatus', { devId: id });
+
+// 获取仓库定时扫描计划
+export const getWarehouseScanPlan = id =>
+  request.post('/store/api/getRadarPlan', { warehouseId: id });
+
+/**
+ * 修改仓库定时扫描计划
+ * @param {object} params
+ * @param {number} params.warehouseId 仓库id
+ * @param {number} params.startTimeSpan 扫描周期 单位：分钟；传 null 则取消定时扫描计划
+ * @param {number} params.noScanTimeStart 非扫描时间起始 单位：小时； 传 null 不设置
+ * @param {number} params.noScanTimeEnd 非扫描时间结束 单位：小时；传 null 不设置
+ * @param {Date} params.radarFirstRunTime 雷达首次运行时间 不可早于当前时间；传 null 不设置
+ * @returns
+ */
+export const updateWarehouseScanPlan = params => request.post('/store/api/updateRadarPlan', params);

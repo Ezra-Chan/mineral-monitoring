@@ -26,6 +26,7 @@
           type="primary"
           link
           :icon="EditPen"
+          :disabled="+scope.row.id <= SYSTEM_ROLES.length"
           @click="openDrawer('编辑', scope.row)"
         >
           编辑
@@ -35,7 +36,7 @@
           type="danger"
           link
           :icon="Delete"
-          :disabled="+scope.row.id < 10"
+          :disabled="+scope.row.id <= SYSTEM_ROLES.length"
           @click="deleteRole(scope.row)"
         >
           删除
@@ -75,7 +76,7 @@
 <script setup>
 import { Plus, View, EditPen, Delete } from '@element-plus/icons-vue';
 import { getRoleListApi, createRoleApi, updateRoleApi, deleteRoleApi } from '@/api/platform';
-import { ROLE_PERMISSIONS } from '@/utils/constant';
+import { ROLE_PERMISSIONS, SYSTEM_ROLES } from '@/utils/constant';
 import { getCheckedNodes, setCheckedNodes, objOmit } from '@/utils';
 
 const proTable = ref();
