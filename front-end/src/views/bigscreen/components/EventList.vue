@@ -47,6 +47,8 @@ import dayjs from 'dayjs';
 // import { getEvents } from '@/api/camera';
 import { getAllEvents } from '@/api/monitoring';
 import { useGlobalStore } from '@/store/global';
+import { useUserStore } from '@/store/user';
+import { Decrypt } from '@/utils/AES';
 
 // const eventTypes = ['车辆越线', '非机动车', '人员越线'];
 const columns = [
@@ -74,6 +76,7 @@ let imgSrc = $ref('');
 let first = true;
 const { toggle } = useFullscreen(imgRef);
 const globalStore = useGlobalStore();
+const userStore = useUserStore();
 
 const getEventsList = async () => {
   first && (loading = true);
@@ -99,9 +102,10 @@ const getEventsList = async () => {
 };
 
 const checkImage = (urls, i, callback) => {
+  const { u, p } = userStore.monitorUser || {};
   fetch(urls[i], {
     headers: {
-      Authorization: 'Basic ' + btoa('root:Hhszcy@12345'),
+      Authorization: 'Basic ' + btoa(`${u}:${Decrypt(p)}`),
     },
   })
     .then(response => {
