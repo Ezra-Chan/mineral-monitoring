@@ -1,5 +1,5 @@
 {
-  "title": "数字仓储管理平台",
+  "title": "数智储运管理平台",
   "cameraIp": "http://10.1.1.215",
   "radarCameraMap": [
     {
@@ -16,6 +16,11 @@
       "wareHouseId": "116",
       "wareHouseName": "泸溪仓A",
       "cameraLayoutId": "b455e39f-fa3f-4183-8eba-e39ff1d20669"
+    },
+    {
+      "wareHouseId": "123",
+      "wareHouseName": "青海捷和物流仓",
+      "cameraLayoutId": "95ea0289-b866-491f-b6ae-e9dbddc29622"
     }
   ]
 }
