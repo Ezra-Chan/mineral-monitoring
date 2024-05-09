@@ -25,6 +25,10 @@ let drawerProps = $ref({});
 const formRef = ref();
 
 const acceptParams = params => {
+  if (drawerVisible) {
+    drawerProps = { ...drawerProps, ...params };
+    return;
+  }
   drawerProps = params;
   drawerVisible = true;
   nextTick(() => {

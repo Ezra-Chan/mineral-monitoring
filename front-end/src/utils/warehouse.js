@@ -13,8 +13,8 @@ export const getWarehouseList = async (params, data) => {
   const { page, per_page } = params;
   const res = await getWarehouseListApi({ page: 1, per_page: 9999999 }, { ...data, company_id });
   const warehouses = warehouse_ids ? warehouse_ids.split(',') : [];
-  const filters = res.results.filter(item => warehouses.includes(item.id));
-  res.total = filters.length;
-  res.results = filters.slice((page - 1) * per_page, page * per_page);
+  const filters = res.data.results.filter(item => warehouses.includes(item.id));
+  res.data.total = filters.length;
+  res.data.results = filters.slice((page - 1) * per_page, page * per_page);
   return res;
 };

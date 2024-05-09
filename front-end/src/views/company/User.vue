@@ -56,7 +56,13 @@
 
 <script setup>
 import { Plus, View, EditPen, Delete, Refresh } from '@element-plus/icons-vue';
-import { createUserApi, updateUserApi, deleteUserApi, resetPwdApi } from '@/api/platform';
+import {
+  createUserApi,
+  updateUserApi,
+  deleteUserApi,
+  resetPwdApi,
+  getWarehouseListApi,
+} from '@/api/platform';
 import { objOmit, querySearch } from '@/utils';
 import { Gender, defaultPwd, SYSTEM_ROLES_MAP } from '@/utils/constant';
 import { getUsers } from '@/utils/user';
@@ -148,7 +154,11 @@ const rules = reactive({
 
 const createUser = async row => {
   try {
-    await createUserApi({ ...row, password: encrypt(row.password) });
+    await createUserApi({
+      ...row,
+      password: encrypt(row.password),
+      warehouse_ids: row.warehouse_ids?.length ? row.warehouse_ids.join(',') : undefined,
+    });
     ElMessage.success('新增成功');
     drawerRef.value.close();
     proTable.value.search();
@@ -159,7 +169,16 @@ const createUser = async row => {
 
 const updateUser = async row => {
   try {
-    await updateUserApi(row.id, objOmit(row, ['id']));
+    await updateUserApi(
+      row.id,
+      objOmit(
+        {
+          ...row,
+          warehouse_ids: row.warehouse_ids?.length ? row.warehouse_ids.join(',') : undefined,
+        },
+        ['id'],
+      ),
+    );
     ElMessage.success('编辑成功');
     drawerRef.value.close();
     proTable.value.search();
@@ -205,7 +224,14 @@ const resetPwd = row => {
 };
 
 const openDrawer = (type, row) => {
-  const { cloned: record } = useCloned(row || { sex: 1, password: defaultPwd });
+  const { cloned: record } = useCloned(
+    row
+      ? { ...row, warehouse_ids: row.warehouse_ids ? row.warehouse_ids.split(',') : undefined }
+      : {
+          sex: 1,
+          password: defaultPwd,
+        },
+  );
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
@@ -292,11 +318,23 @@ const openDrawer = (type, row) => {
         },
       })),
       listeners: {
-        change: val => {
+        change: async val => {
           drawerRef.value.modifyFormData({
             role_name: val ? roles.value?.find(item => item.id === val)?.name : '',
+            warehouse_ids: [],
           });
-          console.log('formColumns', formColumns);
+          warehouses.value = [];
+          if (
+            !(
+              !record.value.role_id ||
+              [SYSTEM_ROLES_MAP.COMPANY_ADMIN, SYSTEM_ROLES_MAP.COMPANY_USER].includes(
+                record.value.role_id,
+              ) ||
+              !record.value.company_id
+            )
+          ) {
+            await getWarehouses(record.value.company_id);
+          }
         },
       },
     },
@@ -319,21 +357,37 @@ const openDrawer = (type, row) => {
         },
       })),
       listeners: {
-        change: val =>
+        change: async val => {
           drawerRef.value.modifyFormData({
             company_name: val ? companies.value?.find(item => item.id === val)?.name : '',
-          }),
+            warehouse_ids: [],
+          });
+          warehouses.value = [];
+          if (
+            !(
+              !record.value.role_id ||
+              [SYSTEM_ROLES_MAP.COMPANY_ADMIN, SYSTEM_ROLES_MAP.COMPANY_USER].includes(
+                record.value.role_id,
+              ) ||
+              !record.value.company_id
+            )
+          ) {
+            await getWarehouses(val);
+          }
+        },
       },
     },
     {
       formItem: {
         label: '所属仓库',
         prop: 'warehouse_ids',
+        rules: [{ required: true, message: '请选择所属仓库', trigger: 'blur' }],
       },
       component: 'el-select',
       attrs: {
         clearable: true,
         filterable: true,
+        multiple: true,
         placeholder: '请选择所属仓库',
       },
       children: warehouses.value?.map(item => ({
@@ -344,8 +398,11 @@ const openDrawer = (type, row) => {
         },
       })),
       hide:
-        !record.role_id ||
-        [SYSTEM_ROLES_MAP.COMPANY_ADMIN, SYSTEM_ROLES_MAP.COMPANY_USER].includes(record.role_id),
+        !record.value.role_id ||
+        [SYSTEM_ROLES_MAP.COMPANY_ADMIN, SYSTEM_ROLES_MAP.COMPANY_USER].includes(
+          record.value.role_id,
+        ) ||
+        !record.value.company_id,
     },
     {
       formItem: {
@@ -410,6 +467,14 @@ const queryRoles = async () => {
       value: item.name,
     })),
   };
+};
+
+const getWarehouses = async id => {
+  const { data = {} } = await getWarehouseListApi(
+    { page: 1, per_page: 999999 },
+    { company_id: id },
+  );
+  warehouses.value = data.results;
 };
 
 onMounted(() => {

@@ -28,18 +28,6 @@ const columns = reactive([
     label: '设备类型',
     minWidth: 80,
   },
-  {
-    prop: 'belong',
-    label: '所属仓库',
-    search: { el: 'select', props: { placeholder: '请选择所属仓库' } },
-    minWidth: 150,
-  },
-  {
-    prop: 'source',
-    label: '设备来源',
-    search: { el: 'input', props: { placeholder: '请输入设备来源' } },
-    minWidth: 150,
-  },
   { prop: 'operation', label: '操作', fixed: 'right', minWidth: 200 },
 ]);
 

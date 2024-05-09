@@ -154,8 +154,9 @@ const systemLogin = async formEl => {
       }
     }
   } catch (error) {
+    console.error('登录失败', error);
+  } finally {
     systemloading = false;
-    bigscreenLoading = false;
   }
 };
 
