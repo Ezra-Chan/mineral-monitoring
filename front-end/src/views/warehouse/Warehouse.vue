@@ -25,6 +25,16 @@
           查看
         </el-button>
         <el-button
+          v-auth="'scanView'"
+          type="primary"
+          link
+          :icon="EditPen"
+          :loading="scanLoding[scope.row.id]"
+          @click="openDrawer('扫描', scope.row)"
+        >
+          扫描计划
+        </el-button>
+        <el-button
           v-auth="'edit'"
           type="primary"
           link
@@ -56,17 +66,21 @@ import {
   deleteWarehouseApi,
   syncWarehouseApi,
 } from '@/api/platform';
+import { getWarehouseScanPlan, updateWarehouseScanPlan } from '@/api/radar';
 import { objOmit } from '@/utils';
 import { WarehouseStatus } from '@/utils/constant';
 import cities from '@/utils/pca-code.json';
 import { getCompany } from '@/utils/company';
 import { getWarehouseList } from '@/utils/warehouse';
 import { useUserStore } from '@/store/user';
+import { useAuthButtons } from '@/hooks/useAuthButtons';
 
 const userStore = useUserStore();
+const { BUTTONS } = useAuthButtons();
 const proTable = ref();
 const drawerRef = ref();
 let syncLoding = $ref(false);
+let scanLoding = $ref([]);
 const companies = ref([]);
 const columns = reactive([
   {
@@ -268,6 +282,91 @@ const rules = reactive({
   capacity: [{ required: true, message: '请输入仓库容量', trigger: 'blur' }],
   company_id: [{ required: true, message: '请选择所属公司', trigger: 'blur' }],
 });
+const scanFormColumns = [
+  {
+    formItem: {
+      label: '扫描周期(分钟)',
+      prop: 'startTimeSpan',
+    },
+    component: 'el-input-number',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入扫描周期',
+      controlsPosition: 'right',
+      class: 'w-100%!',
+    },
+  },
+  {
+    formItem: {
+      label: '扫描周期范围起始(分钟)',
+      prop: 'startTimeSpanStart',
+    },
+    component: 'el-input-number',
+    attrs: {
+      clearable: true,
+      controlsPosition: 'right',
+      class: 'w-100%!',
+      disabled: true,
+    },
+  },
+  {
+    formItem: {
+      label: '扫描周期范围结束(分钟)',
+      prop: 'startTimeSpanEnd',
+    },
+    component: 'el-input-number',
+    attrs: {
+      clearable: true,
+      controlsPosition: 'right',
+      class: 'w-100%!',
+      disabled: true,
+    },
+  },
+  {
+    formItem: {
+      label: '非扫描时间起始(小时)',
+      prop: 'noScanTimeStart',
+    },
+    component: 'el-input-number',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入非扫描时间起始',
+      controlsPosition: 'right',
+      class: 'w-100%!',
+    },
+  },
+  {
+    formItem: {
+      label: '非扫描时间结束(小时)',
+      prop: 'noScanTimeEnd',
+    },
+    component: 'el-input-number',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入非扫描时间结束',
+      controlsPosition: 'right',
+      class: 'w-100%!',
+    },
+  },
+  {
+    formItem: {
+      label: '雷达首次运行时间',
+      prop: 'radarFirstRunTime',
+    },
+    component: 'el-date-picker',
+    attrs: {
+      clearable: true,
+      placeholder: '请选择雷达首次运行时间',
+      valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      type: 'datetime',
+      // 禁用此刻之前的时间
+      disabledDate: time => time.getTime() < Date.now(),
+      style: {
+        width: '100%',
+      },
+    },
+  },
+];
 
 const syncWarehouse = async () => {
   const { company_id, company_name } = userStore.userInfo || {};
@@ -330,30 +429,85 @@ const deleteWarehouse = row => {
     .catch(() => {});
 };
 
-const openDrawer = (type, row) => {
+const updateScanPlan = async data => {
+  const params = {
+    warehouseId: data.warehouseId,
+    startTimeSpan: data.startTimeSpan || null,
+    noScanTimeStart: data.noScanTimeStart || null,
+    noScanTimeEnd: data.noScanTimeEnd || null,
+    radarFirstRunTime: data.radarFirstRunTime || null,
+  };
+  try {
+    await updateWarehouseScanPlan(params);
+    ElMessage.success('修改扫描计划成功');
+    drawerRef.value.close();
+    // proTable.value.search();
+  } catch (error) {
+    ElMessage.error('修改扫描计划失败');
+    console.error(error);
+  }
+};
+
+const openDrawer = async (type, row) => {
   const { cloned: record } = useCloned(row || {});
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
-  drawerRef.value.acceptParams({
-    isView,
-    size: '500px',
-    title: type + '仓库',
-    data: row
-      ? { ...record.value, location: record.value.location ? record.value.location.split('/') : [] }
-      : {
-          status: '302',
+  if (type !== '扫描') {
+    drawerRef.value.acceptParams({
+      isView,
+      size: '500px',
+      title: type + '仓库',
+      data: row
+        ? {
+            ...record.value,
+            location: record.value.location ? record.value.location.split('/') : [],
+          }
+        : {
+            status: '302',
+          },
+      formOptions: {
+        labelWidth: '10rem',
+        labelSuffix: ' :',
+        class: 'overflow-y-auto p-r-8 h-full',
+        rules,
+        disabled: isView,
+      },
+      formColumns,
+      onSubmit: isAdd ? data => createWarehouse(data) : data => updateWarehouse(data),
+    });
+  } else {
+    scanLoding[row.id] = true;
+    const disabled = !BUTTONS.value.scanEdit;
+    try {
+      const { data } = await getWarehouseScanPlan(row.kx_warehouse_id);
+      if (data?.startTimeSpanStart) {
+        scanFormColumns[0].attrs.min = data.startTimeSpanStart;
+      }
+      if (data?.startTimeSpanEnd) {
+        scanFormColumns[0].attrs.max = data.startTimeSpanEnd;
+      }
+      drawerRef.value.acceptParams({
+        isView: disabled,
+        size: '500px',
+        title: row.name + '扫描计划',
+        formColumns: scanFormColumns,
+        formOptions: {
+          labelWidth: '11rem',
+          labelSuffix: ' :',
+          class: 'overflow-y-auto p-r-8 h-full',
+          disabled,
         },
-    formOptions: {
-      labelWidth: '10rem',
-      labelSuffix: ' :',
-      class: 'overflow-y-auto p-r-8 h-full',
-      rules,
-      disabled: isView,
-    },
-    formColumns,
-    onSubmit: isAdd ? data => createWarehouse(data) : data => updateWarehouse(data),
-  });
+        data,
+        onSubmit: updateScanPlan,
+      });
+    } catch (error) {
+      ElMessage.error(error?.data?.message || '查询扫描计划失败');
+      console.error(error);
+    } finally {
+      scanLoding[row.id] = false;
+    }
+  }
 };
 
 const transformData = data => ({

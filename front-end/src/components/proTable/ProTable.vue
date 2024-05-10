@@ -47,6 +47,7 @@
     <!-- 表格主体 -->
     <el-table
       ref="tableRef"
+      v-loading="loading"
       v-bind="$attrs"
       :data="processTableData"
       :border="border"
@@ -203,6 +204,7 @@ const { selectionChange, selectedList, selectedListIds, isSelected } = useSelect
 const {
   tableData,
   pageable,
+  loading,
   searchParam,
   searchInitParam,
   getTableList,

@@ -13,7 +13,7 @@
             <Camera :key="select" :warehouse="select" />
           </el-tab-pane>
         </el-tabs>
-        <div v-else>{{ select.name }}</div>
+        <!-- <div v-else>{{ select.name }}</div> -->
       </template>
     </div>
   </div>

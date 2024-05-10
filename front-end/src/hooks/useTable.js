@@ -26,6 +26,8 @@ export const useTable = (api, initParam = {}, isPageable = true, dataCallBack, r
     searchInitParam: {},
     // 总参数(包含分页和查询参数)
     totalParam: {},
+    // loading
+    loading: false,
   });
 
   /**
@@ -51,6 +53,7 @@ export const useTable = (api, initParam = {}, isPageable = true, dataCallBack, r
     if (!api) return;
     try {
       // 先把初始化参数和分页参数放到总参数里面
+      state.loading = true;
       Object.assign(state.totalParam, initParam, isPageable ? pageParam.value : {});
       const { pageNum, pageSize, ...params } = { ...state.searchInitParam, ...state.totalParam };
       let { data } = await api({ page: pageNum, per_page: pageSize }, params);
@@ -61,7 +64,9 @@ export const useTable = (api, initParam = {}, isPageable = true, dataCallBack, r
         const { total } = data;
         updatePageable({ total });
       }
+      state.loading = false;
     } catch (error) {
+      state.loading = false;
       requestError && requestError(error);
     }
   };

@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { getDevicesByWarehouseId } from '@/api/radar';
+import { getDevicesByWarehouseId, getDeviceConnectStatus } from '@/api/radar';
 
 const props = defineProps({
   warehouse: {
@@ -31,12 +31,24 @@ const columns = reactive([
     label: '设备类型',
     minWidth: 120,
   },
+  {
+    prop: 'status',
+    label: '设备状态',
+    minWidth: 120,
+  },
   { prop: 'operation', label: '操作', fixed: 'right', minWidth: 200 },
 ]);
 
 const getLidarApi = async () => {
   try {
-    return await getDevicesByWarehouseId(props.warehouse.kx_warehouse_id);
+    const { data = [] } = await getDevicesByWarehouseId(props.warehouse.kx_warehouse_id);
+    const status = await Promise.all(data.map(item => getDeviceConnectStatus(item.devId)));
+    return {
+      data: data.map((item, index) => ({
+        ...item,
+        status: status[index]?.data?.connectStatusDesc,
+      })),
+    };
   } catch (error) {
     console.error(error);
     ElMessage.error('获取数据失败');

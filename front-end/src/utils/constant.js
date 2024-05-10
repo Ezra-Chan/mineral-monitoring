@@ -286,6 +286,16 @@ export const ROLE_PERMISSIONS = [
         title: '删除',
         name: 'delete',
       },
+      {
+        id: '6-6',
+        title: '查看扫描计划',
+        name: 'scanView',
+      },
+      {
+        id: '6-7',
+        title: '修改扫描计划',
+        name: 'scanEdit',
+      },
     ],
   },
   {

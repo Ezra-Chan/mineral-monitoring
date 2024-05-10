@@ -10,6 +10,7 @@
           type="primary"
           link
           :icon="View"
+          :disabled="!scope.row.status || !scope.row.accessPoint"
           @click="viewCamera(scope.row)"
         >
           查看画面
@@ -18,14 +19,20 @@
           v-auth="'delete'"
           type="danger"
           link
-          :icon="View"
+          :icon="Delete"
           @click="unbindCamera(scope.row)"
         >
           删除
         </el-button>
       </template>
     </ProTable>
-    <el-dialog v-model="dialogVisible" title="新增设备" width="500" :before-close="handleClose">
+    <el-dialog
+      v-model="dialogVisible"
+      title="新增设备"
+      width="500"
+      class="device-dialog"
+      :before-close="handleClose"
+    >
       <el-select v-model="deviceSelected" filterable multiple>
         <el-option
           v-for="item in leftDevices"
@@ -46,6 +53,7 @@
       title="查看画面"
       destroy-on-close
       width="800"
+      class="video-dialog"
       :before-close="handleCloseVideo"
     >
       <VideoPlayer :src="videoSrc" />
@@ -54,6 +62,7 @@
 </template>
 
 <script setup>
+import { Plus, View, Delete } from '@element-plus/icons-vue';
 import { getDeviceList, addDevice, deleteDevice } from '@/api/platform';
 import { getCameraList } from '@/api/camera';
 import { CameraStatus } from '@/utils/constant';
@@ -88,7 +97,7 @@ const columns = reactive([
   {
     prop: 'status',
     label: '设备状态',
-    minWidth: 80,
+    minWidth: 100,
     enum: CameraStatus,
   },
   {
@@ -207,12 +216,16 @@ const viewCamera = ({ accessPoint }) => {
 </script>
 
 <style lang="less" scoped>
-:deep(.el-dialog__body) {
+:deep(.video-dialog .el-dialog__body) {
   height: 500px;
 
   .video-js {
     width: 100%;
     height: 100%;
   }
+}
+
+:deep(.device-dialog .el-dialog__body) {
+  min-height: 100px;
 }
 </style>
