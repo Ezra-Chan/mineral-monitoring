@@ -132,7 +132,7 @@ const globalStore = useGlobalStore();
 let cameras = $ref([]);
 const currentWareHouse = ref(globalStore.currentWareHouse);
 let wareHouseDetail = $ref({});
-const videoKeys = $ref([]);
+const videoKeys = $ref({});
 const wareHouseInfo = computed(
   () =>
     `${wareHouseDetail.houseTypeDesc || '平房仓'}(长:${wareHouseDetail.houseLength || 0}米，宽:${

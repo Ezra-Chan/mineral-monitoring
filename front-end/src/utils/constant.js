@@ -42,6 +42,17 @@ export const CompanyStatus = [
   },
 ];
 
+export const CameraStatus = [
+  {
+    label: '在线',
+    value: true,
+  },
+  {
+    label: '离线',
+    value: false,
+  },
+];
+
 export const WarehouseStatus = [
   {
     label: '未启用',
@@ -308,6 +319,23 @@ export const ROLE_PERMISSIONS = [
       isAffix: false,
       isKeepAlive: true,
     },
+    buttons: [
+      {
+        id: '8-1',
+        title: '新增',
+        name: 'add',
+      },
+      {
+        id: '8-2',
+        title: '删除',
+        name: 'delete',
+      },
+      {
+        id: '8-3',
+        title: '查看画面',
+        name: 'preview',
+      },
+    ],
   },
   {
     id: '9',
