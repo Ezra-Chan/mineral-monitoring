@@ -1,4 +1,4 @@
-import { LessThanOrEqual, Repository } from 'typeorm';
+import { LessThanOrEqual, Repository, In } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
@@ -15,12 +15,26 @@ export class EventService {
     return await this.eventRepository.save(newEvent);
   }
 
-  async findAll() {
+  async findAll(params: any) {
+    const { cameraId } = params;
+    let filter = {};
+    if (cameraId) {
+      let cameras = [];
+      if (Array.isArray(cameraId)) {
+        cameras = cameraId;
+      } else {
+        cameras = [cameraId];
+      }
+      filter = {
+        cameraId: In(cameras),
+      };
+    }
     return await this.eventRepository.find({
+      where: filter,
       order: {
         eventTime: 'DESC',
       },
-      take: 100,
+      take: params.size ?? 100,
     });
   }
 

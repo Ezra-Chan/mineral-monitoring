@@ -42,8 +42,8 @@ export class EventController {
     }
   }
 
-  @Get()
-  findAll() {
-    return this.eventService.findAll();
+  @Post('list')
+  findAll(@Body() params) {
+    return this.eventService.findAll(params);
   }
 }
