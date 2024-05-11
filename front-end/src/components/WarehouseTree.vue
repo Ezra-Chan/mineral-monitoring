@@ -14,6 +14,7 @@
 <script setup>
 import { getCompany } from '@/utils/company';
 import { getWarehouseListApi } from '@/api/platform';
+import { defaultPage } from '@/utils/constant';
 
 const emit = defineEmits(['select']);
 
@@ -38,10 +39,7 @@ const loadNode = async () => {
 };
 
 const loadWarehouse = async company => {
-  const { data = {} } = await getWarehouseListApi(
-    { page: 1, per_page: 999999 },
-    { company_id: company.id },
-  );
+  const { data = {} } = await getWarehouseListApi(defaultPage, { company_id: company.id });
   return data.results?.map(item => ({ ...item, type: 'warehouse' })) || [];
 };
 

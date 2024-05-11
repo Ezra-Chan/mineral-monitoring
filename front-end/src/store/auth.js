@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAuthMenuListApi, getRoleApi } from '@/api/platform';
+import { getRoleApi } from '@/api/platform';
 import {
   getFlatMenuList,
   getShowMenuList,

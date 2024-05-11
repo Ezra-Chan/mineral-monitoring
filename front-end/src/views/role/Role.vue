@@ -26,7 +26,7 @@
           type="primary"
           link
           :icon="EditPen"
-          :disabled="+scope.row.id <= SYSTEM_ROLES.length"
+          :disabled="+scope.row.id <= SYSTEM_ROLES.length && isProd"
           @click="openDrawer('编辑', scope.row)"
         >
           编辑
@@ -91,6 +91,7 @@ const defaultProps = {
   children: 'buttons',
   label: 'title',
 };
+const isProd = import.meta.env.PROD;
 
 const tableColumns = reactive([
   {

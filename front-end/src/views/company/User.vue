@@ -64,7 +64,7 @@ import {
   getWarehouseListApi,
 } from '@/api/platform';
 import { objOmit, querySearch } from '@/utils';
-import { Gender, defaultPwd, SYSTEM_ROLES_MAP } from '@/utils/constant';
+import { Gender, defaultPwd, SYSTEM_ROLES_MAP, defaultPage } from '@/utils/constant';
 import { getUsers } from '@/utils/user';
 import { getCompany } from '@/utils/company';
 import { getRoles } from '@/utils/role';
@@ -470,10 +470,7 @@ const queryRoles = async () => {
 };
 
 const getWarehouses = async id => {
-  const { data = {} } = await getWarehouseListApi(
-    { page: 1, per_page: 999999 },
-    { company_id: id },
-  );
+  const { data = {} } = await getWarehouseListApi(defaultPage, { company_id: id });
   warehouses.value = data.results;
 };
 

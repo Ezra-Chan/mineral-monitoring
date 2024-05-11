@@ -65,7 +65,7 @@
 import { Plus, View, Delete } from '@element-plus/icons-vue';
 import { getDeviceList, addDevice, deleteDevice } from '@/api/platform';
 import { getCameraList } from '@/api/camera';
-import { CameraStatus } from '@/utils/constant';
+import { CameraStatus, defaultPage } from '@/utils/constant';
 import VideoPlayer from '@/components/Video.vue';
 
 const props = defineProps({
@@ -118,15 +118,9 @@ const getCameraApi = async () => {
         data: { cameras = [] },
       },
     ] = await Promise.all([
-      getDeviceList(
-        {
-          page: 1,
-          per_page: 999999,
-        },
-        {
-          company_id: props.warehouse.company_id,
-        },
-      ),
+      getDeviceList(defaultPage, {
+        company_id: props.warehouse.company_id,
+      }),
       getCameraList(),
     ]);
     bindedDevices = results;
@@ -144,7 +138,6 @@ const getCameraApi = async () => {
         return {
           ...item,
           status: camera?.isActivated,
-          accessPoint: camera?.accessPoint,
         };
       });
 
@@ -170,13 +163,17 @@ const addCamera = () => {
 const bindDevices = async () => {
   try {
     await addDevice(
-      deviceSelected.map(item => ({
-        company_id: props.warehouse.company_id,
-        warehouse_id: props.warehouse.id,
-        warehouse_name: props.warehouse.name,
-        monitor_device_id: item,
-        monitor_device_name: allDevices.find(d => d.displayId === item)?.displayName,
-      })),
+      deviceSelected.map(item => {
+        const camera = allDevices.find(d => d.displayId === item);
+        return {
+          company_id: props.warehouse.company_id,
+          warehouse_id: props.warehouse.id,
+          warehouse_name: props.warehouse.name,
+          monitor_device_id: item,
+          monitor_device_name: camera?.displayName,
+          monitor_device_path: camera?.accessPoint,
+        };
+      }),
     );
     ElMessage.success('绑定成功');
     handleClose();

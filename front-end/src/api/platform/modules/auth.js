@@ -25,9 +25,3 @@ export const revokeRefreshApi = () =>
       Authorization: JSON.parse(localStorage.getItem('user-state'))?.refreshToken,
     },
   });
-
-// 获取菜单列表
-export const getAuthMenuListApi = () =>
-  request.get('/menu/list', {
-    baseURL: '/api5',
-  });

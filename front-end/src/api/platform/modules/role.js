@@ -1,4 +1,5 @@
 import request from '../request';
+import { defaultPage } from '@/utils/constant';
 
 // 获取角色列表
 export const getRoleListApi = () =>
@@ -6,10 +7,7 @@ export const getRoleListApi = () =>
     '/api/v1/rolelist',
     {},
     {
-      params: {
-        page: 1,
-        per_page: 999999,
-      },
+      params: defaultPage,
     },
   );
 

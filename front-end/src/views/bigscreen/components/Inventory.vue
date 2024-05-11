@@ -2,9 +2,12 @@
   <bigscreen-box :type="type" title="货物存量" ref="carouselRef">
     <template #headerRight>
       <el-radio-group v-model="radarChart">
-        <el-radio-button v-for="(type, i) in radarChartTypes" :label="type.value" :key="i">
-          {{ type.label }}
-        </el-radio-button>
+        <el-radio-button
+          v-for="(type, i) in radarChartTypes"
+          :value="type.value"
+          :label="type.label"
+          :key="i"
+        />
       </el-radio-group>
     </template>
     <div class="w-full h-full flex flex-col gap-1 justify-end items-center">
@@ -99,7 +102,7 @@ const date = $ref(dayjs(props.defaultDate).format(format));
 let dataTime = $ref();
 const carouselRef = $ref();
 const currentWareHouseInfo = computed(() =>
-  globalStore.wareHouse.find(item => item.id === globalStore.currentWareHouse),
+  globalStore.wareHouse.find(item => item.kx_warehouse_id === globalStore.currentWareHouse),
 );
 const goodsType = computed(() => {
   const map = {};

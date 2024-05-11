@@ -13,6 +13,7 @@ import { useKeepAliveStore } from '@/store/keepAlive';
 import { initDynamicRouter } from '@/router/dynamicRouter';
 import { Decrypt } from '@/utils/AES';
 import { encrypt } from '@/utils/rsa';
+import { SYSTEM_ROLES_MAP } from '@/utils/constant';
 
 let isPending = false;
 let kexinPending = false;
@@ -118,10 +119,9 @@ export const logoutMonitoring = async () => {
   await Promise.all([revokeAccessApi(), revokeRefreshApi()]);
 };
 
-export const isAdmin = username => {
-  if (username) return username === 'admin';
+export const isAdmin = () => {
   const userStore = useUserStore();
-  return userStore.userInfo?.username === 'admin';
+  return userStore.userInfo?.role_id === SYSTEM_ROLES_MAP.SUPER_ADMIN;
 };
 
 export const getCurrentUser = async () => {

@@ -170,17 +170,17 @@ const getData = async () => {
     const id = globalStore.currentWareHouse;
     const { data = [] } = await getCloudPointData(props.type, id, props.time);
     const { infoList = [], fileDate = [] } = data;
-    const wareHouse = globalStore.wareHouse.find(item => item.id === id) || {};
-    const { houseHight, houseLength, houseWidth } = wareHouse;
+    const wareHouse = globalStore.wareHouse.find(item => item.kx_warehouse_id === id) || {};
+    const { height, length, width } = wareHouse;
     const isBar = props.type === radarChartTypes[0].value;
     const chartOption = isBar ? barOption : pointOption;
-    chartOption.xAxis3D.max = houseWidth;
-    chartOption.yAxis3D.max = houseLength;
-    chartOption.zAxis3D.max = houseHight;
-    chartOption.grid3D.boxWidth = houseWidth;
-    chartOption.grid3D.boxDepth = houseLength;
-    chartOption.grid3D.viewControl.distance = houseLength;
-    chartOption.grid3D.boxHeight = houseHight;
+    chartOption.xAxis3D.max = width;
+    chartOption.yAxis3D.max = length;
+    chartOption.zAxis3D.max = height;
+    chartOption.grid3D.boxWidth = width;
+    chartOption.grid3D.boxDepth = length;
+    chartOption.grid3D.viewControl.distance = length;
+    chartOption.grid3D.boxHeight = height;
     if (isBar) {
       // 堆形图
       const s = infoList.map((item, i) => {

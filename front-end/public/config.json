@@ -1,22 +1,5 @@
 {
   "title": "数智储运管理平台",
   "abbreviation": "数智储运",
-  "cameraIp": "http://10.1.1.215",
-  "radarCameraMap": [
-    {
-      "wareHouseId": "114",
-      "wareHouseName": "河池仓",
-      "cameraLayoutId": "062573dc-eb66-4919-9dd5-d672e459bc06"
-    },
-    {
-      "wareHouseId": "115",
-      "wareHouseName": "泸溪仓B",
-      "cameraLayoutId": "7f262d6a-abcd-486a-9275-7207474e625b"
-    },
-    {
-      "wareHouseId": "116",
-      "wareHouseName": "泸溪仓A",
-      "cameraLayoutId": "b455e39f-fa3f-4183-8eba-e39ff1d20669"
-    }
-  ]
+  "cameraIp": "http://10.1.1.215"
 }

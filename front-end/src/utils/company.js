@@ -1,13 +1,11 @@
 import { getCompanyListApi } from '@/api/platform';
 import { useUserStore } from '@/store/user';
+import { defaultPage } from '@/utils/constant';
 import { isAdmin } from './account';
 
 export const getCompany = async () => {
   if (isAdmin()) {
-    const { data = {} } = await getCompanyListApi({
-      page: 1,
-      per_page: 999999,
-    });
+    const { data = {} } = await getCompanyListApi(defaultPage);
     return data.results;
   } else {
     const userStore = useUserStore();

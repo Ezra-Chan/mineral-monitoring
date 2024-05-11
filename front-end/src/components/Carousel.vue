@@ -18,7 +18,6 @@
       }"
       :modules="modules"
       @swiper="onSwiper"
-      @slideChange="onSlideChange"
     >
       <swiper-slide v-for="item in length" :key="item">
         <slot :name="item"></slot>

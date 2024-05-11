@@ -34,7 +34,7 @@ const pastTenDate = Array.from({ length: 7 })
   .map((_, i) => dayjs().subtract(i, 'day').format(format))
   .reverse();
 const currentWareHouseInfo = computed(() =>
-  globalStore.wareHouse.find(item => item.id === globalStore.currentWareHouse),
+  globalStore.wareHouse.find(item => item.kx_warehouse_id === globalStore.currentWareHouse),
 );
 const goodsType = computed(() => {
   const map = {};
@@ -209,16 +209,6 @@ const initChart = async () => {
 const queryInventoryByTime = async time => {
   const { data = {} } = await getDataByTime(globalStore.currentWareHouse, time);
   const { infoList = [] } = data;
-  // const infoList = [
-  //   {
-  //     goodsNo: 'ZG_ORE',
-  //     actualVolume: Math.random() * 3001 + 3000,
-  //   },
-  //   {
-  //     goodsNo: 'ZINC_SUBOXIDE',
-  //     actualVolume: Math.random() * 3001 + 3000,
-  //   },
-  // ];
   const wareHouseGoodsType = currentWareHouseInfo.value.goodsType;
   const goodsMap = {};
   infoList.forEach(item => {

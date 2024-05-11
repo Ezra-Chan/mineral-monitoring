@@ -13,7 +13,7 @@ import { getCompany } from '@/utils/company';
 import { getRoles } from '@/utils/role';
 import { getCurrentUser } from '@/utils/account';
 import { phoneValidate } from '@/utils/validate';
-import { updateUserApi } from '@/api/platform'
+import { updateUserApi } from '@/api/platform';
 
 const userStore = useUserStore();
 const { userInfo } = $(userStore);
@@ -99,12 +99,12 @@ const formColumns = computed(() => [
       disabled: true,
     },
     children: roles.value?.map(item => ({
-        component: 'el-option',
-        attrs: {
-          label: item.name,
-          value: item.id,
-        },
-      })),
+      component: 'el-option',
+      attrs: {
+        label: item.name,
+        value: item.id,
+      },
+    })),
   },
   {
     formItem: {
@@ -119,12 +119,12 @@ const formColumns = computed(() => [
       disabled: true,
     },
     children: companies.value?.map(item => ({
-        component: 'el-option',
-        attrs: {
-          label: item.name,
-          value: item.id,
-        },
-      })),
+      component: 'el-option',
+      attrs: {
+        label: item.name,
+        value: item.id,
+      },
+    })),
   },
   {
     formItem: {
@@ -169,8 +169,11 @@ const onSubmit = () => {
     if (valid) {
       loading = true;
       try {
-        await updateUserApi(info.value.id, objPick(info.value, ['name', 'sex', 'id_card', 'phone', 'email']));
-        getCurrentUser()
+        await updateUserApi(
+          info.value.id,
+          objPick(info.value, ['name', 'sex', 'id_card', 'phone', 'email']),
+        );
+        getCurrentUser();
         ElMessage.success('修改成功');
       } catch (error) {
         console.error(error);

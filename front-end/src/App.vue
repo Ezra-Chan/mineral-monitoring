@@ -13,9 +13,9 @@ import { useGlobalStore } from '@/store/global';
 const globalStore = useGlobalStore();
 
 const getStaticMap = async () => {
-  const { data: { radarCameraMap = [], title: systemTitle, cameraIp, abbreviation } = {} } =
+  const { data: { title: systemTitle, cameraIp, abbreviation } = {} } =
     await axios.get('/config.json');
-  globalStore.setGlobalState({ radarCameraMap, systemTitle, cameraIp, abbreviation });
+  globalStore.setGlobalState({ systemTitle, cameraIp, abbreviation });
 };
 
 onMounted(() => {

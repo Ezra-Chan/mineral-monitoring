@@ -94,11 +94,6 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: path => path.replace('/api4', ''),
         },
-        '/api5': {
-          target: 'http://127.0.0.1:4523/m1/3869758-0-default',
-          changeOrigin: true,
-          rewrite: path => path.replace('/api5', ''),
-        },
       },
     },
     esbuild: {

@@ -1,7 +1,9 @@
 import request from '../request';
+import { defaultPage } from '@/utils/constant';
 
 // 获取设备列表
-export const getDeviceList = (params, data) => request.post('/api/v1/devicelist', data, { params });
+export const getDeviceList = (params = defaultPage, data) =>
+  request.post('/api/v1/devicelist', data, { params });
 
 // 添加设备与仓库绑定关系
 export const addDevice = data => request.post('/api/v1/device', data);

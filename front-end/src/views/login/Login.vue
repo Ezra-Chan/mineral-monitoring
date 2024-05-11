@@ -93,6 +93,7 @@ const login = async formEl => {
           username: loginForm.username,
           password: Encrypt(loginForm.password),
         });
+        await getCurrentUser();
         return true;
       } catch (error) {
         ElMessage({ type: 'error', message: '账号或密码有误，登录失败' });
@@ -129,8 +130,7 @@ const systemLogin = async formEl => {
   if (!flag) return;
   try {
     await initDynamicRouter();
-    if (isAdmin(loginForm.username)) {
-      await getCurrentUser();
+    if (isAdmin()) {
       ElMessage({ type: 'success', message: '登录成功' });
       setTimeout(() => {
         router.push('/');
@@ -164,7 +164,7 @@ const bigscreenLogin = async formEl => {
   bigscreenLoading = true;
   const flag = await login(formEl);
   if (!flag) return;
-  if (isAdmin(loginForm.username)) {
+  if (isAdmin()) {
     ElMessage({ type: 'warning', message: '请从后台访问大屏' });
     userStore.setToken('');
   } else {
