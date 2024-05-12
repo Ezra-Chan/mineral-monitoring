@@ -100,6 +100,18 @@ const columns = reactive([
     minWidth: 250,
   },
   {
+    prop: 'goodsTypeDesc',
+    label: '货物类型',
+    minWidth: 150,
+  },
+  {
+    prop: 'status',
+    label: '仓库状态',
+    enum: WarehouseStatus,
+    search: { el: 'select', props: { placeholder: '请选择仓库状态', filterable: true } },
+    minWidth: 100,
+  },
+  {
     prop: 'width',
     label: '仓库宽度(m)',
     minWidth: 120,
@@ -118,13 +130,6 @@ const columns = reactive([
     prop: 'capacity',
     label: '仓库容量(吨)',
     minWidth: 120,
-  },
-  {
-    prop: 'status',
-    label: '仓库状态',
-    enum: WarehouseStatus,
-    search: { el: 'select', props: { placeholder: '请选择仓库状态', filterable: true } },
-    minWidth: 100,
   },
   { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
 ]);

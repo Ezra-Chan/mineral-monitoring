@@ -14,6 +14,6 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '1mb' }));
   // 跨域
   app.enableCors();
-  await app.listen(3001);
+  await app.listen(process.env.SYS_PORT || 3000);
 }
 bootstrap();

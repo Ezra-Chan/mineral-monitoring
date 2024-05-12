@@ -48,7 +48,7 @@
                   <div class="w-full h-full flex flex-col justify-between items-center">
                     <video-player
                       class="w-full h-calc-2"
-                      :src="cameras[item - 1].monitor_device_path"
+                      :src="handleCameraPath(cameras[item - 1].monitor_device_path)"
                       :key="
                         cameras[item - 1].monitor_device_path +
                         videoKeys[cameras[item - 1].monitor_device_path]
@@ -113,6 +113,7 @@ import { useUserStore } from '@/store/user';
 import cities from '@/utils/cities.json';
 import { SYSTEM_ROLES_MAP, defaultPage } from '@/utils/constant';
 import { getWarehouseList } from '@/utils/warehouse';
+import { handleCameraPath } from '@/utils';
 import Inventory from './components/Inventory.vue';
 import CurveChart from './components/CurveChart.vue';
 import BarChart from './components/BarChart.vue';

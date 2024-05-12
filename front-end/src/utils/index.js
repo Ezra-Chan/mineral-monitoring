@@ -212,3 +212,5 @@ export const formatMenuAndButton = (menus = []) => {
   });
   return { buttons, menus };
 };
+
+export const handleCameraPath = path => path.replace('hosts', '').replace(/0$/, '1');

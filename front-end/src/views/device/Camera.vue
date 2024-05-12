@@ -10,7 +10,7 @@
           type="primary"
           link
           :icon="View"
-          :disabled="!scope.row.status || !scope.row.accessPoint"
+          :disabled="!scope.row.status || !scope.row.monitor_device_path"
           @click="viewCamera(scope.row)"
         >
           查看画面
@@ -66,6 +66,7 @@ import { Plus, View, Delete } from '@element-plus/icons-vue';
 import { getDeviceList, addDevice, deleteDevice } from '@/api/platform';
 import { getCameraList } from '@/api/camera';
 import { CameraStatus, defaultPage } from '@/utils/constant';
+import { handleCameraPath } from '@/utils';
 import VideoPlayer from '@/components/Video.vue';
 
 const props = defineProps({
@@ -101,7 +102,7 @@ const columns = reactive([
     enum: CameraStatus,
   },
   {
-    prop: 'accessPoint',
+    prop: 'monitor_device_path',
     label: '访问路径',
     minWidth: 350,
   },
@@ -206,9 +207,9 @@ const handleCloseVideo = () => {
   videoSrc = '';
 };
 
-const viewCamera = ({ accessPoint }) => {
+const viewCamera = ({ monitor_device_path }) => {
   videoVisible = true;
-  videoSrc = accessPoint.replace('hosts', '').replace(/0$/, '1');
+  videoSrc = handleCameraPath(monitor_device_path);
 };
 </script>
 

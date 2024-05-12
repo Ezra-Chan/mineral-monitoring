@@ -44,13 +44,14 @@
 
 <script setup>
 import dayjs from 'dayjs';
-// import { getEvents } from '@/api/camera';
 import { getAllEvents } from '@/api/monitoring';
+import { getDeviceList } from '@/api/platform';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { Decrypt } from '@/utils/AES';
+import { defaultPage } from '@/utils/constant';
+import { watch } from 'vue';
 
-// const eventTypes = ['车辆越线', '非机动车', '人员越线'];
 const columns = [
   {
     prop: 'eventTime',
@@ -73,27 +74,37 @@ let loading = $ref(false);
 let imgLoading = $ref(false);
 let dialogVisible = $ref(false);
 let imgSrc = $ref('');
+let deviceMap = $ref({});
 let first = true;
 const { toggle } = useFullscreen(imgRef);
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
+const eventListSwitch = useStorage('eventListSwitch', false);
 
 const getEventsList = async () => {
   first && (loading = true);
   try {
-    // const { data = {} } = await getEvents();
-    const { data = [] } = await getAllEvents();
-    dataSource.value = data.map(ev => {
-      const { info } = ev;
-      const [, position] = info?.split(',');
-      const eventName = info?.substring(info?.lastIndexOf(',') + 1);
-      return {
-        ...ev,
-        position: ev.position || position,
-        eventName,
-        eventTime: dayjs(ev.eventTime).format('YYYY-MM-DD HH:mm:ss'),
-      };
-    });
+    const params = { size: 100 };
+    if (eventListSwitch.value) {
+      if (!deviceMap[globalStore.currentWareHouse]) {
+        const { company_id, id } =
+          globalStore.wareHouse.find(w => w.kx_warehouse_id === globalStore.currentWareHouse) || {};
+        const { data = {} } = await getDeviceList(defaultPage, {
+          company_id,
+          warehouse_id: id,
+        });
+        const record = data.results.map(d => d.monitor_device_path);
+        params.cameraId = record;
+        deviceMap[globalStore.currentWareHouse] = record;
+      } else {
+        params.cameraId = deviceMap[globalStore.currentWareHouse];
+      }
+    }
+    const { data = [] } = await getAllEvents(params);
+    dataSource.value = data.map(ev => ({
+      ...ev,
+      eventTime: dayjs(ev.eventTime).format('YYYY-MM-DD HH:mm:ss'),
+    }));
   } catch (error) {
   } finally {
     loading = false;
@@ -154,6 +165,13 @@ const handleClose = () => {
 useIntervalFn(getEventsList, 10 * 1000, {
   immediateCallback: true,
 });
+
+watch(
+  () => [eventListSwitch.value, globalStore.currentWareHouse],
+  ([newSwitch], [oldSwitch]) => {
+    if (newSwitch || newSwitch !== oldSwitch) getEventsList();
+  },
+);
 </script>
 
 <style lang="less">

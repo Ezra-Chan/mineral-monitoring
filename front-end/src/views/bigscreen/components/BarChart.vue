@@ -125,7 +125,6 @@ const loopTootip = (chart, option) => {
 const initChart = async () => {
   try {
     loading = true;
-    console.log('myChart.value', myChart.value);
     if (myChart.value) {
       myChart.value.dispose();
     }
@@ -261,7 +260,9 @@ const querySingleData = async id => {
 
 watch(
   () => [barChartSwitch.value, globalStore.currentWareHouse],
-  () => initChart(),
+  ([newSwitch], [oldSwitch]) => {
+    if (newSwitch || newSwitch !== oldSwitch) initChart();
+  },
 );
 
 onMounted(() => {

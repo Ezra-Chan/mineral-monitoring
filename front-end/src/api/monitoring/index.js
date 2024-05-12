@@ -1,3 +1,3 @@
 import request from './request';
 
-export const getAllEvents = () => request.get('/event');
+export const getAllEvents = params => request.post('/event/list', params);
