@@ -64,6 +64,7 @@ import {
   getWarehouseListApi,
 } from '@/api/platform';
 import { objOmit, querySearch } from '@/utils';
+import { isAdmin } from '@/utils/account';
 import { Gender, defaultPwd, SYSTEM_ROLES_MAP, defaultPage } from '@/utils/constant';
 import { getUsers } from '@/utils/user';
 import { getCompany } from '@/utils/company';
@@ -223,7 +224,7 @@ const resetPwd = row => {
     .catch(() => {});
 };
 
-const openDrawer = (type, row) => {
+const openDrawer = async (type, row) => {
   const { cloned: record } = useCloned(
     row
       ? { ...row, warehouse_ids: row.warehouse_ids ? row.warehouse_ids.split(',') : undefined }
@@ -232,6 +233,9 @@ const openDrawer = (type, row) => {
           password: defaultPwd,
         },
   );
+  if (record.value.warehouse_ids) {
+    await getWarehouses(record.value.company_id);
+  }
   const isAdd = type === '新增';
   const isEdit = type === '编辑';
   const isView = type === '查看';
@@ -470,6 +474,7 @@ const queryRoles = async () => {
 };
 
 const getWarehouses = async id => {
+  if (!isAdmin() && warehouses.value?.length) return;
   const { data = {} } = await getWarehouseListApi(defaultPage, { company_id: id });
   warehouses.value = data.results;
 };

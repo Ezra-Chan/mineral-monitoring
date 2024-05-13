@@ -8,11 +8,9 @@
             :key="wareHouseDetail.addressCityDesc"
             :city="cities[wareHouseDetail.addressCityDesc]"
           />
-          <el-tooltip effect="dark" content="点击跳往可信仓系统" v-if="currentWareHouse">
-            <el-text @click="openRadarSystem" type="primary" class="fs-1 p-r-1 cursor-pointer">
-              {{ wareHouseInfo }}
-            </el-text>
-          </el-tooltip>
+          <el-text type="primary" class="fs-1 p-r-1 cursor-pointer" v-if="currentWareHouse">
+            {{ wareHouseInfo }}
+          </el-text>
         </div>
         <el-text class="letter-spacing-0.5 p-l-5 fs-2.5! color-white fw-bold">
           {{ globalStore.systemTitle }}
@@ -155,14 +153,6 @@ const getDictApi = async () => {
   const { data = {} } = await getDict();
   const { FoodstuffTypeEnum = [], HouseTypeEnum = [] } = data;
   globalStore.setGlobalState({ goodsType: FoodstuffTypeEnum, houseType: HouseTypeEnum });
-};
-
-const openRadarSystem = () => {
-  const id = currentWareHouse.value;
-  const wareHouseInfo = globalStore.wareHouse.find(item => item.kx_warehouse_id === id) || {};
-  const { height, length, width } = wareHouseInfo;
-  const url = `https://app.or-intech.com/#/wms/wmsInfo?id=${id}&houseHight=${height}&houseLength=${length}&houseWidth=${width}&isQuick=true`;
-  window.open(url);
 };
 
 const updateVideo = key => {

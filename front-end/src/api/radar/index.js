@@ -9,20 +9,20 @@ import request, { sendRequest } from './request';
  * @param {string} params.password 密码
  * @returns
  */
-export const getRadarToken = params => request.post('admin/getToken', params);
-export const radarLogin = params => request.post('admin/login', params);
+export const getRadarToken = params => request.post('/shmanage/admin/getToken', params);
+export const radarLogin = params => request.post('/shmanage/admin/login', params);
 
 /**
  * 获取用户信息
  * @returns
  */
-export const getRadarUserInfo = () => request.get('admin/info');
+export const getRadarUserInfo = () => request.get('/shmanage/admin/info');
 
 /**
  * 获取仓库列表
  */
 export const getWareHouseList = () =>
-  request.post('store/warehouse/list', {
+  request.post('/shmanage/store/warehouse/list', {
     pageNum: 1,
     pageSize: 1000,
     warehouseStatus: '302',
@@ -30,15 +30,15 @@ export const getWareHouseList = () =>
 
 // 获取货仓详细信息
 export const getWareHouseDetail = (id, timestamp = '') =>
-  request.post('/store/warehouse/findDetailByTime', { id, timestamp });
+  request.post('/shmanage/store/warehouse/findDetailByTime', { id, timestamp });
 
 // 堆形图、点云图
 export const getCloudPointData = (type, id, timestamp) => {
   if (!timestamp || dayjs(timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
-    return request.post(`/store/newRadar/${type}`, { id, timestamp: timestamp || '' });
+    return request.post(`/shmanage/store/newRadar/${type}`, { id, timestamp: timestamp || '' });
   } else {
     return sendRequest(
-      `/store/newRadar/${type}`,
+      `/shmanage/store/newRadar/${type}`,
       { id, timestamp: timestamp || '' },
       { method: 'POST' },
     );
@@ -48,13 +48,13 @@ export const getCloudPointData = (type, id, timestamp) => {
 // 堆形图 用来获取不同时间的数据
 export const getDataByTime = (id, timestamp) => {
   if (!timestamp || dayjs(timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
-    return request.post('/store/newRadar/findWarehouseGoodsPointCloudDataHistogram', {
+    return request.post('/shmanage/store/newRadar/findWarehouseGoodsPointCloudDataHistogram', {
       id,
       timestamp,
     });
   } else {
     return sendRequest(
-      '/store/newRadar/findWarehouseGoodsPointCloudDataHistogram',
+      '/shmanage/store/newRadar/findWarehouseGoodsPointCloudDataHistogram',
       { id, timestamp },
       { method: 'POST' },
     );
@@ -62,19 +62,20 @@ export const getDataByTime = (id, timestamp) => {
 };
 
 // 获取字典
-export const getDict = () => request.get('/store/enums/list?name=FoodstuffTypeEnum,HouseTypeEnum');
+export const getDict = () =>
+  request.get('/shmanage/store/enums/list?name=FoodstuffTypeEnum,HouseTypeEnum');
 
 // 获取仓库绑定的设备信息
 export const getDevicesByWarehouseId = id =>
-  request.post('/store/api/getWarehouseEquipmentsInfo', { warehouseId: id });
+  request.post('/shmanage/store/api/getWarehouseEquipmentsInfo', { warehouseId: id });
 
 // 获取设备连接状态
 export const getDeviceConnectStatus = id =>
-  request.post('/store/api/getEquipmentConnectStatus', { devId: id });
+  request.post('/shmanage/store/api/getEquipmentConnectStatus', { devId: id });
 
 // 获取仓库定时扫描计划
 export const getWarehouseScanPlan = id =>
-  request.post('/store/api/getRadarPlan', { warehouseId: id });
+  request.post('/shmanage/store/api/getRadarPlan', { warehouseId: id });
 
 /**
  * 修改仓库定时扫描计划
@@ -86,4 +87,5 @@ export const getWarehouseScanPlan = id =>
  * @param {Date} params.radarFirstRunTime 雷达首次运行时间 不可早于当前时间；传 null 不设置
  * @returns
  */
-export const updateWarehouseScanPlan = params => request.post('/store/api/updateRadarPlan', params);
+export const updateWarehouseScanPlan = params =>
+  request.post('/shmanage/store/api/updateRadarPlan', params);

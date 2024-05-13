@@ -66,14 +66,10 @@ const confirm = () => {
       loading = true;
       try {
         const { oldPwd, newPwd } = pwdForm;
-        const { success, message } = await updatePasswordApi({
+        await updatePasswordApi({
           old_password: encrypt(oldPwd),
           new_password: encrypt(newPwd),
         });
-        if (!success) {
-          ElMessage.error(message);
-          return;
-        }
         ElMessage.success('修改成功!');
       } catch (error) {
         console.error(error);

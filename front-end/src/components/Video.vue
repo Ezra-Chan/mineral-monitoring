@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import videojs from 'video.js';
 import lang_zhcn from 'video.js/dist/lang/zh-CN.json';
 import 'video.js/dist/video-js.min.css';
+import { useUserStore } from '@/store/user';
 
 videojs.addLanguage('zh-CN', lang_zhcn);
 
@@ -30,7 +31,7 @@ const videoRef = $ref();
 const videoInst = shallowRef();
 const visibility = useDocumentVisibility();
 const time = $ref(dayjs().valueOf());
-
+const userStore = useUserStore();
 const initVideo = () => {
   videoInst.value = videojs(videoRef, {
     autoplay: 'muted',
@@ -42,7 +43,7 @@ const initVideo = () => {
     playbackRates: [1.0],
     sources: [
       {
-        src: '/api2/live/media' + props.src + '?format=mp4',
+        src: userStore.companyInfo.monitor_ip + '/live/media' + props.src + '?format=mp4',
         type: 'video/mp4',
       },
     ],

@@ -62,6 +62,7 @@ import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { useAuthStore } from '@/store/auth';
 import { Encrypt } from '@/utils/AES';
+import { objOmit } from '@/utils';
 import { monitoringLogin, kexinLogin, isAdmin, getCurrentUser } from '@/utils/account';
 import { getCompanyApi } from '@/api/platform';
 import { initDynamicRouter } from '@/router/dynamicRouter';
@@ -120,6 +121,7 @@ const getOtherPlatformInfo = async () => {
     u: monitor_user,
     p: Encrypt(monitor_pwd),
   });
+  userStore.setCompanyInfo(objOmit(data.company, ['kexin_pwd', 'monitor_pwd']));
   await kexinLogin();
   ElMessage({ type: 'success', message: '登录成功' });
 };

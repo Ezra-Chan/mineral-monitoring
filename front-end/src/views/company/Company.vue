@@ -197,6 +197,17 @@ const formColumns = markRaw([
   },
   {
     formItem: {
+      label: '可信仓URL',
+      prop: 'kexin_ip',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入可信仓URL',
+    },
+  },
+  {
+    formItem: {
       label: '可信仓账号',
       prop: 'kexin_user',
     },
@@ -215,6 +226,17 @@ const formColumns = markRaw([
     attrs: {
       clearable: true,
       placeholder: '请输入可信仓密码',
+    },
+  },
+  {
+    formItem: {
+      label: '监控平台URL',
+      prop: 'monitor_ip',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入监控平台URL',
     },
   },
   {
@@ -244,8 +266,10 @@ const rules = reactive({
   name: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
   kexin_user: [{ required: true, message: '请输入可信仓账号', trigger: 'blur' }],
   kexin_pwd: [{ required: true, message: '请输入可信仓密码', trigger: 'blur' }],
+  kexin_ip: [{ required: true, message: '请输入可信仓URL', trigger: 'blur' }],
   monitor_user: [{ required: true, message: '请输入监控平台账号', trigger: 'blur' }],
   monitor_pwd: [{ required: true, message: '请输入监控平台密码', trigger: 'blur' }],
+  monitor_ip: [{ required: true, message: '请输入监控平台URL', trigger: 'blur' }],
 });
 
 const deviceList = row => {

@@ -13,9 +13,8 @@ import { useGlobalStore } from '@/store/global';
 const globalStore = useGlobalStore();
 
 const getStaticMap = async () => {
-  const { data: { title: systemTitle, cameraIp, abbreviation } = {} } =
-    await axios.get('/config.json');
-  globalStore.setGlobalState({ systemTitle, cameraIp, abbreviation });
+  const { data: { title: systemTitle, abbreviation } = {} } = await axios.get('/config.json');
+  globalStore.setGlobalState({ systemTitle, abbreviation });
 };
 
 onMounted(() => {

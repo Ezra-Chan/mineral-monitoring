@@ -2,15 +2,13 @@ import axios from 'axios';
 import { Decrypt } from '@/utils/AES';
 
 let apiContextPath = '';
-apiContextPath = '/api2';
+if (import.meta.env.DEV) {
+  apiContextPath = '/api2';
+}
 
-export const getInstance = prefix => {
-  if (prefix) {
-    prefix.startsWith('/') && (prefix = prefix.slice(1, prefix.length));
-    prefix.endsWith('/') && (prefix = prefix.slice(0, -1));
-  }
+export const getInstance = () => {
   const instance = axios.create({
-    baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
+    baseURL: apiContextPath,
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
   });
@@ -18,6 +16,12 @@ export const getInstance = prefix => {
   instance.defaults.headers.post['Content-Type'] = 'application/json';
 
   instance.interceptors.request.use(config => {
+    const { companyInfo } = JSON.parse(localStorage.getItem('user-state') || '{}');
+    if (apiContextPath) {
+      config.baseURL = apiContextPath;
+    } else if (!apiContextPath && companyInfo) {
+      config.baseURL = companyInfo.monitor_ip;
+    }
     if (!config.headers) config.headers = {};
     if (!config.headers.Authorization) {
       if (localStorage.getItem('user-state')) {

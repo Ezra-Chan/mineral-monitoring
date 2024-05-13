@@ -5,17 +5,11 @@ import { kexinLogin } from '@/utils/account';
 let apiContextPath = '';
 if (import.meta.env.DEV) {
   apiContextPath = '/api1';
-} else {
-  apiContextPath = 'https://app.or-intech.com';
 }
 
-export const getInstance = (prefix = 'shmanage') => {
-  if (prefix) {
-    prefix.startsWith('/') && (prefix = prefix.slice(1, prefix.length));
-    prefix.endsWith('/') && (prefix = prefix.slice(0, -1));
-  }
+export const getInstance = () => {
   const instance = axios.create({
-    baseURL: `${apiContextPath}/${prefix ? prefix + '/' : ''}`,
+    baseURL: apiContextPath,
     timeout: 60000,
     validateStatus: status => status >= 200 && status < 300,
   });
@@ -23,12 +17,18 @@ export const getInstance = (prefix = 'shmanage') => {
   instance.defaults.headers.post['Content-Type'] = 'application/json';
 
   instance.interceptors.request.use(config => {
+    const { companyInfo, radarToken } = JSON.parse(localStorage.getItem('user-state') || '{}');
+    if (apiContextPath) {
+      config.baseURL = apiContextPath;
+    } else if (!apiContextPath && companyInfo) {
+      config.baseURL = companyInfo.kexin_ip;
+    }
     if (!config.headers) config.headers = {};
     if (!config.headers.Authorization) {
-      config.headers = localStorage.getItem('user-state')
+      config.headers = radarToken
         ? {
             ...config.headers,
-            Authorization: JSON.parse(localStorage.getItem('user-state')).radarToken,
+            Authorization: radarToken,
           }
         : config.headers;
     }

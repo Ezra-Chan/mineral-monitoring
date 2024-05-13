@@ -90,7 +90,7 @@ export default defineConfig(({ mode }) => {
           rewrite: path => path.replace('/api3', ''),
         },
         '/api4': {
-          target: 'http://192.168.1.4:9000',
+          target: 'http://10.1.1.220:5000',
           changeOrigin: true,
           rewrite: path => path.replace('/api4', ''),
         },
