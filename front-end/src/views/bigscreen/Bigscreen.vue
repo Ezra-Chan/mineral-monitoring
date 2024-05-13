@@ -29,7 +29,7 @@
         </div>
       </div>
       <div class="w-full h-calc-5.5 flex flex-col justify-between items-center gap-2">
-        <el-row class="w-full h-50%" :gutter="8">
+        <el-row class="w-full h-50% z-10" :gutter="8">
           <el-col :span="7" class="h-full">
             <Inventory />
           </el-col>
