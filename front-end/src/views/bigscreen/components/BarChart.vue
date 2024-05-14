@@ -24,6 +24,7 @@ const props = defineProps({
 });
 
 const globalStore = GlobalStore();
+const barChartSwitch = useStorage('barChartSwitch', false);
 const chartRef = ref(null);
 const myChart = shallowRef();
 let loading = $ref(false);
@@ -42,6 +43,11 @@ const goodsType = computed(() => {
   });
   return map;
 });
+const warehouses = computed(() =>
+  barChartSwitch.value
+    ? [globalStore.currentWareHouse]
+    : globalStore.wareHouse.map(item => item.id),
+);
 const serie = {
   type: 'bar',
   label: {
@@ -118,9 +124,11 @@ const loopTootip = (chart, option) => {
 const initChart = async () => {
   try {
     loading = true;
+    if (myChart.value) {
+      myChart.value.dispose();
+    }
     myChart.value = echarts.init(chartRef.value);
-    const list = globalStore.wareHouse.map(item => item.id);
-    const values = await Promise.all(list.map(querySingleData));
+    const values = await Promise.all(warehouses.value.map(querySingleData));
     const goodsMap = [];
     values.forEach(item => {
       Object.keys(item).forEach(key => {
@@ -163,10 +171,9 @@ const initChart = async () => {
       });
       return bar;
     };
-    const datas = goodsMap.map(key => list.map((_, i) => toFixed2(values[i][key])));
+    const datas = goodsMap.map(key => warehouses.value.map((_, i) => toFixed2(values[i][key])));
     datas.forEach((dt, i) => series.push(...dealBar(dt, goodsMap[i])));
     const options = {
-      // color: colors,
       tooltip: {
         trigger: 'item',
         confine: true,
@@ -187,21 +194,23 @@ const initChart = async () => {
           color: '#fff',
         },
       },
-      xAxis: globalStore.wareHouse.map((item, index) => {
-        const data = Array(globalStore.wareHouse.length).fill('');
-        data[index] = item.fullName;
-        return {
-          type: 'category',
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#999',
+      xAxis: globalStore.wareHouse
+        .filter(w => warehouses.value.includes(w.id))
+        .map((item, index) => {
+          const data = Array(warehouses.value.length).fill('');
+          data[index] = item.fullName;
+          return {
+            type: 'category',
+            axisLine: {
+              show: true,
+              lineStyle: {
+                color: '#999',
+              },
             },
-          },
-          position: 'bottom',
-          data,
-        };
-      }),
+            position: 'bottom',
+            data,
+          };
+        }),
       yAxis: {
         type: 'value',
         name: '单位：吨',
@@ -236,16 +245,6 @@ const initChart = async () => {
 const querySingleData = async id => {
   const { data = {} } = await getDataByTime(id);
   const { infoList = [] } = data;
-  // const infoList = [
-  //   {
-  //     goodsNo: 'ZG_ORE',
-  //     actualVolume: Math.random() * 3001 + 3000,
-  //   },
-  //   {
-  //     goodsNo: 'ZINC_SUBOXIDE',
-  //     actualVolume: Math.random() * 3001 + 3000,
-  //   },
-  // ];
   const wareHouseGoodsType = wareHouseGoods.value[id];
   const goodsMap = {};
   infoList.forEach(item => {
@@ -257,6 +256,13 @@ const querySingleData = async id => {
   });
   return goodsMap;
 };
+
+watch(
+  () => [barChartSwitch.value, globalStore.currentWareHouse],
+  ([newSwitch], [oldSwitch]) => {
+    if (newSwitch || newSwitch !== oldSwitch) initChart();
+  },
+);
 
 onMounted(() => {
   initChart();

@@ -21,6 +21,11 @@
       "wareHouseId": "123",
       "wareHouseName": "青海捷和物流仓",
       "cameraLayoutId": "95ea0289-b866-491f-b6ae-e9dbddc29622"
+    },
+    {
+      "wareHouseId": "124",
+      "wareHouseName": "西藏金益物流仓",
+      "cameraLayoutId": "69bbbdb4-9cd7-4f09-9db2-cc1eb4128d02"
     }
   ]
 }

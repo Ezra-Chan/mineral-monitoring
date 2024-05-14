@@ -31,7 +31,7 @@
         </div>
       </div>
       <div class="w-full h-calc-5.5 flex flex-col justify-between items-center gap-2">
-        <el-row class="w-full h-50%" :gutter="8">
+        <el-row class="w-full h-50% z-10" :gutter="8">
           <el-col :span="7" class="h-full">
             <Inventory />
           </el-col>
@@ -50,24 +50,6 @@
                   v-slot:[item]
                 >
                   <div class="w-full h-full flex flex-col justify-between items-center">
-                    <!-- <video
-                      class="w-full h-calc-2"
-                      muted
-                      autoplay
-                      controls
-                      controlslist="nodownload noplaybackrate noremoteplayback"
-                      :disablePictureInPicture="true"
-                      poster=""
-                    >
-                      <source
-                        :src="
-                          '/api2/live/media' +
-                          globalStore.wareHouseIdMapCameras[currentWareHouse][item - 1]
-                            .accessPoint +
-                          '?format=mp4'
-                        "
-                      />
-                    </video> -->
                     <video-player
                       class="w-full h-calc-2"
                       :src="
@@ -90,8 +72,16 @@
             </bigscreen-box>
           </el-col>
           <el-col :span="7" class="h-full">
-            <bigscreen-box title="货物存量分组柱状图" type="rightTop">
-              <bar-chart v-if="currentWareHouse" />
+            <bigscreen-box title="仓库动态" type="rightTop">
+              <template #headerRight>
+                <el-switch
+                  v-model="eventListSwitch"
+                  inline-prompt
+                  active-text="联动"
+                  inactive-text="全部"
+                />
+              </template>
+              <event-list />
             </bigscreen-box>
           </el-col>
         </el-row>
@@ -105,8 +95,16 @@
             </bigscreen-box>
           </el-col>
           <el-col :span="7" class="h-full">
-            <bigscreen-box title="仓库动态" type="rightBottom">
-              <event-list />
+            <bigscreen-box title="货物存量分组柱状图" type="rightBottom">
+              <template #headerRight>
+                <el-switch
+                  v-model="barChartSwitch"
+                  inline-prompt
+                  active-text="联动"
+                  inactive-text="全部"
+                />
+              </template>
+              <bar-chart v-if="currentWareHouse" />
             </bigscreen-box>
           </el-col>
         </el-row>
@@ -129,6 +127,8 @@ import cities from '@/utils/cities.json';
 import VideoPlayer from '../../components/Video.vue';
 
 const globalStore = GlobalStore();
+const barChartSwitch = useStorage('barChartSwitch', false);
+const eventListSwitch = useStorage('eventListSwitch', false);
 let cameras = $ref([]);
 const currentWareHouse = ref(globalStore.currentWareHouse);
 let wareHouseDetail = $ref({});

@@ -44,11 +44,9 @@
 
 <script setup>
 import dayjs from 'dayjs';
-// import { getEvents } from '@/api/camera';
 import { getAllEvents } from '@/api/monitoring';
 import { GlobalStore } from '@/store';
 
-// const eventTypes = ['车辆越线', '非机动车', '人员越线'];
 const columns = [
   {
     prop: 'eventTime',
@@ -74,24 +72,23 @@ let imgSrc = $ref('');
 let first = true;
 const { toggle } = useFullscreen(imgRef);
 const globalStore = GlobalStore();
+const eventListSwitch = useStorage('eventListSwitch', false);
 
 const getEventsList = async () => {
   first && (loading = true);
   try {
-    // const { data = {} } = await getEvents();
-    const { data = [] } = await getAllEvents();
-    dataSource.value = data.map(ev => {
-      const { info } = ev;
-      const [, position] = info?.split(',');
-      const eventName = info?.substring(info?.lastIndexOf(',') + 1);
-      return {
-        ...ev,
-        position: ev.position || position,
-        eventName,
-        eventTime: dayjs(ev.eventTime).format('YYYY-MM-DD HH:mm:ss'),
-      };
-    });
+    const params = { size: 100 };
+    if (eventListSwitch.value) {
+      const cameras = globalStore.wareHouseIdMapCameras[globalStore.currentWareHouse];
+      params.cameraId = cameras?.map(item => 'hosts' + item.accessPoint.replace(/1$/, '0'));
+    }
+    const { data = [] } = await getAllEvents(params);
+    dataSource.value = data.map(ev => ({
+      ...ev,
+      eventTime: dayjs(ev.eventTime).format('YYYY-MM-DD HH:mm:ss'),
+    }));
   } catch (error) {
+    console.log(error);
   } finally {
     loading = false;
     first = false;
@@ -150,6 +147,13 @@ const handleClose = () => {
 useIntervalFn(getEventsList, 10 * 1000, {
   immediateCallback: true,
 });
+
+watch(
+  () => [eventListSwitch.value, globalStore.currentWareHouse],
+  ([newSwitch], [oldSwitch]) => {
+    if (newSwitch || newSwitch !== oldSwitch) getEventsList();
+  },
+);
 </script>
 
 <style lang="less">
