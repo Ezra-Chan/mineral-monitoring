@@ -144,11 +144,8 @@ const handleView = row => {
   imgLoading = true;
   const { cameraId, eventTime } = row;
   const time = dayjs(eventTime).subtract(8, 'hours').format('YYYYMMDDTHHmmss');
-  const src = `${userStore.companyInfo.monitor_ip}/archive/media${cameraId.replace(
-    'hosts',
-    '',
-  )}/${time}`;
-  const srcArr = [src, src.replace(':0:0', ':0:1')];
+  const src = `${userStore.companyInfo.monitor_ip}/archive/media${cameraId.replace('hosts', '')}`;
+  const srcArr = [`${src}/${time}`, `${src.replace(/:0$/, ':1')}/${time}`];
   checkImage(srcArr, 0, (flag, data) => {
     if (flag) {
       imgSrc = data;

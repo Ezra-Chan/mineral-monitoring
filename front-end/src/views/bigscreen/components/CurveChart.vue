@@ -33,6 +33,7 @@ const format = 'YYYY-MM-DD 23:59:59';
 const pastTenDate = Array.from({ length: 7 })
   .map((_, i) => dayjs().subtract(i, 'day').format(format))
   .reverse();
+pastTenDate[6] = '';
 const currentWareHouseInfo = computed(() =>
   globalStore.wareHouse.find(item => item.kx_warehouse_id === globalStore.currentWareHouse),
 );
@@ -165,7 +166,7 @@ const initChart = async () => {
       },
       xAxis: {
         type: 'category',
-        data: pastTenDate.map(date => dayjs(date).format('M-D')),
+        data: pastTenDate.map(date => dayjs(date || void 0).format('M-D')),
         axisLine: {
           show: true,
           lineStyle: {

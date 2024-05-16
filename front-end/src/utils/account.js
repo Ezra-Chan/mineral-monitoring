@@ -62,7 +62,6 @@ export const kexinLogin = async () => {
         const { data = {} } = await getRadarToken(radarUserInfo);
         const { tokenHead, token } = data;
         userStore.setRadarToken(tokenHead + token);
-
         kexinPending = false;
         return true;
       }
@@ -75,6 +74,11 @@ export const kexinLogin = async () => {
       throw new Error(error.data.message);
     }
     throw new Error(error);
+  } finally {
+    const timer = setTimeout(() => {
+      isPending = false;
+      clearTimeout(timer);
+    }, 2000);
   }
 };
 

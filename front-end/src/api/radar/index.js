@@ -48,10 +48,12 @@ export const getCloudPointData = (type, id, timestamp) => {
 // 堆形图 用来获取不同时间的数据
 export const getDataByTime = (id, timestamp) => {
   if (!timestamp || dayjs(timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
-    return request.post('/shmanage/store/newRadar/findWarehouseGoodsPointCloudDataHistogram', {
-      id,
-      timestamp,
-    });
+    const params = { id };
+    timestamp && (params.timestamp = timestamp);
+    return request.post(
+      '/shmanage/store/newRadar/findWarehouseGoodsPointCloudDataHistogram',
+      params,
+    );
   } else {
     return sendRequest(
       '/shmanage/store/newRadar/findWarehouseGoodsPointCloudDataHistogram',
