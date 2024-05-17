@@ -76,7 +76,7 @@ export const kexinLogin = async () => {
     throw new Error(error);
   } finally {
     const timer = setTimeout(() => {
-      isPending = false;
+      kexinPending = false;
       clearTimeout(timer);
     }, 2000);
   }
