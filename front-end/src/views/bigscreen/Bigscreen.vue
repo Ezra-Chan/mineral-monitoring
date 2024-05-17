@@ -6,7 +6,7 @@
           <Weather
             v-if="wareHouseDetail.addressCityDesc"
             :key="wareHouseDetail.addressCityDesc"
-            :city="cities[wareHouseDetail.addressCityDesc]"
+            :city="cities[wareHouseDetail.addressCityDesc] ?? wareHouseDetail.addressCityDesc"
           />
           <el-text type="primary" class="fs-1 p-r-1 cursor-pointer" v-if="currentWareHouse">
             {{ wareHouseInfo }}
@@ -36,24 +36,32 @@
           <el-col :span="10" class="h-full">
             <bigscreen-box title="视频监控" type="center">
               <Carousel
-                v-if="cameras?.length && currentWareHouse"
-                :length="cameras.length"
+                v-if="currentWareHouse && cameras[currentWareHouse]?.length"
+                :length="cameras[currentWareHouse].length"
                 :smooth="true"
                 :key="currentWareHouse + ':Carousel'"
                 :showButton="false"
               >
-                <template v-for="item in cameras.length" :key="item" v-slot:[item]>
+                <template
+                  v-for="item in cameras[currentWareHouse].length"
+                  :key="item"
+                  v-slot:[item]
+                >
                   <div class="w-full h-full flex flex-col justify-between items-center">
                     <video-player
                       class="w-full h-calc-2"
-                      :src="handleCameraPath(cameras[item - 1].monitor_device_path)"
+                      :src="
+                        handleCameraPath(cameras[currentWareHouse][item - 1].monitor_device_path)
+                      "
                       :key="
-                        cameras[item - 1].monitor_device_path +
-                        videoKeys[cameras[item - 1].monitor_device_path]
+                        cameras[currentWareHouse][item - 1].monitor_device_path +
+                        videoKeys[cameras[currentWareHouse][item - 1].monitor_device_path]
                       "
                       @update="updateVideo"
                     />
-                    <el-text class="fs-1">{{ cameras[item - 1].monitor_device_name }}</el-text>
+                    <el-text class="fs-1">{{
+                      cameras[currentWareHouse][item - 1].monitor_device_name
+                    }}</el-text>
                   </div>
                 </template>
               </Carousel>
@@ -124,7 +132,7 @@ const userStore = useUserStore();
 const barChartSwitch = useStorage('barChartSwitch', false);
 const eventListSwitch = useStorage('eventListSwitch', false);
 let show = $ref(false);
-let cameras = $ref([]);
+let cameras = $ref({});
 const currentWareHouse = ref(globalStore.currentWareHouse);
 let wareHouseDetail = $ref({});
 const videoKeys = $ref({});
@@ -137,15 +145,17 @@ const wareHouseInfo = computed(
 
 const queryCameraList = async id => {
   const wareHouseInfo = globalStore.wareHouse.find(item => item.kx_warehouse_id === id) || {};
-  const { data = {} } = await getDeviceList(undefined, {
-    warehouse_id: wareHouseInfo.id,
-  });
-  cameras = data.results || [];
+  if (!cameras[wareHouseInfo.kx_warehouse_id]?.length) {
+    const { data = {} } = await getDeviceList(undefined, {
+      warehouse_id: wareHouseInfo.id,
+    });
+    cameras[wareHouseInfo.kx_warehouse_id] = data.results || [];
+  }
 };
 
 const queryWareHouseDetail = id => {
   const item = globalStore.wareHouse.find(item => item.kx_warehouse_id === id) || {};
-  item.addressCityDesc = item.location?.split('/').pop();
+  item.addressCityDesc = item.location?.split('/')[1];
   wareHouseDetail = item;
 };
 
