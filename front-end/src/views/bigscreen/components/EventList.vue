@@ -1,33 +1,39 @@
 <template>
-  <el-table
-    class="event-list w-full h-full"
-    stripe
-    :data="dataSource"
-    v-loading="loading"
-    element-loading-background="#0004"
-    :header-row-style="{ background: 'rgba(14, 188, 225, 0.3)', color: 'var(--el-color-primary)' }"
-  >
-    <el-table-column
-      v-for="item in columns"
-      :key="item.prop"
-      :prop="item.prop"
-      :label="item.label"
-      :min-width="item.minWidth || 0"
-    />
-    <el-table-column label="操作" min-width="100" align="center">
-      <template #default="{ row }">
-        <el-text
-          v-if="row.cameraId"
-          type="primary"
-          class="cursor-pointer"
-          size="small"
-          @click="handleView(row)"
-        >
-          查看
-        </el-text>
-      </template>
-    </el-table-column>
-  </el-table>
+  <div class="w-full h-full flex flex-col justify-between items-center gap-2">
+    <div class="w-full h-25">11111</div>
+    <el-table
+      class="event-list w-full h-calc-6.75!"
+      stripe
+      v-loading="loading"
+      element-loading-background="#0004"
+      :data="dataSource"
+      :header-row-style="{
+        background: 'rgba(14, 188, 225, 0.3)',
+        color: 'var(--el-color-primary)',
+      }"
+    >
+      <el-table-column
+        v-for="item in columns"
+        :key="item.prop"
+        :prop="item.prop"
+        :label="item.label"
+        :min-width="item.minWidth || 0"
+      />
+      <el-table-column label="操作" min-width="100" align="center">
+        <template #default="{ row }">
+          <el-text
+            v-if="row.cameraId"
+            type="primary"
+            class="cursor-pointer"
+            size="small"
+            @click="handleView(row)"
+          >
+            查看
+          </el-text>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
   <el-dialog v-model="dialogVisible" title="关键画面" width="1000" :before-close="handleClose">
     <div class="w-full h-xl" v-loading="imgLoading" element-loading-background="rgba(0, 0, 0, 0.8)">
       <img
@@ -44,6 +50,7 @@
 
 <script setup>
 import dayjs from 'dayjs';
+import * as echarts from 'echarts';
 import { getAllEvents } from '@/api/monitoring';
 import { getDeviceList } from '@/api/platform';
 import { useGlobalStore } from '@/store/global';
@@ -81,24 +88,30 @@ const globalStore = useGlobalStore();
 const userStore = useUserStore();
 const eventListSwitch = useStorage('eventListSwitch', false);
 
+const getCameraIds = async () => {
+  let cameraId = [];
+  if (!deviceMap[globalStore.currentWareHouse]?.length) {
+    const { company_id, id } =
+      globalStore.wareHouse.find(w => w.kx_warehouse_id === globalStore.currentWareHouse) || {};
+    const { data = {} } = await getDeviceList(defaultPage, {
+      company_id,
+      warehouse_id: id,
+    });
+    const record = data.results.map(d => d.monitor_device_path);
+    cameraId = record;
+    deviceMap[globalStore.currentWareHouse] = record;
+  } else {
+    cameraId = deviceMap[globalStore.currentWareHouse];
+  }
+  return cameraId;
+};
+
 const getEventsList = async () => {
   first && (loading = true);
   try {
     const params = { size: 100 };
     if (eventListSwitch.value) {
-      if (!deviceMap[globalStore.currentWareHouse]) {
-        const { company_id, id } =
-          globalStore.wareHouse.find(w => w.kx_warehouse_id === globalStore.currentWareHouse) || {};
-        const { data = {} } = await getDeviceList(defaultPage, {
-          company_id,
-          warehouse_id: id,
-        });
-        const record = data.results.map(d => d.monitor_device_path);
-        params.cameraId = record;
-        deviceMap[globalStore.currentWareHouse] = record;
-      } else {
-        params.cameraId = deviceMap[globalStore.currentWareHouse];
-      }
+      params.cameraId = await getCameraIds();
     }
     const { data = [] } = await getAllEvents(params);
     dataSource.value = data.map(ev => ({
