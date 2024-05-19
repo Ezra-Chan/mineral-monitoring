@@ -4,6 +4,7 @@ import {
   Repository,
   In,
   FindManyOptions,
+  FindOptionsWhere,
 } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,7 +24,7 @@ export class EventService {
 
   async findByParams(params: any) {
     const { cameraId, eventTime, size } = params;
-    let filter = {};
+    let filter: FindOptionsWhere<Event> = {};
     if (cameraId) {
       let cameras = [];
       if (Array.isArray(cameraId)) {
@@ -50,7 +51,22 @@ export class EventService {
     if (!eventTime) {
       options.take = size ?? 100;
     }
-    return await this.eventRepository.find(options);
+    const events = await this.eventRepository.find(options);
+    if (eventTime && events.length < 100) {
+      let newFilter: FindOptionsWhere<Event> = {};
+      if (cameraId) {
+        newFilter = { cameraId: filter.cameraId };
+      }
+      return await this.eventRepository.find({
+        where: newFilter,
+        order: {
+          eventTime: 'DESC',
+        },
+        take: size ?? 100,
+      });
+    } else {
+      return events;
+    }
   }
 
   async findAll() {
