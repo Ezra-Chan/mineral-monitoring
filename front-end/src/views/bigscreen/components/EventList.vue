@@ -1,11 +1,13 @@
 <template>
-  <div class="w-full h-full flex flex-col justify-between items-center gap-2">
-    <div class="w-full h-25">11111</div>
+  <div
+    class="w-full h-full flex flex-col justify-between items-center gap-2"
+    v-loading="loading"
+    element-loading-background="#0004"
+  >
+    <div class="w-full h-25" ref="eventTypeRef" v-element-size="onResize" />
     <el-table
       class="event-list w-full h-calc-6.75!"
       stripe
-      v-loading="loading"
-      element-loading-background="#0004"
       :data="dataSource"
       :header-row-style="{
         background: 'rgba(14, 188, 225, 0.3)',
@@ -57,7 +59,8 @@ import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { Decrypt } from '@/utils/AES';
 import { defaultPage } from '@/utils/constant';
-import { watch } from 'vue';
+
+const emits = defineEmits(['update']);
 
 const columns = [
   {
@@ -76,20 +79,23 @@ const columns = [
   },
 ];
 const dataSource = ref([]);
+const eventTypeRef = ref(null);
+const myChart = ref(null);
 const imgRef = ref(null);
 let loading = $ref(false);
 let imgLoading = $ref(false);
 let dialogVisible = $ref(false);
 let imgSrc = $ref('');
 let deviceMap = $ref({});
-let first = true;
+const types = ref({});
+const cameraIds = ref([]);
+const colors = ['#fbc292', '#06fbfe', '#A098FC', '#4386FA'];
 const { toggle } = useFullscreen(imgRef);
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
 const eventListSwitch = useStorage('eventListSwitch', false);
 
 const getCameraIds = async () => {
-  let cameraId = [];
   if (!deviceMap[globalStore.currentWareHouse]?.length) {
     const { company_id, id } =
       globalStore.wareHouse.find(w => w.kx_warehouse_id === globalStore.currentWareHouse) || {};
@@ -98,30 +104,129 @@ const getCameraIds = async () => {
       warehouse_id: id,
     });
     const record = data.results.map(d => d.monitor_device_path);
-    cameraId = record;
+    cameraIds.value = record;
     deviceMap[globalStore.currentWareHouse] = record;
   } else {
-    cameraId = deviceMap[globalStore.currentWareHouse];
+    cameraIds.value = deviceMap[globalStore.currentWareHouse];
   }
-  return cameraId;
 };
 
-const getEventsList = async () => {
-  first && (loading = true);
+const getEventsList = async (needLoading = true) => {
+  needLoading && (loading = true);
   try {
-    const params = { size: 100 };
+    const params = { size: 100, eventTime: dayjs().format('YYYY-MM-DD 00:00:00') };
     if (eventListSwitch.value) {
-      params.cameraId = await getCameraIds();
+      params.cameraId = cameraIds.value;
     }
     const { data = [] } = await getAllEvents(params);
-    dataSource.value = data.map(ev => ({
-      ...ev,
-      eventTime: dayjs(ev.eventTime).format('YYYY-MM-DD HH:mm:ss'),
-    }));
+    const typeMap = {
+      区域进入: 0,
+      人员出入: 0,
+      车辆出入: 0,
+      total: 0,
+    };
+    const today = dayjs().format('YYYY-MM-DD');
+    dataSource.value = data.map(ev => {
+      const { eventTime, eventName } = ev;
+      const formatTime = dayjs(eventTime).format('YYYY-MM-DD HH:mm:ss');
+      if (formatTime.startsWith(today)) {
+        typeMap[eventName]++;
+        typeMap.total++;
+      }
+      return {
+        ...ev,
+        eventTime: formatTime,
+      };
+    });
+    types.value = typeMap;
+    emits('update', typeMap.total);
   } catch (error) {
+    console.error(error);
   } finally {
-    loading = false;
-    first = false;
+    needLoading && (loading = false);
+  }
+};
+
+const onResize = () => myChart.value?.resize();
+
+const setOptions = () => {
+  if (myChart.value) {
+    const typeArr = ['区域进入', '人员出入', '车辆出入'];
+    let series = [];
+    typeArr.forEach((type, index) => {
+      const current = types.value[type];
+      const left = types.value.total - current;
+      series = [
+        ...series,
+        ...[
+          {
+            type: 'pie',
+            name: type,
+            radius: ['65%', '80%'],
+            center: [`${index * 33.33 + 16.66}%`, '40%'],
+            hoverAnimation: false,
+            data: [
+              {
+                value: types.value[type],
+                label: {
+                  normal: {
+                    show: true,
+                    position: 'center',
+                    formatter: '{d}%',
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                  },
+                },
+                itemStyle: {
+                  normal: {
+                    color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                      {
+                        offset: 0,
+                        color: colors[index],
+                      },
+                      {
+                        offset: 1,
+                        color: colors[index + 1],
+                      },
+                    ]),
+                  },
+                },
+              },
+              {
+                value: left === 0 && current === 0 ? 1 : left,
+                name: 'invisible',
+                labelLine: {
+                  show: false,
+                },
+                label: {
+                  show: false,
+                },
+                itemStyle: {
+                  normal: {
+                    color: '#ddd2',
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      ];
+    });
+    myChart.value.setOption({
+      title: typeArr.map((type, index) => ({
+        text: `${type}: ${types.value[type]}`,
+        left: index * 33.33 + 16.66 + '%',
+        bottom: -5,
+        textAlign: 'center',
+        textStyle: {
+          fontWeight: 'normal',
+          fontSize: 14,
+          color: '#1DF7FF',
+          textAlign: 'center',
+        },
+      })),
+      series,
+    });
   }
 };
 
@@ -175,16 +280,34 @@ const handleClose = () => {
   }, 100);
 };
 
-useIntervalFn(getEventsList, 10 * 1000, {
-  immediateCallback: true,
-});
+useIntervalFn(() => getEventsList(false), 10 * 1000);
 
 watch(
   () => [eventListSwitch.value, globalStore.currentWareHouse],
-  ([newSwitch], [oldSwitch]) => {
-    if (newSwitch || newSwitch !== oldSwitch) getEventsList();
+  ([newSwitch] = [], [oldSwitch] = []) => {
+    if (newSwitch) {
+      getCameraIds();
+    } else if (newSwitch !== oldSwitch) {
+      getEventsList();
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => [eventListSwitch.value, cameraIds.value],
+  ([newSwitch]) => {
+    if (newSwitch) {
+      getEventsList();
+    }
   },
 );
+
+watch(types, () => setOptions());
+
+onMounted(() => {
+  myChart.value = echarts.init(eventTypeRef.value);
+});
 </script>
 
 <style lang="less">
