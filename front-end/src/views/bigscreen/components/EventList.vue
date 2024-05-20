@@ -21,7 +21,7 @@
         :label="item.label"
         :min-width="item.minWidth || 0"
       />
-      <el-table-column label="操作" min-width="100" align="center">
+      <el-table-column label="操作" min-width="90" align="center">
         <template #default="{ row }">
           <el-text
             v-if="row.cameraId"
@@ -66,7 +66,7 @@ const columns = [
   {
     prop: 'eventTime',
     label: '时间',
-    minWidth: 150,
+    minWidth: 160,
   },
   {
     prop: 'eventName',
@@ -175,6 +175,7 @@ const setOptions = () => {
                     formatter: '{d}%',
                     fontSize: 16,
                     fontWeight: 'bold',
+                    color: colors[index],
                   },
                 },
                 itemStyle: {

@@ -59,9 +59,9 @@
                       "
                       @update="updateVideo"
                     />
-                    <el-text class="fs-1">{{
-                      cameras[currentWareHouse][item - 1].monitor_device_name
-                    }}</el-text>
+                    <el-text class="fs-1">
+                      {{ cameras[currentWareHouse][item - 1].monitor_device_name }}
+                    </el-text>
                   </div>
                 </template>
               </Carousel>
@@ -69,6 +69,12 @@
           </el-col>
           <el-col :span="7" class="h-full">
             <bigscreen-box title="仓库动态" type="rightTop">
+              <template #headerCenter>
+                <div class="fs-1 c-white">
+                  当日事件总数:
+                  <span class="fw-bold">{{ eventListTotal }}</span>
+                </div>
+              </template>
               <template #headerRight>
                 <el-switch
                   v-model="eventListSwitch"
@@ -77,7 +83,7 @@
                   inactive-text="全部"
                 />
               </template>
-              <event-list />
+              <event-list @update="num => (eventListTotal = num)" />
             </bigscreen-box>
           </el-col>
         </el-row>
@@ -133,6 +139,7 @@ const barChartSwitch = useStorage('barChartSwitch', false);
 const eventListSwitch = useStorage('eventListSwitch', false);
 let show = $ref(false);
 let cameras = $ref({});
+let eventListTotal = $ref(0);
 const currentWareHouse = ref(globalStore.currentWareHouse);
 let wareHouseDetail = $ref({});
 const videoKeys = $ref({});
