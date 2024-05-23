@@ -72,11 +72,12 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="less" scoped>
-:deep(.vjs-big-play-button) {
-  display: none !important;
-}
-:deep(.vjs-control-bar) {
-  display: none !important;
+<style lang="less">
+.video-js {
+  .vjs-big-play-button,
+  .vjs-control-bar,
+  .vjs-poster {
+    display: none !important;
+  }
 }
 </style>

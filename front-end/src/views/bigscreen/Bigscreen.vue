@@ -55,7 +55,9 @@
                       "
                       :key="
                         cameras[currentWareHouse][item - 1].monitor_device_path +
-                        videoKeys[cameras[currentWareHouse][item - 1].monitor_device_path]
+                        videoKeys[
+                          cameras[currentWareHouse][item - 1].monitor_device_path.replace(/0$/, '1')
+                        ]
                       "
                       @update="updateVideo"
                     />
@@ -173,7 +175,7 @@ const getDictApi = async () => {
 };
 
 const updateVideo = key => {
-  videoKeys[key] = dayjs().valueOf();
+  videoKeys['hosts' + key] = dayjs().valueOf();
 };
 
 watch(
