@@ -2,6 +2,7 @@
   <div class="table-box">
     <ProTable
       ref="proTable"
+      stripe
       :columns="tableColumns"
       :request-api="getRoleListApi"
       :data-callback="transformData"
@@ -14,7 +15,7 @@
       <template #operation="scope">
         <el-button
           v-auth="'view'"
-          type="primary"
+          type="success"
           link
           :icon="View"
           @click="openDrawer('查看', scope.row)"

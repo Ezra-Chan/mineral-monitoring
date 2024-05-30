@@ -1,6 +1,12 @@
 <template>
   <div class="table-box">
-    <ProTable ref="proTable" :columns="columns" :request-api="getLidarApi" :pagination="false" />
+    <ProTable
+      ref="proTable"
+      stripe
+      :columns="columns"
+      :request-api="getLidarApi"
+      :pagination="false"
+    />
   </div>
 </template>
 
@@ -36,7 +42,7 @@ const columns = reactive([
     label: '设备状态',
     minWidth: 120,
   },
-  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 200 },
+  // { prop: 'operation', label: '操作', fixed: 'right', minWidth: 200 },
 ]);
 
 const getLidarApi = async () => {
@@ -46,6 +52,7 @@ const getLidarApi = async () => {
     return {
       data: data.map((item, index) => ({
         ...item,
+        alias: item.alias || void 0,
         status: status[index]?.data?.connectStatusDesc,
       })),
     };

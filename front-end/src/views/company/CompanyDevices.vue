@@ -1,6 +1,6 @@
 <template>
   <div class="table-box">
-    <ProTable ref="proTable" :columns="columns" :request-api="getTableList">
+    <ProTable ref="proTable" stripe :columns="columns" :request-api="getTableList">
       <template #tableHeader>
         <el-button v-auth="'add'" type="primary" :icon="Plus" @click="openDrawer('新增')">
           新增

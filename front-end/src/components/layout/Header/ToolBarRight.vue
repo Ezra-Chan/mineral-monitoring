@@ -2,7 +2,7 @@
   <div class="tool-bar-ri flex items-center justify-center gap-5 p-r-6">
     <theme-switch />
     <Message />
-    <full-screen-button size="30px" color="inherit" hoverColor="inherit" />
+    <full-screen-button size="22px" color="inherit" hoverColor="inherit" />
     <span class="username fs-1">{{ name }}</span>
     <Avatar />
   </div>

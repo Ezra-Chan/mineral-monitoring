@@ -1,9 +1,18 @@
 .el-container {
+  @white: #fff;
   :deep(.el-aside) {
+    --el-menu-bg-color: rgb(0, 20, 40);
+    --el-menu-text-color: rgb(187, 187, 187);
+    --el-menu-active-color: @white;
+    --el-menu-item-font-size: 16px;
+    --el-menu-hover-text-color: @white;
+    --el-menu-hover-bg-color: var(--el-color-primary);
+    --el-color-primary-light-9: var(--el-color-primary);
     background-color: var(--el-menu-bg-color);
     border-right: 1px solid var(--el-border-color-light);
 
     .logo-text {
+      --el-logo-text-color: @white;
       color: var(--el-logo-text-color);
     }
   }

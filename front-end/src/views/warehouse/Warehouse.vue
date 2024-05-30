@@ -2,6 +2,7 @@
   <div class="table-box">
     <ProTable
       ref="proTable"
+      stripe
       :columns="columns"
       :request-api="getWarehouseList"
       :data-callback="transformData"
@@ -21,7 +22,7 @@
         </el-button>
       </template>
       <template #operation="scope">
-        <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">
+        <el-button type="success" link :icon="View" @click="openDrawer('查看', scope.row)">
           查看
         </el-button>
         <el-button
@@ -107,6 +108,7 @@ const columns = reactive([
   {
     prop: 'status',
     label: '仓库状态',
+    tag: true,
     enum: WarehouseStatus,
     search: { el: 'select', props: { placeholder: '请选择仓库状态', filterable: true } },
     minWidth: 100,

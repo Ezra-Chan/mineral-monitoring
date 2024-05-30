@@ -35,10 +35,12 @@ export const CompanyStatus = [
   {
     label: '营业中',
     value: 1,
+    tagType: 'success',
   },
   {
     label: '已注销',
     value: 0,
+    tagType: 'danger',
   },
 ];
 
@@ -46,10 +48,12 @@ export const CameraStatus = [
   {
     label: '在线',
     value: true,
+    tagType: 'success',
   },
   {
     label: '离线',
     value: false,
+    tagType: 'danger',
   },
 ];
 
@@ -57,14 +61,17 @@ export const WarehouseStatus = [
   {
     label: '未启用',
     value: '301',
+    tagType: 'info',
   },
   {
     label: '使用中',
     value: '302',
+    tagType: 'success',
   },
   {
     label: '已停用',
     value: '303',
+    tagType: 'danger',
   },
 ];
 
@@ -72,10 +79,12 @@ export const Gender = [
   {
     label: '男',
     value: 1,
+    tagType: 'success',
   },
   {
     label: '女',
     value: 0,
+    tagType: 'danger',
   },
 ];
 

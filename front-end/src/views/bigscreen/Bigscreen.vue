@@ -12,7 +12,10 @@
             {{ wareHouseInfo }}
           </el-text>
         </div>
-        <el-text class="letter-spacing-0.5 p-l-5 fs-2.5! color-white fw-bold">
+        <el-text
+          class="letter-spacing-0.5 p-l-5 fs-2.5! color-white fw-bold cursor-pointer"
+          @click="jumpToSystem"
+        >
           {{ globalStore.systemTitle }}
         </el-text>
         <div class="flex items-center gap-10 absolute right-0 self-start p-r-4 h-12.5">
@@ -124,6 +127,8 @@ import { getDict } from '@/api/radar';
 import { getDeviceList } from '@/api/platform';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
+import { useAuthStore } from '@/store/auth';
+import { HOME_URL } from '@/config';
 import cities from '@/utils/cities.json';
 import { SYSTEM_ROLES_MAP, defaultPage } from '@/utils/constant';
 import { getWarehouseList } from '@/utils/warehouse';
@@ -135,8 +140,10 @@ import EventList from './components/EventList.vue';
 import VideoPlayer from '../../components/Video.vue';
 
 const route = useRoute();
+const router = useRouter();
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
+const authStore = useAuthStore();
 const barChartSwitch = useStorage('barChartSwitch', false);
 const eventListSwitch = useStorage('eventListSwitch', false);
 let show = $ref(false);
@@ -176,6 +183,12 @@ const getDictApi = async () => {
 
 const updateVideo = key => {
   videoKeys['hosts' + key] = dayjs().valueOf();
+};
+
+const jumpToSystem = () => {
+  if (authStore.hasPermission('system')) {
+    router.push(HOME_URL);
+  }
 };
 
 watch(

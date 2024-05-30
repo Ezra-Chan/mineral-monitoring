@@ -1,4 +1,5 @@
 <template>
+  <el-input v-model="filterText" placeholder="请输入" clearable class="m-b" />
   <el-tree
     ref="treeRef"
     node-key="id"
@@ -7,6 +8,7 @@
     :props="defaultProps"
     :data="data"
     :expand-on-click-node="false"
+    :filter-node-method="filterNode"
     @node-click="handleNodeClick"
   />
 </template>
@@ -23,6 +25,7 @@ const defaultProps = {
 };
 let data = $ref([]);
 const treeRef = ref();
+const filterText = ref('');
 
 const loadNode = async () => {
   const res = await getCompany();
@@ -47,9 +50,38 @@ const handleNodeClick = data => {
   emit('select', data);
 };
 
+const filterNode = (value, data) => {
+  if (!value) return true;
+  return data.name.includes(value);
+};
+
+watch(filterText, val => {
+  treeRef.value.filter(val);
+});
+
 onMounted(() => {
   loadNode();
 });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+:deep(.el-tree-node) {
+  font-size: 15px;
+  --el-tree-node-content-height: 32px;
+
+  &.is-current > .el-tree-node__content > .el-tree-node__label {
+    color: var(--el-color-primary);
+  }
+}
+</style>
+
+<style lang="less">
+.dark {
+  .el-tree-node.is-current > .el-tree-node__content {
+    background-color: var(--el-color-primary-dark-2);
+    & > .el-tree-node__label {
+      color: var(--el-color-white);
+    }
+  }
+}
+</style>

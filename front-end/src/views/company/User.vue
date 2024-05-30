@@ -2,6 +2,7 @@
   <div class="table-box">
     <ProTable
       ref="proTable"
+      stripe
       :columns="columns"
       :request-api="getUsers"
       :data-callback="transformData"
@@ -14,7 +15,7 @@
       <template #operation="scope">
         <el-button
           v-auth="'view'"
-          type="primary"
+          type="success"
           link
           :icon="View"
           @click="openDrawer('查看', scope.row)"
@@ -88,6 +89,7 @@ const columns = computed(() => [
     prop: 'sex',
     label: '性别',
     minWidth: 80,
+    tag: true,
     enum: Gender,
     search: { el: 'select', props: { placeholder: '请选择性别', filterable: true } },
   },

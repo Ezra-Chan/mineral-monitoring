@@ -2,6 +2,7 @@
   <div class="table-box">
     <ProTable
       ref="proTable"
+      stripe
       :columns="columns"
       :request-api="queryCompany"
       :data-callback="transformData"
@@ -25,7 +26,7 @@
         </el-button>
         <el-button
           v-auth="'view'"
-          type="primary"
+          type="success"
           link
           :icon="View"
           @click="openDrawer('查看', scope.row)"
@@ -113,6 +114,7 @@ const columns = reactive([
   {
     prop: 'status',
     label: '公司状态',
+    tag: true,
     enum: CompanyStatus,
     search: { el: 'select', props: { placeholder: '请选择公司状态', filterable: true } },
     minWidth: 100,

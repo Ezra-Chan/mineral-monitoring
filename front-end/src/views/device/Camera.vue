@@ -1,13 +1,19 @@
 <template>
   <div class="table-box">
-    <ProTable ref="proTable" :columns="columns" :request-api="getCameraApi" :pagination="false">
+    <ProTable
+      ref="proTable"
+      stripe
+      :columns="columns"
+      :request-api="getCameraApi"
+      :pagination="false"
+    >
       <template #tableHeader>
         <el-button v-auth="'add'" type="primary" :icon="Plus" @click="addCamera"> 新增 </el-button>
       </template>
       <template #operation="scope">
         <el-button
           v-auth="'preview'"
-          type="primary"
+          type="success"
           link
           :icon="View"
           :disabled="!scope.row.status || !scope.row.monitor_device_path"
@@ -99,6 +105,7 @@ const columns = reactive([
     prop: 'status',
     label: '设备状态',
     minWidth: 100,
+    tag: true,
     enum: CameraStatus,
   },
   {
