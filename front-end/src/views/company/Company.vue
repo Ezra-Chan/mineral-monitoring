@@ -67,7 +67,7 @@ import {
   deleteCompanyApi,
   getCompanyApi,
 } from '@/api/platform';
-import { objOmit } from '@/utils';
+import { objOmit, querySearch } from '@/utils';
 import { isAdmin } from '@/utils/account';
 import { CompanyStatus } from '@/utils/constant';
 import { useUserStore } from '@/store/user';
@@ -263,6 +263,66 @@ const formColumns = markRaw([
       placeholder: '请输入监控平台密码',
     },
   },
+  {
+    formItem: {
+      label: 'ERP平台对应名称',
+      prop: 'erp_name',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入ERP平台对应名称',
+    },
+  },
+  {
+    formItem: {
+      label: '邮箱账号',
+      prop: 'email_account',
+    },
+    component: 'el-autocomplete',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入邮箱',
+      fetchSuggestions: querySearch,
+      class: 'w-100%',
+      triggerOnFocus: false,
+    },
+  },
+  {
+    formItem: {
+      label: '邮箱密码',
+      prop: 'email_password',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入邮箱密码',
+    },
+  },
+  {
+    formItem: {
+      label: '邮箱服务器地址',
+      prop: 'email_service',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入邮箱服务器地址',
+    },
+  },
+  {
+    formItem: {
+      label: '邮箱服务器端口',
+      prop: 'email_port',
+    },
+    component: 'el-input-number',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入邮箱服务器端口',
+      controlsPosition: 'right',
+      class: 'w-100%!',
+    },
+  },
 ]);
 const rules = reactive({
   name: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
@@ -272,6 +332,18 @@ const rules = reactive({
   monitor_user: [{ required: true, message: '请输入监控平台账号', trigger: 'blur' }],
   monitor_pwd: [{ required: true, message: '请输入监控平台密码', trigger: 'blur' }],
   monitor_ip: [{ required: true, message: '请输入监控平台URL', trigger: 'blur' }],
+  erp_name: [{ required: true, message: '请输入ERP平台对应名称', trigger: 'blur' }],
+  email_account: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    {
+      type: 'email',
+      message: '请输入正确的邮箱地址',
+      trigger: ['blur', 'change'],
+    },
+  ],
+  email_password: [{ required: true, message: '请输入邮箱密码', trigger: 'blur' }],
+  email_service: [{ required: true, message: '请输入邮箱服务器地址', trigger: 'blur' }],
+  email_port: [{ required: true, message: '请输入邮箱服务器端口', trigger: 'blur' }],
 });
 
 const deviceList = row => {
@@ -347,6 +419,8 @@ const openDrawer = (type, row) => {
       ? record
       : {
           status: 1,
+          email_service: 'smtp.exmail.qq.com',
+          email_port: 465,
         },
     formOptions: {
       labelWidth: '10rem',

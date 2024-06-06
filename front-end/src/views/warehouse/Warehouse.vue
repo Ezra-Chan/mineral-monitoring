@@ -133,7 +133,7 @@ const columns = reactive([
     label: '仓库容量(吨)',
     minWidth: 120,
   },
-  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
+  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 260 },
 ]);
 const formColumns = computed(() => [
   {
@@ -267,6 +267,17 @@ const formColumns = computed(() => [
       },
     })),
   },
+  {
+    formItem: {
+      label: 'ERP平台对应名称',
+      prop: 'erp_name',
+    },
+    component: 'el-input',
+    attrs: {
+      clearable: true,
+      placeholder: '请输入ERP平台对应名称',
+    },
+  },
   // {
   //   formItem: {
   //     label: '仓库管理员',
@@ -288,6 +299,7 @@ const rules = reactive({
   length: [{ required: true, message: '请输入仓库长度', trigger: 'blur' }],
   capacity: [{ required: true, message: '请输入仓库容量', trigger: 'blur' }],
   company_id: [{ required: true, message: '请选择所属公司', trigger: 'blur' }],
+  erp_name: [{ required: true, message: '请输入ERP平台对应名称', trigger: 'blur' }],
 });
 const scanFormColumns = [
   {
