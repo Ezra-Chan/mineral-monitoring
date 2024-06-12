@@ -3,3 +3,4 @@ export * from './modules/company';
 export * from './modules/warehouse';
 export * from './modules/role';
 export * from './modules/device';
+export * from './modules/dictionary';

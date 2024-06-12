@@ -88,6 +88,19 @@ export const Gender = [
   },
 ];
 
+export const IE_TYPE = [
+  {
+    label: '入库',
+    value: 'I',
+    tagType: 'success',
+  },
+  {
+    label: '出库',
+    value: 'E',
+    tagType: 'danger',
+  },
+];
+
 export const EMAIL_SUFFIX = [
   '@qq.com',
   '@163.com',
@@ -356,22 +369,39 @@ export const ROLE_PERMISSIONS = [
       },
     ],
   },
-  // {
-  //   id: '9',
-  //   path: '/dictionary',
-  //   name: 'dictionary',
-  //   component: '/dictionary/Dictionary',
-  //   title: '字典管理',
-  //   meta: {
-  //     icon: 'Reading',
-  //     title: '字典管理',
-  //     isLink: '',
-  //     isHide: false,
-  //     isFull: false,
-  //     isAffix: false,
-  //     isKeepAlive: true,
-  //   },
-  // },
+  {
+    id: '9',
+    path: '/dictionary',
+    name: 'dictionary',
+    component: '/dictionary/Dictionary',
+    title: '字典管理',
+    meta: {
+      icon: 'Reading',
+      title: '字典管理',
+      isLink: '',
+      isHide: false,
+      isFull: false,
+      isAffix: false,
+      isKeepAlive: true,
+    },
+    buttons: [
+      {
+        id: '9-1',
+        title: '新增',
+        name: 'add',
+      },
+      {
+        id: '9-2',
+        title: '编辑',
+        name: 'edit',
+      },
+      {
+        id: '9-3',
+        title: '删除',
+        name: 'delete',
+      },
+    ],
+  },
   {
     id: '10',
     path: '/self',
