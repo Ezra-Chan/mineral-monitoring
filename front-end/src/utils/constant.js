@@ -1,7 +1,7 @@
 export const radarChartTypes = [
   {
     label: '货物堆形',
-    value: 'findWarehouseGoodsPointCloudDataHistogram',
+    value: 'findWarehouseGoodsPointCloudHistogram',
   },
   {
     label: '货物点云',

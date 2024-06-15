@@ -50,13 +50,10 @@ export const getDataByTime = (id, timestamp) => {
   if (!timestamp || dayjs(timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
     const params = { id };
     timestamp && (params.timestamp = timestamp);
-    return request.post(
-      '/shmanage/store/newRadar/findWarehouseGoodsPointCloudDataHistogram',
-      params,
-    );
+    return request.post('/shmanage/store/newRadar/findWarehouseGoodsPointCloudHistogram', params);
   } else {
     return sendRequest(
-      '/shmanage/store/newRadar/findWarehouseGoodsPointCloudDataHistogram',
+      '/shmanage/store/newRadar/findWarehouseGoodsPointCloudHistogram',
       { id, timestamp },
       { method: 'POST' },
     );

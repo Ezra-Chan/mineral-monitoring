@@ -213,7 +213,7 @@ const queryInventoryByTime = async time => {
   const wareHouseGoodsType = currentWareHouseInfo.value.goodsType;
   const goodsMap = {};
   infoList.forEach(item => {
-    const type = item.goodsNo || wareHouseGoodsType;
+    const type = item.foodstuffType || wareHouseGoodsType;
     if (!goodsMap[type]) {
       goodsMap[type] = 0;
     }

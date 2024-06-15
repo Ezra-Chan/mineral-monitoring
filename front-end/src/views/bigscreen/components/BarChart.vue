@@ -249,7 +249,7 @@ const querySingleData = async id => {
   const wareHouseGoodsType = wareHouseGoods.value[id];
   const goodsMap = {};
   infoList.forEach(item => {
-    const type = item.goodsNo || wareHouseGoodsType;
+    const type = item.foodstuffType || wareHouseGoodsType;
     if (!goodsMap[type]) {
       goodsMap[type] = 0;
     }

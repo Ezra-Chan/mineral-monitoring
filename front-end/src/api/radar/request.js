@@ -94,7 +94,7 @@ export const sendRequest = (url, params = {}, options = {}) => {
                   // 判断time是否是7天前或者是2天前的不一定需要的大内存数据
                   if (
                     time.isBefore(dayjs().subtract(7, 'day')) ||
-                    (!key.includes('findWarehouseGoodsPointCloudDataHistogram') &&
+                    (!key.includes('findWarehouseGoodsPointCloudHistogram') &&
                       time.isBefore(dayjs().subtract(2, 'day')))
                   ) {
                     localStorage.removeItem(key);

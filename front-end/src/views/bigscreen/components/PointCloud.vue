@@ -190,7 +190,7 @@ const getData = async () => {
             color: barColors[i % barColors.length],
             // opacity: 0.8,
           },
-          name: item.goodsNo ? goodsType.value[item.goodsNo] : wareHouse.goodsTypeDesc,
+          name: item.foodstuffType ? goodsType.value[item.foodstuffType] : wareHouse.goodsTypeDesc,
           data: item.goodsData,
           actualVolume: toFixed2(item.actualVolume),
           actualWeight: toFixed2(item.actualWeight),
