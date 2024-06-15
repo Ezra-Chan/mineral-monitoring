@@ -17,6 +17,7 @@ export const useGlobalStore = defineStore('globalState', {
     maximize: false,
     // 暗黑模式
     isDark: false,
+    inventory: {},
   }),
   getters: {},
   actions: {

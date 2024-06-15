@@ -25,14 +25,13 @@
         />
         <div class="flex items-center gap-2">
           <el-text class="color-white fs-0.8" v-if="dataTime"> 数据时间：{{ dataTime }} </el-text>
-          <!-- <full-screen-button :el="carouselRef" size="1rem" /> -->
         </div>
       </div>
       <Carousel class="h-calc-2" noDrag :length="2" :showButton="false" :showSize="1">
         <template #1>
           <point-cloud
-            v-if="globalStore.currentWareHouse"
-            :key="globalStore.currentWareHouse + date"
+            v-if="currentWareHouse"
+            :key="currentWareHouse + date"
             :type="radarChart"
             :time="dayjs(date).format(format)"
             class="h-calc-1.5"
@@ -66,8 +65,9 @@
 import dayjs from 'dayjs';
 import { useGlobalStore } from '@/store/global';
 import { getDataByTime } from '@/api/radar';
-import PointCloud from './PointCloud.vue';
 import { radarChartTypes } from '@/utils/constant';
+import { toFixed2 } from '@/utils/math';
+import PointCloud from './PointCloud.vue';
 
 const props = defineProps({
   defaultDate: {
@@ -79,8 +79,10 @@ const props = defineProps({
     default: 'leftTop',
   },
   cb: Function,
+  index: Boolean,
 });
 const globalStore = useGlobalStore();
+const { currentWareHouse, inventory } = $(globalStore);
 const columns = [
   {
     prop: 'type',
@@ -102,7 +104,7 @@ const date = $ref(dayjs(props.defaultDate).format(format));
 let dataTime = $ref();
 const carouselRef = $ref();
 const currentWareHouseInfo = computed(() =>
-  globalStore.wareHouse.find(item => item.kx_warehouse_id === globalStore.currentWareHouse),
+  globalStore.wareHouse.find(item => item.kx_warehouse_id === currentWareHouse),
 );
 const goodsType = computed(() => {
   const map = {};
@@ -115,9 +117,9 @@ const goodsType = computed(() => {
 const disabledDate = time => time.getTime() > dayjs();
 
 const queryGoodsInventory = async time => {
-  if (globalStore.currentWareHouse) {
+  if (currentWareHouse) {
     try {
-      const { data = {} } = await getDataByTime(globalStore.currentWareHouse, time);
+      const { data = {} } = await getDataByTime(currentWareHouse, time);
       const { fileUpdateTime, infoList = [] } = data;
       dataTime = fileUpdateTime;
       const wareHouseGoodsType = currentWareHouseInfo.value.goodsType;
@@ -139,9 +141,56 @@ const queryGoodsInventory = async time => {
         weight: Math.round((goodsMap[goods].weight || 0) * 100) / 100,
       }));
       dataSource.value = ds;
+      globalStore.setGlobalState({
+        inventory: {
+          ...inventory,
+          [currentWareHouse]: {
+            ...(inventory[currentWareHouse] || {}),
+            [+props.index]: ds,
+          },
+        },
+      });
     } catch (error) {}
   }
 };
+
+const addPrefix = val => (val > 0 ? `+${val}` : val);
+
+watch(
+  globalStore.inventory,
+  newVal => {
+    const current = newVal[currentWareHouse]?.[+props.index];
+    const compare = newVal[currentWareHouse]?.[+!props.index];
+    if (current && compare) {
+      const goodsType = newVal[currentWareHouse][0].map(item => item.type);
+      newVal[currentWareHouse][1].forEach(item => {
+        if (!goodsType.includes(item.type)) {
+          goodsType.push(item.type);
+        }
+      });
+      const dt = goodsType.map(goods => {
+        const defaultGoods = {
+          type: goods,
+          volume: 0,
+          weight: 0,
+        };
+        const currentItem = current.find(item => item.type === goods) || defaultGoods;
+        const compareItem = compare.find(item => item.type === goods) || defaultGoods;
+        const volumeDiff = toFixed2(currentItem.volume - compareItem.volume);
+        const weightDiff = toFixed2(currentItem.weight - compareItem.weight);
+        return {
+          type: goods,
+          volume: currentItem.volume + `（${addPrefix(volumeDiff)}）`,
+          weight: currentItem.weight + `（${addPrefix(weightDiff)}）`,
+        };
+      });
+      dataSource.value = dt;
+    }
+  },
+  {
+    deep: true,
+  },
+);
 
 watch(
   () => [date, globalStore.currentWareHouse],

@@ -34,7 +34,7 @@
       <div class="w-full h-calc-5.5 flex flex-col justify-between items-center gap-2">
         <el-row class="w-full h-50% z-10" :gutter="8">
           <el-col :span="7" class="h-full">
-            <Inventory />
+            <Inventory :index="true" />
           </el-col>
           <el-col :span="10" class="h-full">
             <bigscreen-box title="视频监控" type="center">
@@ -94,7 +94,11 @@
         </el-row>
         <el-row class="w-full h-50%" :gutter="8">
           <el-col :span="7" class="h-full">
-            <Inventory :default-date="dayjs().subtract(1, 'day').valueOf()" type="leftBottom" />
+            <Inventory
+              :index="false"
+              :default-date="dayjs().subtract(1, 'day').valueOf()"
+              type="leftBottom"
+            />
           </el-col>
           <el-col :span="10" class="h-full">
             <bigscreen-box title="货物体积变化曲线图" type="centerBottom">
