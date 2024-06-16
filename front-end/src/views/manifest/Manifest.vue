@@ -36,6 +36,7 @@
 </template>
 
 <script setup>
+import dayjs from 'dayjs';
 import { EditPen, Delete, View } from '@element-plus/icons-vue';
 import { updateMenifestApi, deleteMenifestApi, getMenifestListApi } from '@/api/platform';
 import { objOmit } from '@/utils';
@@ -82,9 +83,9 @@ const columns = reactive([
   {
     prop: 'operate_time',
     label: '操作时间',
-    minWidth: 150,
+    minWidth: 200,
   },
-  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 200 },
+  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 220 },
 ]);
 const formColumns = markRaw([
   {
@@ -169,6 +170,7 @@ const formColumns = markRaw([
     component: 'el-date-picker',
     attrs: {
       clearable: true,
+      type: 'datetime',
       placeholder: '请选择操作时间',
       valueFormat: 'YYYY-MM-DD HH:mm:ss',
       style: {
@@ -240,8 +242,15 @@ const queryMenifest = async (params, data) => {
   return await getMenifestListApi(params, data);
 };
 
+const handleRecord = record => {
+  return {
+    ...record,
+    operate_time: dayjs(record.operate_time).format('YYYY-MM-DD HH:mm:ss'),
+  };
+};
+
 const transformData = data => ({
-  list: data.results,
+  list: data.results.map(handleRecord),
   total: data.total,
 });
 </script>

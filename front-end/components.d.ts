@@ -69,6 +69,7 @@ declare module 'vue' {
     Maximize: typeof import('./src/components/layout/Main/Maximize.vue')['default']
     MoreButton: typeof import('./src/components/layout/Tabs/MoreButton.vue')['default']
     Pagination: typeof import('./src/components/proTable/components/Pagination.vue')['default']
+    ProDialog: typeof import('./src/components/ProDialog.vue')['default']
     ProDrawer: typeof import('./src/components/ProDrawer.vue')['default']
     ProForm: typeof import('./src/components/ProForm.vue')['default']
     ProTable: typeof import('./src/components/proTable/ProTable.vue')['default']

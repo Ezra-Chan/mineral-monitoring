@@ -61,6 +61,7 @@ import { User, Lock } from '@element-plus/icons-vue';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { useAuthStore } from '@/store/auth';
+import { useDictStore } from '@/store/dictionary';
 import { Encrypt } from '@/utils/AES';
 import { objOmit } from '@/utils';
 import { monitoringLogin, kexinLogin, isAdmin, getCurrentUser } from '@/utils/account';
@@ -70,6 +71,7 @@ import { initDynamicRouter } from '@/router/dynamicRouter';
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
 const authStore = useAuthStore();
+const dictStore = useDictStore();
 const router = useRouter();
 
 const loginFormRef = ref();
@@ -124,6 +126,7 @@ const getOtherPlatformInfo = async () => {
   userStore.setCompanyInfo(objOmit(data.company, ['kexin_pwd', 'monitor_pwd']));
   await kexinLogin();
   ElMessage({ type: 'success', message: '登录成功' });
+  dictStore.getAllDictionary();
 };
 
 const systemLogin = async formEl => {

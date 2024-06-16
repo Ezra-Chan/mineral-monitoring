@@ -101,6 +101,19 @@ export const IE_TYPE = [
   },
 ];
 
+export const ALERT_STATUS = [
+  {
+    label: '已读',
+    value: '1',
+    tagType: 'success',
+  },
+  {
+    label: '未读',
+    value: '0',
+    tagType: 'danger',
+  },
+];
+
 export const EMAIL_SUFFIX = [
   '@qq.com',
   '@163.com',
@@ -178,11 +191,6 @@ export const ROLE_PERMISSIONS = [
         id: '3-4',
         title: '删除',
         name: 'delete',
-      },
-      {
-        id: '3-5',
-        title: '看板',
-        name: 'bigscreen',
       },
     ],
   },
@@ -335,6 +343,23 @@ export const ROLE_PERMISSIONS = [
       isAffix: false,
       isKeepAlive: true,
     },
+    buttons: [
+      {
+        id: '7-1',
+        title: '新增',
+        name: 'add',
+      },
+      {
+        id: '7-2',
+        title: '编辑',
+        name: 'edit',
+      },
+      {
+        id: '7-3',
+        title: '删除',
+        name: 'delete',
+      },
+    ],
   },
   {
     id: '8',
@@ -417,6 +442,34 @@ export const ROLE_PERMISSIONS = [
       isAffix: false,
       isKeepAlive: true,
     },
+  },
+  {
+    id: '11',
+    path: '/alert',
+    name: 'alert',
+    component: '/alert/Alert',
+    title: '告警信息',
+    meta: {
+      icon: 'Bell',
+      title: '告警信息',
+      isLink: '',
+      isHide: true,
+      isFull: false,
+      isAffix: false,
+      isKeepAlive: true,
+    },
+    buttons: [
+      {
+        id: '11-1',
+        title: '查看',
+        name: 'view',
+      },
+      {
+        id: '11-2',
+        title: '已读',
+        name: 'read',
+      },
+    ],
   },
 ];
 

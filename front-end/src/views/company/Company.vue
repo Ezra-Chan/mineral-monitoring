@@ -16,15 +16,6 @@
       </template>
       <template #operation="scope">
         <el-button
-          v-auth="'deviceList'"
-          type="primary"
-          link
-          :icon="Monitor"
-          @click="deviceList(scope.row)"
-        >
-          设备列表
-        </el-button>
-        <el-button
           v-auth="'view'"
           type="success"
           link
@@ -228,6 +219,8 @@ const formColumns = markRaw([
     attrs: {
       clearable: true,
       placeholder: '请输入可信仓密码',
+      showPassword: true,
+      type: 'password',
     },
   },
   {
@@ -261,17 +254,8 @@ const formColumns = markRaw([
     attrs: {
       clearable: true,
       placeholder: '请输入监控平台密码',
-    },
-  },
-  {
-    formItem: {
-      label: 'ERP平台对应名称',
-      prop: 'erp_name',
-    },
-    component: 'el-input',
-    attrs: {
-      clearable: true,
-      placeholder: '请输入ERP平台对应名称',
+      showPassword: true,
+      type: 'password',
     },
   },
   {
@@ -297,6 +281,8 @@ const formColumns = markRaw([
     attrs: {
       clearable: true,
       placeholder: '请输入邮箱密码',
+      showPassword: true,
+      type: 'password',
     },
   },
   {
@@ -332,7 +318,6 @@ const rules = reactive({
   monitor_user: [{ required: true, message: '请输入监控平台账号', trigger: 'blur' }],
   monitor_pwd: [{ required: true, message: '请输入监控平台密码', trigger: 'blur' }],
   monitor_ip: [{ required: true, message: '请输入监控平台URL', trigger: 'blur' }],
-  erp_name: [{ required: true, message: '请输入ERP平台对应名称', trigger: 'blur' }],
   email_account: [
     { required: true, message: '请输入邮箱', trigger: 'blur' },
     {
@@ -345,12 +330,6 @@ const rules = reactive({
   email_service: [{ required: true, message: '请输入邮箱服务器地址', trigger: 'blur' }],
   email_port: [{ required: true, message: '请输入邮箱服务器端口', trigger: 'blur' }],
 });
-
-const deviceList = row => {
-  router.push({
-    path: `/company/${row.id}/deviceList`,
-  });
-};
 
 const queryCompany = async (params, data) => {
   if (showSearch) {
