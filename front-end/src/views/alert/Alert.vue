@@ -8,7 +8,13 @@
       :data-callback="transformData"
     >
       <template #operation="scope">
-        <el-button type="success" link :icon="View" @click="openDrawer('查看', scope.row)">
+        <el-button
+          v-auth="'view'"
+          type="success"
+          link
+          :icon="View"
+          @click="openDrawer('查看', scope.row)"
+        >
           查看
         </el-button>
         <el-button
@@ -17,7 +23,7 @@
           link
           :icon="Check"
           :disabled="scope.row.active"
-          @click="read(scope.row)"
+          @click="readAlert(scope.row)"
         >
           已读
         </el-button>
@@ -29,12 +35,7 @@
 
 <script setup>
 import { Check, View } from '@element-plus/icons-vue';
-import {
-  updateAlertApi,
-  getAlertDetailApi,
-  getAlertListApi,
-  getDictByTypeApi,
-} from '@/api/platform';
+import { readAlertApi, getAlertListApi, getDictByTypeApi } from '@/api/platform';
 import { objOmit } from '@/utils';
 import { ALERT_STATUS } from '@/utils/constant';
 import { getWarehouseList } from '@/utils/warehouse';
@@ -133,7 +134,7 @@ const formColumns = markRaw([
   },
 ]);
 
-const updateAlert = row => {
+const readAlert = row => {
   ElMessageBox.confirm(`确定该事件已处理吗？`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -141,7 +142,7 @@ const updateAlert = row => {
   })
     .then(async () => {
       try {
-        await updateAlertApi(row.id);
+        await readAlertApi(row.id);
         ElMessage.success('操作成功');
         proTable.value.search();
       } catch (error) {
@@ -174,7 +175,7 @@ const openDrawer = async (type, row) => {
 };
 
 const queryAlert = async (params, data) => {
-  return await getDictionaryListApi(params, { ...data, source: userInfo.company_id });
+  return await getAlertListApi(params, { ...data, source: userInfo.company_id });
 };
 
 const queryWarehouse = async () => {
