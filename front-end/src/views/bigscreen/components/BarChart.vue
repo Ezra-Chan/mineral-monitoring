@@ -13,9 +13,10 @@ import * as echarts from 'echarts';
 import { vElementSize } from '@vueuse/components';
 import { getDataByTime } from '@/api/radar';
 import { useGlobalStore } from '@/store/global';
+import { useUserStore } from '@/store/user';
+import { useDictStore } from '@/store/dictionary';
 import { toFixed2 } from '@/utils/math';
 import { barGradientColors } from '@/utils/constant';
-import { watch } from 'vue';
 
 const props = defineProps({
   loopTooltip: {
@@ -25,11 +26,16 @@ const props = defineProps({
 });
 
 const globalStore = useGlobalStore();
+const userStore = useUserStore();
+const dictStore = useDictStore();
 const barChartSwitch = useStorage('barChartSwitch', false);
-const warehouses = computed(() =>
+
+const { warehouses } = $(userStore);
+
+const warehouse = computed(() =>
   barChartSwitch.value
     ? [globalStore.currentWareHouse]
-    : globalStore.wareHouse.map(item => item.kx_warehouse_id),
+    : warehouses.map(item => item.kx_warehouse_id),
 );
 const chartRef = ref(null);
 const myChart = shallowRef();
@@ -37,18 +43,12 @@ let loading = $ref(false);
 const timer = ref();
 const wareHouseGoods = computed(() => {
   const map = {};
-  globalStore.wareHouse.forEach(item => {
-    map[item.kx_warehouse_id] = item.goodsType;
+  warehouses.forEach(item => {
+    map[item.kx_warehouse_id] = item.goodsType || item.goodsTypeDesc;
   });
   return map;
 });
-const goodsType = computed(() => {
-  const map = {};
-  globalStore.goodsType.forEach(item => {
-    map[item.code] = item.desc;
-  });
-  return map;
-});
+
 const serie = {
   type: 'bar',
   label: {
@@ -129,7 +129,7 @@ const initChart = async () => {
       myChart.value.dispose();
     }
     myChart.value = echarts.init(chartRef.value);
-    const values = await Promise.all(warehouses.value.map(querySingleData));
+    const values = await Promise.all(warehouse.value.map(querySingleData));
     const goodsMap = [];
     values.forEach(item => {
       Object.keys(item).forEach(key => {
@@ -151,7 +151,7 @@ const initChart = async () => {
           const colors = barGradientColors[goodsMap.indexOf(name) % barGradientColors.length];
           bar.push({
             ...serie,
-            name: goodsType.value[name],
+            name: dictStore.dict.GOODS_TYPE[name] || name,
             xAxisIndex: index,
             data,
             itemStyle: {
@@ -172,7 +172,7 @@ const initChart = async () => {
       });
       return bar;
     };
-    const datas = goodsMap.map(key => warehouses.value.map((_, i) => toFixed2(values[i][key])));
+    const datas = goodsMap.map(key => warehouse.value.map((_, i) => toFixed2(values[i][key])));
     datas.forEach((dt, i) => series.push(...dealBar(dt, goodsMap[i])));
     const options = {
       tooltip: {
@@ -195,10 +195,10 @@ const initChart = async () => {
           color: '#fff',
         },
       },
-      xAxis: globalStore.wareHouse
-        .filter(w => warehouses.value.includes(w.kx_warehouse_id))
+      xAxis: warehouses
+        .filter(w => warehouse.value.includes(w.kx_warehouse_id))
         .map((item, index) => {
-          const data = Array(warehouses.value.length).fill('');
+          const data = Array(warehouse.value.length).fill('');
           data[index] = item.name;
           return {
             type: 'category',
@@ -249,7 +249,7 @@ const querySingleData = async id => {
   const wareHouseGoodsType = wareHouseGoods.value[id];
   const goodsMap = {};
   infoList.forEach(item => {
-    const type = item.foodstuffType || wareHouseGoodsType;
+    const type = item.foodstuffType || wareHouseGoodsType || item.foodstuffTypeDesc;
     if (!goodsMap[type]) {
       goodsMap[type] = 0;
     }

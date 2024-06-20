@@ -18,16 +18,21 @@
         >
           {{ globalStore.systemTitle }}
         </el-text>
-        <div class="flex items-center gap-10 absolute right-0 self-start p-r-4 h-12.5">
+        <div class="flex items-center gap-8 absolute right-0 self-start p-r-4 h-12.5">
           <el-select v-model="currentWareHouse" :teleported="false" style="width: 10rem">
             <el-option
-              v-for="item in globalStore.wareHouse"
+              v-for="item in warehouses"
               :key="item.id"
               :label="item.name"
               :value="item.kx_warehouse_id"
             />
           </el-select>
           <real-time />
+          <Message
+            v-if="warehouses.length && Object.keys(BUTTONS).length"
+            style="--color: #fff"
+            size="30px"
+          />
           <full-screen-button />
         </div>
       </div>
@@ -127,21 +132,21 @@
 <script setup>
 import dayjs from 'dayjs';
 import VScaleScreen from 'v-scale-screen';
-import { getDict } from '@/api/radar';
 import { getDeviceList } from '@/api/platform';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { useAuthStore } from '@/store/auth';
 import { HOME_URL } from '@/config';
 import cities from '@/utils/cities.json';
-import { SYSTEM_ROLES_MAP, defaultPage } from '@/utils/constant';
-import { getWarehouseList } from '@/utils/warehouse';
+import { SYSTEM_ROLES_MAP } from '@/utils/constant';
 import { handleCameraPath } from '@/utils';
 import Inventory from './components/Inventory.vue';
 import CurveChart from './components/CurveChart.vue';
 import BarChart from './components/BarChart.vue';
 import EventList from './components/EventList.vue';
 import VideoPlayer from '../../components/Video.vue';
+import Message from '@/components/layout/Header/components/StationMessage.vue';
+import { useAuthButtons } from '@/hooks/useAuthButtons';
 
 const route = useRoute();
 const router = useRouter();
@@ -150,6 +155,9 @@ const userStore = useUserStore();
 const authStore = useAuthStore();
 const barChartSwitch = useStorage('barChartSwitch', false);
 const eventListSwitch = useStorage('eventListSwitch', false);
+
+const { BUTTONS } = useAuthButtons('alert');
+const { userInfo, warehouses } = $(userStore);
 let show = $ref(false);
 let cameras = $ref({});
 let eventListTotal = $ref(0);
@@ -164,7 +172,7 @@ const wareHouseInfo = computed(
 );
 
 const queryCameraList = async id => {
-  const wareHouseInfo = globalStore.wareHouse.find(item => item.kx_warehouse_id === id) || {};
+  const wareHouseInfo = warehouses.find(item => item.kx_warehouse_id === id) || {};
   if (!cameras[wareHouseInfo.kx_warehouse_id]?.length) {
     const { data = {} } = await getDeviceList(undefined, {
       warehouse_id: wareHouseInfo.id,
@@ -174,15 +182,9 @@ const queryCameraList = async id => {
 };
 
 const queryWareHouseDetail = id => {
-  const item = globalStore.wareHouse.find(item => item.kx_warehouse_id === id) || {};
+  const item = warehouses.find(item => item.kx_warehouse_id === id) || {};
   item.addressCityDesc = item.location?.split('/')[1];
   wareHouseDetail = item;
-};
-
-const getDictApi = async () => {
-  const { data = {} } = await getDict();
-  const { FoodstuffTypeEnum = [], HouseTypeEnum = [] } = data;
-  globalStore.setGlobalState({ goodsType: FoodstuffTypeEnum, houseType: HouseTypeEnum });
 };
 
 const updateVideo = key => {
@@ -209,22 +211,14 @@ watch(
   },
 );
 
-onMounted(() => {
-  getDictApi();
-});
-
 onBeforeMount(async () => {
-  const { role_id } = userStore.userInfo || {};
-  if (role_id === SYSTEM_ROLES_MAP.SUPER_ADMIN) {
-    const { company, warehouse } = route.query;
-    if (!company || !warehouse) return ElMessage.error('请选择公司或仓库');
+  if (userInfo.role_id === SYSTEM_ROLES_MAP.SUPER_ADMIN) {
+    const { company } = route.query;
+    if (!company) return ElMessage.error('请选择公司');
     // TODO
   } else {
-    const { data = {} } = await getWarehouseList(defaultPage, { status: '302' });
-    const warehouses = data.results || [];
     if (!warehouses.length) return ElMessage.error('您没有仓库权限');
     currentWareHouse.value = warehouses[0]?.kx_warehouse_id;
-    globalStore.setGlobalState({ wareHouse: warehouses });
     show = true;
   }
 });

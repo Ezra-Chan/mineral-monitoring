@@ -61,17 +61,16 @@ import { User, Lock } from '@element-plus/icons-vue';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { useAuthStore } from '@/store/auth';
-import { useDictStore } from '@/store/dictionary';
 import { Encrypt } from '@/utils/AES';
 import { objOmit } from '@/utils';
-import { monitoringLogin, kexinLogin, isAdmin, getCurrentUser } from '@/utils/account';
+import { initSystem } from '@/utils/init';
+import { monitoringLogin, kexinLogin, isAdmin } from '@/utils/account';
 import { getCompanyApi } from '@/api/platform';
 import { initDynamicRouter } from '@/router/dynamicRouter';
 
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
 const authStore = useAuthStore();
-const dictStore = useDictStore();
 const router = useRouter();
 
 const loginFormRef = ref();
@@ -96,7 +95,7 @@ const login = async formEl => {
           username: loginForm.username,
           password: Encrypt(loginForm.password),
         });
-        await getCurrentUser();
+        await initSystem();
         return true;
       } catch (error) {
         ElMessage({ type: 'error', message: '账号或密码有误，登录失败' });
@@ -126,7 +125,6 @@ const getOtherPlatformInfo = async () => {
   userStore.setCompanyInfo(objOmit(data.company, ['kexin_pwd', 'monitor_pwd']));
   await kexinLogin();
   ElMessage({ type: 'success', message: '登录成功' });
-  dictStore.getAllDictionary();
 };
 
 const systemLogin = async formEl => {

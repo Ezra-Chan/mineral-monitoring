@@ -6,6 +6,8 @@ export const getWarehouseList = async (params = {}, data = {}) => {
   try {
     const userStore = useUserStore();
     const { role_id, company_id, warehouse_ids } = userStore.userInfo || {};
+    // 如果是超级管理员，则返回空数组
+    if (role_id === SYSTEM_ROLES_MAP.SUPER_ADMIN) return { data: { results: [] } };
     // 如果是公司层级，则返回所有仓库
     if ([SYSTEM_ROLES_MAP.COMPANY_ADMIN, SYSTEM_ROLES_MAP.COMPANY_USER].includes(role_id)) {
       return await getWarehouseListApi(params, { ...data, company_id });

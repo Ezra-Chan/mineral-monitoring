@@ -19,10 +19,10 @@
         </el-button>
         <el-button
           v-auth="'read'"
+          v-if="!scope.row.active"
           type="primary"
           link
           :icon="Check"
-          :disabled="scope.row.active"
           @click="readAlert(scope.row)"
         >
           已读
@@ -35,15 +35,16 @@
 
 <script setup>
 import { Check, View } from '@element-plus/icons-vue';
-import { readAlertApi, getAlertListApi, getDictByTypeApi } from '@/api/platform';
-import { objOmit } from '@/utils';
+import { readAlertApi, getAlertListApi } from '@/api/platform';
 import { ALERT_STATUS } from '@/utils/constant';
-import { getWarehouseList } from '@/utils/warehouse';
 import { useUserStore } from '@/store/user';
+import { useDictStore } from '@/store/dictionary';
 
+const bus = useEventBus('station-message');
 const userStore = useUserStore();
-const { userInfo } = $(userStore);
-const warehouses = ref([]);
+const dictStore = useDictStore();
+const { userInfo, warehouses } = $(userStore);
+const { dict } = $(dictStore);
 const proTable = ref();
 const drawerRef = ref();
 const columns = computed(() => [
@@ -52,14 +53,17 @@ const columns = computed(() => [
     label: '仓库',
     search: { el: 'select', props: { placeholder: '请选择仓库', filterable: true } },
     minWidth: 150,
-    enum: queryWarehouse,
+    enum: warehouses.map(w => ({
+      label: w.name,
+      value: w.id,
+    })),
   },
   {
     prop: 'goods_id',
     label: '货物',
     search: { el: 'select', props: { placeholder: '请选择货物', filterable: true } },
     minWidth: 150,
-    enum: queryGoods,
+    enum: dict.GOODS_TYPE.ORIGIN_ENUM,
   },
   {
     prop: 'content',
@@ -73,7 +77,7 @@ const columns = computed(() => [
     minWidth: 150,
     enum: ALERT_STATUS,
   },
-  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 100 },
+  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 150 },
 ]);
 const formColumns = markRaw([
   {
@@ -145,6 +149,7 @@ const readAlert = row => {
         await readAlertApi(row.id);
         ElMessage.success('操作成功');
         proTable.value.search();
+        bus.emit();
       } catch (error) {
         ElMessage.error('操作失败');
       }
@@ -154,7 +159,6 @@ const readAlert = row => {
 
 const openDrawer = async (type, row) => {
   const { cloned: record } = useCloned(row || {});
-  const isAdd = type === '新增';
   const isView = type === '查看';
 
   drawerRef.value.acceptParams({
@@ -166,37 +170,14 @@ const openDrawer = async (type, row) => {
       labelWidth: '10rem',
       labelSuffix: ' :',
       class: 'overflow-y-auto p-r-8 h-full',
-      rules,
       disabled: isView,
     },
     formColumns,
-    onSubmit: isAdd ? data => createDictionary(data) : data => updateDictionary(data),
   });
 };
 
 const queryAlert = async (params, data) => {
   return await getAlertListApi(params, { ...data, source: userInfo.company_id });
-};
-
-const queryWarehouse = async () => {
-  const { data: { results = [] } = {} } = await getWarehouseList();
-  warehouses.value = results;
-  return {
-    data: results.map(res => ({
-      label: res.name,
-      value: res.id,
-    })),
-  };
-};
-
-const queryGoods = async () => {
-  const { data: { results = [] } = {} } = await getDictByTypeApi('GOODS_TYPE');
-  return {
-    data: results.map(res => ({
-      label: res.value,
-      value: res.key,
-    })),
-  };
 };
 
 const transformData = data => ({

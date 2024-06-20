@@ -64,6 +64,8 @@
 <script setup>
 import dayjs from 'dayjs';
 import { useGlobalStore } from '@/store/global';
+import { useUserStore } from '@/store/user';
+import { useDictStore } from '@/store/dictionary';
 import { getDataByTime } from '@/api/radar';
 import { radarChartTypes } from '@/utils/constant';
 import { toFixed2 } from '@/utils/math';
@@ -81,7 +83,9 @@ const props = defineProps({
   cb: Function,
   index: Boolean,
 });
+const userStore = useUserStore();
 const globalStore = useGlobalStore();
+const dictStore = useDictStore();
 const { currentWareHouse, inventory } = $(globalStore);
 const columns = [
   {
@@ -104,15 +108,8 @@ const date = $ref(dayjs(props.defaultDate).format(format));
 let dataTime = $ref();
 const carouselRef = $ref();
 const currentWareHouseInfo = computed(() =>
-  globalStore.wareHouse.find(item => item.kx_warehouse_id === currentWareHouse),
+  userStore.warehouses.find(item => item.kx_warehouse_id === currentWareHouse),
 );
-const goodsType = computed(() => {
-  const map = {};
-  globalStore.goodsType.forEach(item => {
-    map[item.code] = item.desc;
-  });
-  return map;
-});
 
 const disabledDate = time => time.getTime() > dayjs();
 
@@ -122,10 +119,11 @@ const queryGoodsInventory = async time => {
       const { data = {} } = await getDataByTime(currentWareHouse, time);
       const { fileUpdateTime, infoList = [] } = data;
       dataTime = fileUpdateTime;
-      const wareHouseGoodsType = currentWareHouseInfo.value.goodsType;
+      const wareHouseGoodsType =
+        currentWareHouseInfo.value.goodsType || currentWareHouseInfo.value.goodsTypeDesc;
       const goodsMap = {};
       infoList.forEach(item => {
-        const type = item.foodstuffType || wareHouseGoodsType;
+        const type = item.foodstuffType || wareHouseGoodsType || item.foodstuffTypeDesc;
         if (!goodsMap[type]) {
           goodsMap[type] = {
             volume: 0,
@@ -136,7 +134,7 @@ const queryGoodsInventory = async time => {
         goodsMap[type].weight += item.actualWeight || 0;
       });
       const ds = Object.keys(goodsMap).map(goods => ({
-        type: goodsType.value?.[goods],
+        type: dictStore.dict.GOODS_TYPE[goods] || goods,
         volume: Math.round((goodsMap[goods].volume || 0) * 100) / 100,
         weight: Math.round((goodsMap[goods].weight || 0) * 100) / 100,
       }));

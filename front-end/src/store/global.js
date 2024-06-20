@@ -5,10 +5,7 @@ export const useGlobalStore = defineStore('globalState', {
   state: () => ({
     systemTitle: '数智储运管理平台',
     abbreviation: '数智储运',
-    wareHouse: [],
     currentWareHouse: void 0,
-    goodsType: [],
-    houseType: [],
     // 折叠菜单
     isCollapse: false,
     // 面包屑导航

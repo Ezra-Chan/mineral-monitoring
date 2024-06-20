@@ -3,9 +3,9 @@ import { useAuthStore } from '@/store/auth';
 /**
  * @description 页面按钮权限
  * */
-export const useAuthButtons = () => {
+export const useAuthButtons = path => {
   const authStore = useAuthStore();
-  const authButtons = authStore.authButtonListGet[authStore.routeName] ?? [];
+  const authButtons = authStore.authButtonListGet[path ?? authStore.routeName] ?? [];
 
   const BUTTONS = computed(() => {
     const currentPageAuthButton = {};

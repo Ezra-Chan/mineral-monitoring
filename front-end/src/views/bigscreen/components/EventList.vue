@@ -98,7 +98,7 @@ const eventListSwitch = useStorage('eventListSwitch', false);
 const getCameraIds = async () => {
   if (!deviceMap[globalStore.currentWareHouse]?.length) {
     const { company_id, id } =
-      globalStore.wareHouse.find(w => w.kx_warehouse_id === globalStore.currentWareHouse) || {};
+      userStore.warehouses.find(w => w.kx_warehouse_id === globalStore.currentWareHouse) || {};
     const { data = {} } = await getDeviceList(defaultPage, {
       company_id,
       warehouse_id: id,

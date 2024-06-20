@@ -11,7 +11,7 @@
 
 <script setup>
 import { LOGIN_URL } from '@/config';
-import { getCurrentUser } from '@/utils/account';
+import { initSystem } from '@/utils/init';
 
 let loading = $ref(false);
 
@@ -20,7 +20,7 @@ const judgeLoginStatus = async () => {
     loading = false;
     return;
   }
-  await getCurrentUser();
+  await initSystem();
   loading = false;
 };
 

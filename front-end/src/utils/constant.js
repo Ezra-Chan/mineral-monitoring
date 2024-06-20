@@ -104,12 +104,12 @@ export const IE_TYPE = [
 export const ALERT_STATUS = [
   {
     label: '已读',
-    value: '1',
+    value: true,
     tagType: 'success',
   },
   {
     label: '未读',
-    value: '0',
+    value: false,
     tagType: 'danger',
   },
 ];
@@ -346,16 +346,21 @@ export const ROLE_PERMISSIONS = [
     buttons: [
       {
         id: '7-1',
+        title: '查看',
+        name: 'view',
+      },
+      {
+        id: '7-2',
         title: '新增',
         name: 'add',
       },
       {
-        id: '7-2',
+        id: '7-3',
         title: '编辑',
         name: 'edit',
       },
       {
-        id: '7-3',
+        id: '7-4',
         title: '删除',
         name: 'delete',
       },
@@ -379,16 +384,21 @@ export const ROLE_PERMISSIONS = [
     buttons: [
       {
         id: '8-1',
+        title: '查看',
+        name: 'view',
+      },
+      {
+        id: '8-2',
         title: '新增',
         name: 'add',
       },
       {
-        id: '8-2',
+        id: '8-3',
         title: '删除',
         name: 'delete',
       },
       {
-        id: '8-3',
+        id: '8-4',
         title: '查看画面',
         name: 'preview',
       },
@@ -412,17 +422,37 @@ export const ROLE_PERMISSIONS = [
     buttons: [
       {
         id: '9-1',
+        title: '查看',
+        name: 'view',
+      },
+      {
+        id: '9-2',
         title: '新增',
         name: 'add',
       },
       {
-        id: '9-2',
+        id: '9-3',
         title: '编辑',
         name: 'edit',
       },
       {
-        id: '9-3',
+        id: '9-4',
         title: '删除',
+        name: 'delete',
+      },
+      {
+        id: '9-5',
+        title: '新增类别',
+        name: 'add',
+      },
+      {
+        id: '9-6',
+        title: '编辑类别',
+        name: 'edit',
+      },
+      {
+        id: '9-7',
+        title: '删除类别',
         name: 'delete',
       },
     ],

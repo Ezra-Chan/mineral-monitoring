@@ -15,7 +15,9 @@ import { vElementSize } from '@vueuse/components';
 import { radarChartTypes, barColors } from '@/utils/constant';
 import { toFixed2 } from '@/utils/math';
 import { getCloudPointData } from '@/api/radar';
+import { useUserStore } from '@/store/user';
 import { useGlobalStore } from '@/store/global';
+import { useDictStore } from '@/store/dictionary';
 
 const axis = {
   type: 'value',
@@ -144,19 +146,13 @@ const props = defineProps({
   },
 });
 const globalStore = useGlobalStore();
+const userStore = useUserStore();
+const dictStore = useDictStore();
 
 const chartRef = ref();
 let myChart = shallowRef();
 let loading = $ref(false);
 let series = [];
-
-const goodsType = computed(() => {
-  const map = {};
-  globalStore.goodsType.forEach(item => {
-    map[item.code] = item.desc;
-  });
-  return map;
-});
 
 const onResize = () => myChart.value?.resize();
 
@@ -170,7 +166,7 @@ const getData = async () => {
     const id = globalStore.currentWareHouse;
     const { data = [] } = await getCloudPointData(props.type, id, props.time);
     const { infoList = [], fileDate = [] } = data;
-    const wareHouse = globalStore.wareHouse.find(item => item.kx_warehouse_id === id) || {};
+    const wareHouse = userStore.warehouses.find(item => item.kx_warehouse_id === id) || {};
     const { height, length, width } = wareHouse;
     const isBar = props.type === radarChartTypes[0].value;
     const chartOption = isBar ? barOption : pointOption;
@@ -184,13 +180,18 @@ const getData = async () => {
     if (isBar) {
       // 堆形图
       const s = infoList.map((item, i) => {
+        const type =
+          item.foodstuffType ||
+          wareHouse.goodsType ||
+          item.foodstuffTypeDesc ||
+          wareHouse.goodsTypeDesc;
         return {
           ...barOption.series[0],
           itemStyle: {
             color: barColors[i % barColors.length],
             // opacity: 0.8,
           },
-          name: item.foodstuffType ? goodsType.value[item.foodstuffType] : wareHouse.goodsTypeDesc,
+          name: dictStore.dict.GOODS_TYPE[type] || type,
           data: item.goodsData,
           actualVolume: toFixed2(item.actualVolume),
           actualWeight: toFixed2(item.actualWeight),

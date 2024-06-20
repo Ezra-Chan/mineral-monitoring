@@ -15,14 +15,16 @@
 
 <script setup>
 import { getCompany } from '@/utils/company';
-import { getWarehouseListApi } from '@/api/platform';
-import { defaultPage } from '@/utils/constant';
+import { useUserStore } from '@/store/user';
 
 const emit = defineEmits(['select']);
 
 const defaultProps = {
   label: 'name',
 };
+
+const userStore = useUserStore();
+const { warehouses } = $(userStore);
 let data = $ref([]);
 const treeRef = ref();
 const filterText = ref('');
@@ -41,10 +43,8 @@ const loadNode = async () => {
   }
 };
 
-const loadWarehouse = async company => {
-  const { data = {} } = await getWarehouseListApi(defaultPage, { company_id: company.id });
-  return data.results?.map(item => ({ ...item, type: 'warehouse' })) || [];
-};
+const loadWarehouse = async company =>
+  warehouses?.map(item => ({ ...item, type: 'warehouse' })) || [];
 
 const handleNodeClick = data => {
   emit('select', data);

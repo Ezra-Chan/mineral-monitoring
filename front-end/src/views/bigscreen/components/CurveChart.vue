@@ -14,6 +14,8 @@ import dayjs from 'dayjs';
 import { vElementSize } from '@vueuse/components';
 import { getDataByTime } from '@/api/radar';
 import { useGlobalStore } from '@/store/global';
+import { useUserStore } from '@/store/user';
+import { useDictStore } from '@/store/dictionary';
 import { toFixed2 } from '@/utils/math';
 import { gradientColors, colors } from '@/utils/constant';
 
@@ -24,7 +26,10 @@ const props = defineProps({
   },
 });
 
+const userStore = useUserStore();
 const globalStore = useGlobalStore();
+const dictStore = useDictStore();
+
 const chartRef = ref(null);
 const myChart = shallowRef();
 let loading = $ref(false);
@@ -35,15 +40,8 @@ const pastTenDate = Array.from({ length: 7 })
   .reverse();
 pastTenDate[6] = '';
 const currentWareHouseInfo = computed(() =>
-  globalStore.wareHouse.find(item => item.kx_warehouse_id === globalStore.currentWareHouse),
+  userStore.warehouses.find(item => item.kx_warehouse_id === globalStore.currentWareHouse),
 );
-const goodsType = computed(() => {
-  const map = {};
-  globalStore.goodsType.forEach(item => {
-    map[item.code] = item.desc;
-  });
-  return map;
-});
 
 const onResize = () => myChart.value?.resize();
 
@@ -116,7 +114,7 @@ const initChart = async () => {
       });
     });
     const series = dtMap.map((key, i) => ({
-      name: goodsType.value[key],
+      name: dictStore.dict.GOODS_TYPE[key] || key,
       data: values.map(item => {
         const value = item.find(item => item.key === key)?.value;
         return isNaN(value) ? 0 : value;
@@ -210,10 +208,11 @@ const initChart = async () => {
 const queryInventoryByTime = async time => {
   const { data = {} } = await getDataByTime(globalStore.currentWareHouse, time);
   const { infoList = [] } = data;
-  const wareHouseGoodsType = currentWareHouseInfo.value.goodsType;
+  const wareHouseGoodsType =
+    currentWareHouseInfo.value.goodsType || currentWareHouseInfo.value.goodsTypeDesc;
   const goodsMap = {};
   infoList.forEach(item => {
-    const type = item.foodstuffType || wareHouseGoodsType;
+    const type = item.foodstuffType || wareHouseGoodsType || item.foodstuffTypeDesc;
     if (!goodsMap[type]) {
       goodsMap[type] = 0;
     }

@@ -1,25 +1,31 @@
 <template>
-  <div class="w-full flex items-center justify-between mb">
-    <el-button type="primary" size="small" :icon="Plus" @click="openDialog('新增')">新增</el-button>
-    <el-space v-if="select">
-      <el-button type="primary" size="small" :icon="EditPen" @click="openDialog('编辑', select)">
-        编辑
+  <div class="w-full h-full flex flex-col gap-4">
+    <el-text size="large" class="self-start! font-bold">字典类别</el-text>
+    <div class="w-full flex items-center justify-between">
+      <el-button type="primary" size="small" :icon="Plus" @click="openDialog('新增')">
+        新增
       </el-button>
-      <el-button type="danger" size="small" :icon="Delete" @click="deleteDictType(select)">
-        删除
-      </el-button>
-    </el-space>
+      <el-space v-if="select">
+        <el-button type="primary" size="small" :icon="EditPen" @click="openDialog('编辑', select)">
+          编辑
+        </el-button>
+        <el-button type="danger" size="small" :icon="Delete" @click="deleteDictType(select)">
+          删除
+        </el-button>
+      </el-space>
+    </div>
+    <el-input v-model="filterText" placeholder="请输入" clearable />
+    <el-tree
+      ref="treeRef"
+      class="w-full"
+      node-key="id"
+      highlight-current
+      :props="defaultProps"
+      :data="data"
+      :filter-node-method="filterNode"
+      @node-click="handleNodeClick"
+    />
   </div>
-  <el-input v-model="filterText" placeholder="请输入" clearable class="m-b" />
-  <el-tree
-    ref="treeRef"
-    node-key="id"
-    highlight-current
-    :props="defaultProps"
-    :data="data"
-    :filter-node-method="filterNode"
-    @node-click="handleNodeClick"
-  />
   <pro-dialog ref="dialogRef" />
 </template>
 
