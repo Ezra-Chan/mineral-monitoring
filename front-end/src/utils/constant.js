@@ -443,17 +443,17 @@ export const ROLE_PERMISSIONS = [
       {
         id: '9-5',
         title: '新增类别',
-        name: 'add',
+        name: 'addType',
       },
       {
         id: '9-6',
         title: '编辑类别',
-        name: 'edit',
+        name: 'editType',
       },
       {
         id: '9-7',
         title: '删除类别',
-        name: 'delete',
+        name: 'deleteType',
       },
     ],
   },

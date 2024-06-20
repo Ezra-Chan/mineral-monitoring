@@ -2,14 +2,32 @@
   <div class="w-full h-full flex flex-col gap-4">
     <el-text size="large" class="self-start! font-bold">字典类别</el-text>
     <div class="w-full flex items-center justify-between">
-      <el-button type="primary" size="small" :icon="Plus" @click="openDialog('新增')">
+      <el-button
+        v-auth="'addType'"
+        type="primary"
+        size="small"
+        :icon="Plus"
+        @click="openDialog('新增')"
+      >
         新增
       </el-button>
       <el-space v-if="select">
-        <el-button type="primary" size="small" :icon="EditPen" @click="openDialog('编辑', select)">
+        <el-button
+          v-auth="'editType'"
+          type="primary"
+          size="small"
+          :icon="EditPen"
+          @click="openDialog('编辑', select)"
+        >
           编辑
         </el-button>
-        <el-button type="danger" size="small" :icon="Delete" @click="deleteDictType(select)">
+        <el-button
+          v-auth="'deleteType'"
+          type="danger"
+          size="small"
+          :icon="Delete"
+          @click="deleteDictType(select)"
+        >
           删除
         </el-button>
       </el-space>
