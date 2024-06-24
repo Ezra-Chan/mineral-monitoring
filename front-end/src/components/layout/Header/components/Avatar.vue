@@ -19,8 +19,12 @@
 <script setup>
 import { LOGIN_URL } from '@/config';
 import { logoutMonitoring } from '@/utils/account';
+import { useTabsStore } from '@/store/tabs';
+import { useKeepAliveStore } from '@/store/keepAlive';
 
 const router = useRouter();
+const tabStore = useTabsStore();
+const keepAliveStore = useKeepAliveStore();
 
 // 退出登录
 const logout = () => {
@@ -31,6 +35,8 @@ const logout = () => {
   }).then(async () => {
     // 1.执行退出登录接口
     await logoutMonitoring();
+    tabStore.closeMultipleTab();
+    keepAliveStore.setKeepAliveName();
 
     // 2.重定向到登录页
     router.replace(LOGIN_URL);
