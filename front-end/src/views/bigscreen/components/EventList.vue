@@ -57,6 +57,7 @@ import { getAllEvents } from '@/api/monitoring';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { Decrypt } from '@/utils/AES';
+import { computed } from 'vue';
 
 const props = defineProps({
   cameras: {
@@ -98,24 +99,15 @@ const globalStore = useGlobalStore();
 const userStore = useUserStore();
 const eventListSwitch = useStorage('eventListSwitch', false);
 
-const { monitorUser, companyInfo, warehouses } = $(userStore);
-const warehouseMap = computed(() => {
-  const map = {};
-  warehouses.forEach(item => {
-    map[item.kx_warehouse_id] = item.id;
-  });
-  return map;
-});
+const { monitorUser, companyInfo } = $(userStore);
 
-const cameraIds = computed(() => {
-  if (eventListSwitch.value) {
-    return props.cameras.map(item => item.cameraId);
-  } else {
-    return props.cameras
-      .filter(item => item.warehouse_id === warehouseMap.value[globalStore.currentWareHouse])
-      .map(item => item.cameraId);
-  }
-});
+const cameraArray = computed(() => Object.values(props.cameras).flat(Infinity));
+
+const cameraIds = computed(() =>
+  (
+    (eventListSwitch.value ? cameraArray.value : props.cameras[globalStore.currentWareHouse]) || []
+  ).map(item => item.cameraId),
+);
 
 const getEventsList = async (needLoading = true) => {
   needLoading && (loading = true);

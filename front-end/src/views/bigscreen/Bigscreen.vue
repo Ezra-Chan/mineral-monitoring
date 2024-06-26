@@ -94,7 +94,7 @@
                 />
               </template>
               <event-list
-                v-if="currentWareHouse && cameras[currentWareHouse]?.length"
+                v-if="currentWareHouse && Object.keys(cameras)?.length"
                 :cameras="cameras"
                 @update="num => (eventListTotal = num)"
               />
