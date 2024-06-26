@@ -105,8 +105,8 @@ const cameraArray = computed(() => Object.values(props.cameras).flat(Infinity));
 
 const cameraIds = computed(() =>
   (
-    (eventListSwitch.value ? cameraArray.value : props.cameras[globalStore.currentWareHouse]) || []
-  ).map(item => item.cameraId),
+    (!eventListSwitch.value ? cameraArray.value : props.cameras[globalStore.currentWareHouse]) || []
+  ).map(item => item.monitor_device_path),
 );
 
 const getEventsList = async (needLoading = true) => {
