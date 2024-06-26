@@ -4,7 +4,7 @@
     v-loading="loading"
     element-loading-background="#0004"
   >
-    <div class="w-full h-25" ref="eventTypeRef" v-element-size="onResize" />
+    <div class="w-full h-25" ref="eventTypeRef" />
     <el-table
       class="event-list w-full h-calc-6.75!"
       stripe
@@ -54,12 +54,16 @@
 import dayjs from 'dayjs';
 import * as echarts from 'echarts';
 import { getAllEvents } from '@/api/monitoring';
-import { getDeviceList } from '@/api/platform';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { Decrypt } from '@/utils/AES';
-import { defaultPage } from '@/utils/constant';
 
+const props = defineProps({
+  cameras: {
+    type: Array,
+    default: () => [],
+  },
+});
 const emits = defineEmits(['update']);
 
 const columns = [
@@ -78,6 +82,7 @@ const columns = [
     minWidth: 150,
   },
 ];
+const colors = ['#fbc292', '#06fbfe', '#A098FC', '#4386FA'];
 const dataSource = ref([]);
 const eventTypeRef = ref(null);
 const myChart = ref(null);
@@ -86,39 +91,40 @@ let loading = $ref(false);
 let imgLoading = $ref(false);
 let dialogVisible = $ref(false);
 let imgSrc = $ref('');
-let deviceMap = $ref({});
 const types = ref({});
-const cameraIds = ref([]);
-const colors = ['#fbc292', '#06fbfe', '#A098FC', '#4386FA'];
+
 const { toggle } = useFullscreen(imgRef);
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
 const eventListSwitch = useStorage('eventListSwitch', false);
 
-const getCameraIds = async () => {
-  if (!deviceMap[globalStore.currentWareHouse]?.length) {
-    const { company_id, id } =
-      userStore.warehouses.find(w => w.kx_warehouse_id === globalStore.currentWareHouse) || {};
-    const { data = {} } = await getDeviceList(defaultPage, {
-      company_id,
-      warehouse_id: id,
-    });
-    const record = data.results.map(d => d.monitor_device_path);
-    cameraIds.value = record;
-    deviceMap[globalStore.currentWareHouse] = record;
+const { monitorUser, companyInfo, warehouses } = $(userStore);
+const warehouseMap = computed(() => {
+  const map = {};
+  warehouses.forEach(item => {
+    map[item.kx_warehouse_id] = item.id;
+  });
+  return map;
+});
+
+const cameraIds = computed(() => {
+  if (eventListSwitch.value) {
+    return props.cameras.map(item => item.cameraId);
   } else {
-    cameraIds.value = deviceMap[globalStore.currentWareHouse];
+    return props.cameras
+      .filter(item => item.warehouse_id === warehouseMap.value[globalStore.currentWareHouse])
+      .map(item => item.cameraId);
   }
-};
+});
 
 const getEventsList = async (needLoading = true) => {
   needLoading && (loading = true);
   try {
-    const params = { size: 100, eventTime: dayjs().format('YYYY-MM-DD 00:00:00') };
-    if (eventListSwitch.value) {
-      params.cameraId = cameraIds.value;
-    }
-    const { data = [] } = await getAllEvents(params);
+    const { data = [] } = await getAllEvents({
+      size: 100,
+      eventTime: dayjs().format('YYYY-MM-DD 00:00:00'),
+      cameraId: cameraIds.value,
+    });
     const typeMap = {
       区域进入: 0,
       人员出入: 0,
@@ -146,8 +152,6 @@ const getEventsList = async (needLoading = true) => {
     needLoading && (loading = false);
   }
 };
-
-const onResize = () => myChart.value?.resize();
 
 const setOptions = () => {
   if (myChart.value) {
@@ -232,7 +236,7 @@ const setOptions = () => {
 };
 
 const checkImage = (urls, i, callback) => {
-  const { u, p } = userStore.monitorUser || {};
+  const { u, p } = monitorUser || {};
   fetch(urls[i], {
     headers: {
       Authorization: 'Basic ' + btoa(`${u}:${Decrypt(p)}`),
@@ -263,7 +267,7 @@ const handleView = row => {
   imgLoading = true;
   const { cameraId, eventTime } = row;
   const time = dayjs(eventTime).subtract(8, 'hours').format('YYYYMMDDTHHmmss');
-  const src = `${userStore.companyInfo.monitor_ip}/archive/media${cameraId.replace('hosts', '')}`;
+  const src = `${companyInfo.monitor_ip}/archive/media${cameraId.replace('hosts', '')}`;
   const srcArr = [`${src}/${time}`, `${src.replace(/:0$/, ':1')}/${time}`];
   checkImage(srcArr, 0, (flag, data) => {
     if (flag) {
@@ -285,23 +289,8 @@ useIntervalFn(() => getEventsList(false), 10 * 1000);
 
 watch(
   () => [eventListSwitch.value, globalStore.currentWareHouse],
-  ([newSwitch] = [], [oldSwitch] = []) => {
-    if (newSwitch) {
-      getCameraIds();
-    } else if (newSwitch !== oldSwitch) {
-      getEventsList();
-    }
-  },
+  () => getEventsList(),
   { immediate: true },
-);
-
-watch(
-  () => [eventListSwitch.value, cameraIds.value],
-  ([newSwitch]) => {
-    if (newSwitch) {
-      getEventsList();
-    }
-  },
 );
 
 watch(types, () => setOptions());

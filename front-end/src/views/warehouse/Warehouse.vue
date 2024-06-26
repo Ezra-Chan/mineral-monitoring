@@ -27,8 +27,19 @@
         </el-button>
         <el-button
           v-auth="'scanView'"
-          type="primary"
+          v-if="!BUTTONS.scanEdit"
           link
+          type="success"
+          :icon="View"
+          :loading="scanLoding[scope.row.id]"
+          @click="openDrawer('扫描', scope.row)"
+        >
+          扫描计划
+        </el-button>
+        <el-button
+          v-auth="'scanEdit'"
+          link
+          type="primary"
           :icon="EditPen"
           :loading="scanLoding[scope.row.id]"
           @click="openDrawer('扫描', scope.row)"

@@ -93,7 +93,11 @@
                   inactive-text="全部"
                 />
               </template>
-              <event-list @update="num => (eventListTotal = num)" />
+              <event-list
+                v-if="currentWareHouse && cameras[currentWareHouse]?.length"
+                :cameras="cameras"
+                @update="num => (eventListTotal = num)"
+              />
             </bigscreen-box>
           </el-col>
         </el-row>
@@ -171,14 +175,22 @@ const wareHouseInfo = computed(
     }米，高:${wareHouseDetail.height || 0}米)`,
 );
 
-const queryCameraList = async id => {
-  const wareHouseInfo = warehouses.find(item => item.kx_warehouse_id === id) || {};
-  if (!cameras[wareHouseInfo.kx_warehouse_id]?.length) {
-    const { data = {} } = await getDeviceList(undefined, {
-      warehouse_id: wareHouseInfo.id,
-    });
-    cameras[wareHouseInfo.kx_warehouse_id] = data.results || [];
-  }
+const queryCameraList = async () => {
+  const warehouseMap = {};
+  const { data = {} } = await getDeviceList(undefined, {
+    warehouse_id: warehouses.map(w => {
+      warehouseMap[w.id] = w.kx_warehouse_id;
+      return w.id;
+    }),
+  });
+  const cameraMap = {};
+  data.results.forEach(item => {
+    if (!cameraMap[warehouseMap[item.warehouse_id]]) {
+      cameraMap[warehouseMap[item.warehouse_id]] = [];
+    }
+    cameraMap[warehouseMap[item.warehouse_id]].push(item);
+  });
+  cameras = cameraMap;
 };
 
 const queryWareHouseDetail = id => {
@@ -203,7 +215,6 @@ watch(
     if (newVal) {
       globalStore.setGlobalState({ currentWareHouse: newVal });
       queryWareHouseDetail(newVal);
-      queryCameraList(newVal);
     }
   },
   {
@@ -221,6 +232,7 @@ onBeforeMount(async () => {
     currentWareHouse.value = warehouses[0]?.kx_warehouse_id;
     show = true;
   }
+  queryCameraList();
 });
 </script>
 
