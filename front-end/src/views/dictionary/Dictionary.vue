@@ -55,8 +55,10 @@ import {
 } from '@/api/platform';
 import { objOmit } from '@/utils';
 import { useUserStore } from '@/store/user';
+import { useDictStore } from '@/store/dictionary';
 import DictionaryTypeTree from './DictionaryTypeTree.vue';
 
+const dictStore = useDictStore();
 const userStore = useUserStore();
 const { userInfo } = $(userStore);
 
@@ -68,13 +70,15 @@ const columns = reactive([
     prop: 'key',
     label: '字典键',
     search: { el: 'input', props: { placeholder: '请输入字典键' } },
+    minWidth: 280,
   },
   {
     prop: 'value',
     label: '字典值',
     search: { el: 'input', props: { placeholder: '请输入字典值' } },
+    minWidth: 280,
   },
-  { prop: 'operation', label: '操作', fixed: 'right' },
+  { prop: 'operation', label: '操作', fixed: 'right', minWidth: 180 },
 ]);
 const formColumns = markRaw([
   {
@@ -118,6 +122,7 @@ const createDictionary = async row => {
     ElMessage.success('新增成功');
     dialogRef.value.close();
     proTable.value.search();
+    dictStore.getDictionary();
   } catch (error) {
     console.error(error);
     ElMessage.error(error?.data?.msg || '新增失败');
@@ -130,6 +135,7 @@ const updateDictionary = async row => {
     ElMessage.success('编辑成功');
     dialogRef.value.close();
     proTable.value.search();
+    dictStore.getDictionary();
   } catch (error) {
     ElMessage.error('编辑失败');
   }
@@ -146,6 +152,7 @@ const deleteDictionary = row => {
         await deleteDictionaryApi(row.id);
         ElMessage.success('删除成功');
         proTable.value.search();
+        dictStore.getDictionary();
       } catch (error) {
         ElMessage.error('删除失败');
       }

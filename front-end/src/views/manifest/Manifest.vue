@@ -8,7 +8,13 @@
       :data-callback="transformData"
     >
       <template #operation="scope">
-        <el-button type="success" link :icon="View" @click="openDrawer('查看', scope.row)">
+        <el-button
+          v-auth="'view'"
+          type="success"
+          link
+          :icon="View"
+          @click="openDrawer('查看', scope.row)"
+        >
           查看
         </el-button>
         <el-button
@@ -242,12 +248,10 @@ const queryMenifest = async (params, data) => {
   return await getMenifestListApi(params, data);
 };
 
-const handleRecord = record => {
-  return {
-    ...record,
-    operate_time: dayjs(record.operate_time).format('YYYY-MM-DD HH:mm:ss'),
-  };
-};
+const handleRecord = record => ({
+  ...record,
+  operate_time: dayjs(record.operate_time).format('YYYY-MM-DD HH:mm:ss'),
+});
 
 const transformData = data => ({
   list: data.results.map(handleRecord),

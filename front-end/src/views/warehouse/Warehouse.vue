@@ -22,7 +22,13 @@
         </el-button>
       </template>
       <template #operation="scope">
-        <el-button type="success" link :icon="View" @click="openDrawer('查看', scope.row)">
+        <el-button
+          v-auth="'view'"
+          type="success"
+          link
+          :icon="View"
+          @click="openDrawer('查看', scope.row)"
+        >
           查看
         </el-button>
         <el-button
