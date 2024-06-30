@@ -6,3 +6,5 @@ export * from './modules/device';
 export * from './modules/dictionary';
 export * from './modules/manifest';
 export * from './modules/alert';
+export * from './modules/inventory';
+export * from './modules/system';

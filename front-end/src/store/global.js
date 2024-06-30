@@ -22,5 +22,5 @@ export const useGlobalStore = defineStore('globalState', {
       this.$patch(state);
     },
   },
-  persist: piniaPersistConfig('GlobalState'),
+  persist: piniaPersistConfig('global-state'),
 });

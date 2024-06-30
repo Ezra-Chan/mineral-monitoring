@@ -48,9 +48,30 @@ import { updateMenifestApi, deleteMenifestApi, getMenifestListApi } from '@/api/
 import { objOmit } from '@/utils';
 import { IE_TYPE } from '@/utils/constant';
 import { useUserStore } from '@/store/user';
+import { useDictStore } from '@/store/dictionary';
 
+const dictStore = useDictStore();
 const userStore = useUserStore();
-const { userInfo } = $(userStore);
+const { warehouses = [] } = $(userStore);
+const { dict = {} } = $(dictStore);
+
+const warehouseMap = computed(() => [
+  ...new Set(warehouses.map(w => dict.ERP?.[w.name] ?? w.name)),
+]);
+const goodsMap = computed(
+  () =>
+    [
+      ...new Set(
+        dict.GOODS_TYPE?.ORIGIN_ENUM?.map(t => {
+          const name = dict.ERP?.[t.label] || t.label;
+          return {
+            label: name,
+            value: name,
+          };
+        }),
+      ),
+    ] || [],
+);
 
 const proTable = ref();
 const drawerRef = ref();
@@ -64,13 +85,21 @@ const columns = reactive([
   {
     prop: 'goods_name',
     label: '货物',
-    search: { el: 'input', props: { placeholder: '请输入货物' } },
+    search: {
+      el: 'select',
+      props: { placeholder: '请输入货物', filterable: true, multiple: true },
+    },
+    enum: goodsMap.value,
     minWidth: 150,
   },
   {
     prop: 'warehouse_name',
     label: '仓库',
-    search: { el: 'input', props: { placeholder: '请输入仓库' } },
+    search: {
+      el: 'select',
+      props: { placeholder: '请选择仓库', filterable: true, multiple: true },
+    },
+    enum: warehouseMap.value.map(w => ({ label: w, value: w })),
     minWidth: 150,
   },
   {
@@ -244,7 +273,10 @@ const openDrawer = async (type, row) => {
   });
 };
 
-const queryMenifest = async (params, data) => {
+const queryMenifest = async (params, data = {}) => {
+  if (!data.warehouse_name || !data.warehouse_name.length) {
+    data.warehouse_name = warehouseMap.value;
+  }
   return await getMenifestListApi(params, data);
 };
 
