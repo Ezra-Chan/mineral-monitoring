@@ -115,6 +115,7 @@ export const ALERT_STATUS = [
 ];
 
 export const EMAIL_SUFFIX = [
+  '@jstex.com',
   '@qq.com',
   '@163.com',
   '@gmail.com',

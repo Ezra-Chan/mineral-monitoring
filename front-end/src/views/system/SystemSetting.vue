@@ -9,7 +9,7 @@
 
 <script setup>
 import { useGlobalStore } from '@/store/global';
-import { getSystemSettingApi, updateSystemSettingApi } from '@/api/platform';
+import { updateSystemSettingApi } from '@/api/platform';
 
 const globalStore = useGlobalStore();
 const { cloned: info } = useCloned({
@@ -58,8 +58,8 @@ const onSubmit = () => {
     if (valid) {
       loading = true;
       try {
-        await updateSystemSettingApi({});
-        getSystemSetting();
+        await updateSystemSettingApi(info.value);
+        globalStore.getSystemConfigs();
         ElMessage.success('修改成功');
       } catch (error) {
         console.error(error);
@@ -73,8 +73,6 @@ const onSubmit = () => {
     }
   });
 };
-
-const getSystemSetting = async () => {};
 </script>
 
 <style lang="less" scoped></style>

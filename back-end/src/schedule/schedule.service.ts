@@ -1,10 +1,13 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import axios from 'axios';
+import { CronJob } from 'cron';
+import { Injectable, Inject, forwardRef, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventService } from '../event/event.service';
 
+const pyIp = 'http://localhost:9000';
+
 @Injectable()
-export class ScheduleService {
+export class ScheduleService implements OnModuleInit {
   constructor(
     @Inject(forwardRef(() => EventService))
     private readonly eventService: EventService,
@@ -19,17 +22,29 @@ export class ScheduleService {
   }
 
   async checkAlert() {
-    await axios.get('http://localhost:5000/api/v1/check_alert');
+    await axios.get(pyIp + '/api/v1/check_alert');
   }
 
-  // 每天上午8点和下午8点执行
-  @Cron(CronExpression.EVERY_DAY_AT_8AM)
-  async handleCron2() {
-    await this.checkAlert();
+  async scheduleCronJobs() {
+    const { data: { results = {} } = {} } = await axios.get(
+      pyIp + '/api/v1/allConfig',
+    );
+    const { isAlert, alertFrequency, alertTime } = results;
+    if (isAlert === '1') {
+      const times = alertTime
+        ?.split(',')
+        .map((t: string) => alertFrequency + '_' + t);
+      times.forEach((t: keyof CronExpression) => {
+        const cronJob = new CronJob(
+          CronExpression[t],
+          this.checkAlert.bind(this),
+        );
+        cronJob.start();
+      });
+    }
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_8PM)
-  async handleCron3() {
-    await this.checkAlert();
+  async onModuleInit() {
+    await this.scheduleCronJobs();
   }
 }
