@@ -4,7 +4,7 @@ import { Injectable, Inject, forwardRef, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventService } from '../event/event.service';
 
-const pyIp = 'http://localhost:9000';
+const pyIp = 'http://localhost:5000';
 
 @Injectable()
 export class ScheduleService implements OnModuleInit {
