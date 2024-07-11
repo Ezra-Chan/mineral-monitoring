@@ -48,13 +48,13 @@ export const getCloudPointData = (type, id, timestamp) => {
 // 堆形图 用来获取不同时间的数据
 export const getDataByTime = (id, timestamp) => {
   if (!timestamp || dayjs(timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
-    return request.post('/store/newRadar/findWarehouseGoodsPointCloudDataHistogram', {
+    return request.post('/store/newRadar/findWarehouseGoodsPointCloudHistogram', {
       id,
       timestamp,
     });
   } else {
     return sendRequest(
-      '/store/newRadar/findWarehouseGoodsPointCloudDataHistogram',
+      '/store/newRadar/findWarehouseGoodsPointCloudHistogram',
       { id, timestamp },
       { method: 'POST' },
     );
