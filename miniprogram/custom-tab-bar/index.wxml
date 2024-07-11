@@ -1,0 +1,5 @@
+<van-tabbar active="{{ active }}" bind:change="onChange">
+  <van-tabbar-item wx:for="{{list}}" wx:key="index" icon="{{item.iconPath}}" name="{{item.name}}" url="{{item.pagePath}}" link-type="switchTab">
+    {{item.text}}
+  </van-tabbar-item>
+</van-tabbar>

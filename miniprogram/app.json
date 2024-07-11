@@ -1,0 +1,46 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/warehouse/warehouse",
+    "pages/device/device",
+    "pages/inventory/inventory",
+    "pages/profile/profile",
+    "pages/login/login"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "数智储运",
+    "navigationBarBackgroundColor": "#ffffff"
+  },
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/warehouse/warehouse",
+        "text": "仓库"
+      },
+      {
+        "pagePath": "pages/device/device",
+        "text": "设备"
+      },
+      {
+        "pagePath": "pages/inventory/inventory",
+        "text": "盘点"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}
