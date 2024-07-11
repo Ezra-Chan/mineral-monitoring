@@ -1,9 +1,14 @@
-Page({
-  /**
-   * 页面的初始数据
-   */
+import { storeBindingsBehavior } from "mobx-miniprogram-bindings";
+import { globalStore } from "../store/globalStore.js";
+
+Component({
+  behaviors: [storeBindingsBehavior],
+  storeBindings: {
+    store: globalStore,
+    fields: ["activeTab"],
+    actions: ["setGlobalStore"],
+  },
   data: {
-    active: "home",
     list: [
       {
         pagePath: "/pages/home/home",
@@ -37,8 +42,9 @@ Page({
       },
     ],
   },
-
-  onChange(event) {
-    this.setData({ active: event.detail });
+  methods: {
+    onChange(event) {
+      this.setGlobalStore({ activeTab: event.detail });
+    },
   },
 });

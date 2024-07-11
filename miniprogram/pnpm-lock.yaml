@@ -8,9 +8,32 @@ dependencies:
   '@vant/weapp':
     specifier: ^1.11.6
     version: 1.11.6
+  mobx-miniprogram:
+    specifier: ^6.12.3
+    version: 6.12.3
+  mobx-miniprogram-bindings:
+    specifier: ^3.0.0
+    version: 3.0.0(mobx-miniprogram@6.12.3)
 
 packages:
 
+  /@types/wechat-miniprogram@3.4.7:
+    resolution: {integrity: sha512-X6SVOOaTPQN24lYBSV5jLuWyIedx8DGJnT0VUBnoNzJruhxotCL28ecGb7AO5JfXOXtHqSS5+CnJ70NxFxmisA==}
+    dev: false
+
   /@vant/weapp@1.11.6:
     resolution: {integrity: sha512-a3heReWYT2gNdsyj6x1hBwsM8V8NrjcPAmle86NH2CD2V/i/h0le75piW6KntSfOPCwekVWMBKhysNrBpJeKdw==}
+    dev: false
+
+  /mobx-miniprogram-bindings@3.0.0(mobx-miniprogram@6.12.3):
+    resolution: {integrity: sha512-58EcQfaC2rDH7O2STLFa5qO/1z24BMkaUqfxnDB2nVlKx7SE/jGL7WoIttZFkrbqdVj3bj3Qs907HzZDC/YuJA==}
+    peerDependencies:
+      mobx-miniprogram: ^6.0.0
+    dependencies:
+      '@types/wechat-miniprogram': 3.4.7
+      mobx-miniprogram: 6.12.3
+    dev: false
+
+  /mobx-miniprogram@6.12.3:
+    resolution: {integrity: sha512-GEq1EG7jZPnrHYV43oppa6jY9lgbNRuGPiXyOFRoluHjd5LIGBf3a+zXMjzO1AVwrFOWvVRazxtzfiRXMUUqZw==}
     dev: false
