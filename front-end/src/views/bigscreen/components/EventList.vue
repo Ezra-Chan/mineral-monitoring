@@ -127,7 +127,7 @@ const handleView = row => {
   const { cameraId, eventTime } = row;
   const time = dayjs(eventTime).subtract(8, 'hours').format('YYYYMMDDTHHmmss');
   const src = `${globalStore.cameraIp}/archive/media${cameraId.replace('hosts', '')}/${time}`;
-  const srcArr = [src, src.replace(':0:0', ':0:1')];
+  const srcArr = [src, src.replace(/:0\//, ':1/')];
   checkImage(srcArr, 0, (flag, data) => {
     if (flag) {
       imgSrc = data;
