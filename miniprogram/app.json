@@ -13,30 +13,45 @@
     "navigationBarBackgroundColor": "#ffffff"
   },
   "usingComponents": {
-    "van-button": "@vant/weapp/button/index"
+    "van-button": "@vant/weapp/button/index",
+    "van-toast": "@vant/weapp/toast/index",
+    "van-image": "@vant/weapp/image/index"
   },
   "tabBar": {
-    "custom": true,
+    "color": "#666666",
+    "selectedColor": "#3E89F2",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "assets/images/home.png",
+        "selectedIconPath": "assets/images/home-active.png"
       },
       {
         "pagePath": "pages/warehouse/warehouse",
-        "text": "仓库"
+        "text": "仓库",
+        "iconPath": "assets/images/warehouse.png",
+        "selectedIconPath": "assets/images/warehouse-active.png"
       },
       {
         "pagePath": "pages/device/device",
-        "text": "设备"
+        "text": "设备",
+        "iconPath": "assets/images/device.png",
+        "selectedIconPath": "assets/images/device-active.png"
       },
       {
         "pagePath": "pages/inventory/inventory",
-        "text": "盘点"
+        "text": "盘点",
+        "iconPath": "assets/images/inventory.png",
+        "selectedIconPath": "assets/images/inventory-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "assets/images/profile.png",
+        "selectedIconPath": "assets/images/profile-active.png"
       }
     ]
   },

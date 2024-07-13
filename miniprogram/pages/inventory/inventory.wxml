@@ -1,2 +1,3 @@
-<!--pages/inventory/inventory.wxml-->
+<!-- pages/inventory/inventory.wxml -->
 <text>pages/inventory/inventory.wxml</text>
+<text>{{systemTitle}}</text>

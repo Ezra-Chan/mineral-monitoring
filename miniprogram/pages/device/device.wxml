@@ -1,2 +1,3 @@
-<!--pages/device/device.wxml-->
+<!-- pages/device/device.wxml -->
 <text>pages/device/device.wxml</text>
+<text>{{systemTitle}}</text>

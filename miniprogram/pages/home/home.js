@@ -1,66 +1,61 @@
 // pages/home/home.js
-Page({
+import { createStoreBindings } from "mobx-miniprogram-bindings";
+import { globalStore } from "../../store/globalStore";
+import { getWareHouseList } from "../../api/radar/index";
 
+Page({
   /**
    * 页面的初始数据
    */
-  data: {
-
-  },
+  data: {},
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    console.log("onLoad", options);
+    this.storeBindings = createStoreBindings(this, {
+      store: globalStore,
+      fields: ["systemTitle"],
+      actions: ["setStore"],
+    });
+    this.test();
+  },
 
+  async test() {
+    const res = await getWareHouseList();
+    console.log("res", res);
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-
+    console.log("onReady");
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow() {
-
-  },
+  onShow() {},
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide() {
-
-  },
+  onHide() {},
 
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload() {
-
-  },
+  onUnload() {},
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh() {
-
-  },
+  onPullDownRefresh() {},
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
-})
+  onReachBottom() {},
+});

@@ -3,11 +3,17 @@ import { observable, autorun } from "mobx-miniprogram";
 export const globalStore = observable({
   systemTitle: "数智储运管理平台",
   abbreviation: "数智储运",
-  activeTab: "home",
-  setGlobalStore(state) {
+  setStore(state) {
     Object.assign(this, state);
   },
 });
+
+// 恢复状态
+const savedStore = wx.getStorageSync("globalStore");
+if (savedStore) {
+  globalStore.systemTitle = savedStore.systemTitle;
+  globalStore.abbreviation = savedStore.abbreviation;
+}
 
 // 持久化逻辑
 autorun(() => {
@@ -16,10 +22,3 @@ autorun(() => {
     abbreviation: globalStore.abbreviation,
   });
 });
-
-// 恢复状态
-const savedGlobalStore = wx.getStorageSync("globalStore");
-if (savedGlobalStore) {
-  globalStore.systemTitle = savedGlobalStore.systemTitle;
-  globalStore.abbreviation = savedGlobalStore.abbreviation;
-}
