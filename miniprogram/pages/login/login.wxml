@@ -1,8 +1,11 @@
 <!-- pages/login/login.wxml -->
-<view class="login-wrapper" style="background: url('../../assets/images/login-bg.jpeg') no-repeat center center; background-size: cover;">
-  <view class="system-title">{{systemTitle}}</view>
-  <view class="login-form">
-    <van-field model:value="{{ account }}" placeholder="请输入用户名" clearable border="{{ true }}" custom-class="login-input" />
-    <van-field model:value="{{ password }}" type="password" clearable placeholder="请输入密码" border="{{ true }}" custom-class="login-input" />
+<view class="login-wrapper-bg">
+  <view class="login-wrapper">
+    <view class="system-title">{{systemTitle}}</view>
+    <view class="login-form">
+      <van-field model:value="{{ account }}" placeholder="请输入用户名" clearable border="{{ true }}" custom-class="login-input" />
+      <van-field model:value="{{ password }}" type="password" clearable placeholder="请输入密码" border="{{ true }}" custom-class="login-input" />
+      <van-button type="info" block>登录</van-button>
+    </view>
   </view>
 </view>
