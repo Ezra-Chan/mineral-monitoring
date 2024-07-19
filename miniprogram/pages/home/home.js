@@ -1,7 +1,6 @@
 // pages/home/home.js
 import { createStoreBindings } from "mobx-miniprogram-bindings";
-import { globalStore } from "../../store/globalStore";
-import { getWareHouseList } from "../../api/radar/index";
+import { globalStore } from "../../store/global";
 
 Page({
   /**
@@ -19,12 +18,6 @@ Page({
       fields: ["systemTitle"],
       actions: ["setStore"],
     });
-    this.test();
-  },
-
-  async test() {
-    const res = await getWareHouseList();
-    console.log("res", res);
   },
 
   /**

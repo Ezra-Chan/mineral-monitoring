@@ -1,60 +1,50 @@
 // pages/login/login.js
+import Toast from "@vant/weapp/toast/toast";
 import { createStoreBindings } from "mobx-miniprogram-bindings";
-import { globalStore } from "../../store/globalStore";
+import { globalStore } from "../../store/global";
+import { monitoringLogin } from "../../utils/account";
+import { initSystem } from "../../utils/init";
+import { Encrypt } from "../../utils/AES";
+import { initDynamicRouter } from "../../utils/router";
 
 Page({
-  /**
-   * 页面的初始数据
-   */
   data: {
-    account: "",
+    username: "",
     password: "",
   },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
+  onLoad() {
     wx.hideHomeButton();
     this.storeBindings = createStoreBindings(this, {
       store: globalStore,
       fields: ["systemTitle"],
-      actions: ["setStore"],
     });
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {},
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {},
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {},
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {},
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {},
+  async login() {
+    if (!this.data.username || !this.data.password) {
+      return Toast.fail("请输入账号和密码");
+    }
+    try {
+      Toast.loading({
+        duration: 0,
+        message: "登录中...",
+        forbidClick: true,
+      });
+      await monitoringLogin({
+        username: this.data.username,
+        password: Encrypt(this.data.password),
+      });
+      const flag = await initSystem();
+      if (flag !== false) {
+        await initDynamicRouter();
+        Toast.success({
+          message: "登录成功",
+          duration: 1500,
+          onClose: () => wx.reLaunch({ url: "/pages/home/home" }),
+        });
+      }
+    } catch (error) {
+      console.error("登录失败", error);
+      return Toast.fail("登录失败");
+    }
+  },
 });

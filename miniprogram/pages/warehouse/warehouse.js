@@ -1,6 +1,6 @@
 // pages/warehouse/warehouse.js
 import { createStoreBindings } from "mobx-miniprogram-bindings";
-import { globalStore } from "../../store/globalStore";
+import { globalStore } from "../../store/global";
 
 Page({
   /**

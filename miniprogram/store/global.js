@@ -1,4 +1,5 @@
 import { observable, autorun } from "mobx-miniprogram";
+import { getNonFuncProperties } from "../utils/func";
 
 export const globalStore = observable({
   systemTitle: "数智储运管理平台",
@@ -8,17 +9,21 @@ export const globalStore = observable({
   },
 });
 
+const nonFuncProperties = getNonFuncProperties(globalStore);
+
 // 恢复状态
 const savedStore = wx.getStorageSync("globalStore");
 if (savedStore) {
-  globalStore.systemTitle = savedStore.systemTitle;
-  globalStore.abbreviation = savedStore.abbreviation;
+  nonFuncProperties.forEach(p => {
+    globalStore[p] = savedStore[p];
+  });
 }
 
 // 持久化逻辑
 autorun(() => {
-  wx.setStorageSync("globalStore", {
-    systemTitle: globalStore.systemTitle,
-    abbreviation: globalStore.abbreviation,
+  const obj = {};
+  nonFuncProperties.forEach(p => {
+    obj[p] = globalStore[p];
   });
+  wx.setStorageSync("globalStore", obj);
 });

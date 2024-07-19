@@ -16,7 +16,7 @@ export const refreshTokenApi = () =>
   );
 
 // 删除token
-export const revokeAccessApi = params => request.delete('/auth/revoke_access', params);
+export const revokeAccessApi = () => request.delete('/auth/revoke_access');
 
 // 删除refresh_token
 export const revokeRefreshApi = () =>

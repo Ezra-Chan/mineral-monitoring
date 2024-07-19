@@ -1,4 +1,4 @@
-import CryptoJS from "crypto-js";
+const CryptoJS = require("crypto-js");
 
 const key = "TTJWeU5DTkZVaVE9";
 const iv = "TTJWeU5DTkZVaVE9";

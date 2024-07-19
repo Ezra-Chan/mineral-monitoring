@@ -3,9 +3,10 @@
   <view class="login-wrapper">
     <view class="system-title">{{systemTitle}}</view>
     <view class="login-form">
-      <van-field model:value="{{ account }}" placeholder="请输入用户名" clearable border="{{ true }}" custom-class="login-input" />
+      <van-field model:value="{{ username }}" placeholder="请输入用户名" clearable border="{{ true }}" custom-class="login-input" />
       <van-field model:value="{{ password }}" type="password" clearable placeholder="请输入密码" border="{{ true }}" custom-class="login-input" />
-      <van-button type="info" block>登录</van-button>
+      <van-button type="info" block bind:click="login">登录</van-button>
     </view>
   </view>
+  <van-toast id="van-toast" />
 </view>

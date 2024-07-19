@@ -1,17 +1,14 @@
-import { kexinApi } from "../../utils/constant";
-import { kexinLogin } from "../../utils/account";
-
-const prefix = "/shmanage";
+import { getToken } from "../../utils/account";
+import { platformIp } from "../../utils/constant";
 
 const request = (url, data, method = "GET", myHeader = {}) => {
   return new Promise((resolve, reject) => {
-    const { companyInfo = {}, radarToken } =
-      wx.getStorageSync("userStore") || {};
+    const { token } = wx.getStorageSync("userStore") || {};
 
-    const header = radarToken
+    const header = token
       ? {
           "content-type": "application/json",
-          Authorization: radarToken,
+          Authorization: token,
           ...myHeader,
         }
       : {
@@ -19,17 +16,16 @@ const request = (url, data, method = "GET", myHeader = {}) => {
           ...myHeader,
         };
     wx.request({
-      url: (companyInfo.kexin_ip || kexinApi) + prefix + url,
+      url: platformIp + url,
       method,
       data,
       header,
       success: async res => {
-        const { data = {} } = res;
-        const { code } = data;
-        if (code === 401) {
-          const flag = await kexinLogin();
-          // flag && wx.reLaunch({ url: "home/home" });
-        } else if (code < 200 || code >= 300) {
+        const { data, statusCode } = res;
+        if (statusCode < 200 || statusCode >= 300) {
+          if (statusCode === 401) {
+            return;
+          }
           reject(res);
         } else {
           resolve(data);
@@ -46,4 +42,6 @@ const request = (url, data, method = "GET", myHeader = {}) => {
 module.exports = {
   get: (url, data, header) => request(url, data, "GET", header),
   post: (url, data, header) => request(url, data, "POST", header),
+  put: (url, data, header) => request(url, data, "PUT", header),
+  delete: (url, header) => request(url, void 0, "DELETE", header),
 };

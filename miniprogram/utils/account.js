@@ -1,8 +1,16 @@
 import Toast from "@vant/weapp/toast/toast";
 import { Decrypt } from "./AES";
 import { encrypt } from "./rsa";
+import { SYSTEM_ROLES_MAP } from "./constant";
 import { getRadarToken } from "../api/radar/index";
-import { userStore } from "../store/userStore";
+import {
+  loginApi,
+  refreshTokenApi,
+  revokeAccessApi,
+  revokeRefreshApi,
+  getCurrentUserApi,
+} from "../api/platform/index";
+import { userStore } from "../store/user";
 
 let isPending = false;
 let kexinPending = false;
@@ -43,9 +51,38 @@ export const kexinLogin = async () => {
   }
 };
 
-export const getToken = async (params = {}, flag) => {
+// 登录本平台
+export const monitoringLogin = async (params = {}) => {
+  const info = { ...params, password: encrypt(Decrypt(params.password)) };
+  const { access_token, refresh_token } = await loginApi(info);
+  userStore.setToken(access_token, refresh_token);
+};
+
+// 刷新token
+const refreshMonitoringToken = async () => {
+  const { access_token } = await refreshTokenApi();
+  userStore.setToken(access_token);
+};
+
+export const getToken = async (params, flag) => {
   const { userInfo, token } = wx.getStorageSync("userStore") || {};
-  if (!userInfo) {
+  if (!userInfo && !params) {
     return wx.reLaunch({ url: "/pages/login/login" });
   }
+};
+
+// 退出登录
+export const logoutMonitoring = async () => {
+  await Promise.all([revokeAccessApi(), revokeRefreshApi()]);
+};
+
+export const isAdmin = () => {
+  return userStore.userInfo?.role_id === SYSTEM_ROLES_MAP.SUPER_ADMIN;
+};
+
+export const getCurrentUser = async () => {
+  try {
+    const { user = {} } = await getCurrentUserApi();
+    userStore.setStore({ userInfo: user });
+  } catch (error) {}
 };

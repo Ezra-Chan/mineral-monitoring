@@ -20,6 +20,9 @@ dependencies:
   mobx-miniprogram-bindings:
     specifier: ^3.0.0
     version: 3.0.0(mobx-miniprogram@6.12.3)
+  querystringify:
+    specifier: ^2.2.0
+    version: 2.2.0
 
 packages:
 
@@ -50,4 +53,8 @@ packages:
 
   /mobx-miniprogram@6.12.3:
     resolution: {integrity: sha512-GEq1EG7jZPnrHYV43oppa6jY9lgbNRuGPiXyOFRoluHjd5LIGBf3a+zXMjzO1AVwrFOWvVRazxtzfiRXMUUqZw==}
+    dev: false
+
+  /querystringify@2.2.0:
+    resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
     dev: false
