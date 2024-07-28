@@ -1,10 +1,9 @@
+import 'dotenv/config';
 import axios from 'axios';
 import { CronJob } from 'cron';
 import { Injectable, Inject, forwardRef, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventService } from '../event/event.service';
-
-const pyIp = 'http://localhost:5000';
 
 @Injectable()
 export class ScheduleService implements OnModuleInit {
@@ -22,25 +21,29 @@ export class ScheduleService implements OnModuleInit {
   }
 
   async checkAlert() {
-    await axios.get(pyIp + '/api/v1/check_alert');
+    await axios.get(process.env.PY_IP + '/api/v1/check_alert');
   }
 
   async scheduleCronJobs() {
-    const { data: { results = {} } = {} } = await axios.get(
-      pyIp + '/api/v1/allConfig',
-    );
-    const { isAlert, alertFrequency, alertTime } = results;
-    if (isAlert === '1') {
-      const times = alertTime
-        ?.split(',')
-        .map((t: string) => alertFrequency + '_' + t);
-      times.forEach((t: keyof CronExpression) => {
-        const cronJob = new CronJob(
-          CronExpression[t],
-          this.checkAlert.bind(this),
-        );
-        cronJob.start();
-      });
+    try {
+      const { data: { results = {} } = {} } = await axios.get(
+        process.env.PY_IP + '/api/v1/allConfig',
+      );
+      const { isAlert, alertFrequency, alertTime } = results;
+      if (isAlert === '1') {
+        const times = alertTime
+          ?.split(',')
+          .map((t: string) => alertFrequency + '_' + t);
+        times.forEach((t: keyof CronExpression) => {
+          const cronJob = new CronJob(
+            CronExpression[t],
+            this.checkAlert.bind(this),
+          );
+          cronJob.start();
+        });
+      }
+    } catch (error) {
+      console.error('Error scheduling cron jobs:', error);
     }
   }
 
