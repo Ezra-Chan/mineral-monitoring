@@ -1,0 +1,50 @@
+/**index.wxss**/
+.profile {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20% 50rpx;
+  box-sizing: border-box;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 50rpx;
+  width: 100%;
+}
+
+.avatar-wrapper {
+  padding: 0;
+  margin: 0;
+}
+
+.avatar {
+  display: block;
+  width: 160rpx;
+  height: 160rpx;
+}
+
+.van-image {
+  width: 100%;
+  height: 100%;
+}
+
+.nickname-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.nick-name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.role-name {
+  font-size: 1.2rem;
+  color: #444;
+}

@@ -1,6 +1,7 @@
 import { observable, autorun } from "mobx-miniprogram";
 import dayjs from "dayjs";
 import { getNonFuncProperties } from "../utils/func";
+import { defaultAvatarUrl } from "../utils/constant";
 
 export const userStore = observable({
   token: "",
@@ -12,6 +13,7 @@ export const userStore = observable({
   radarToken: "",
   radarUser: void 0,
   monitorUser: void 0,
+  userAvatar: defaultAvatarUrl,
   setToken(token, refreshToken) {
     if (token) {
       this.token = "Bearer " + token;

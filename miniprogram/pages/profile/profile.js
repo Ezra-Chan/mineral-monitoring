@@ -1,6 +1,7 @@
 // pages/profile/profile.js
 import { createStoreBindings } from "mobx-miniprogram-bindings";
-import { globalStore } from "../../store/global";
+import { userStore } from "../../store/user";
+import { defaultAvatarUrl } from "../../utils/constant";
 
 Page({
   /**
@@ -8,49 +9,32 @@ Page({
    */
   data: {},
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-    this.storeBindings = createStoreBindings(this, {
-      store: globalStore,
-      fields: ["systemTitle"],
-      actions: ["setStore"],
+  async onChooseAvatar(e) {
+    const { avatarUrl } = e.detail;
+    console.log("avatarUrl", avatarUrl);
+    const base64 = await new Promise(resolve => {
+      //获取全局唯一的文件管理器
+      wx.getFileSystemManager().readFile({
+        //读取本地文件内容
+        filePath: avatarUrl, // 文件路径
+        encoding: "base64", // 返回格式
+        success: ({ data }) => resolve("data:image/png;base64," + data),
+        fail(res) {
+          console.log("fail", res);
+        },
+      });
     });
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {},
+  async logout() {},
 
   /**
-   * 生命周期函数--监听页面显示
+   * 生命周期函数--监听页面加载
    */
-  onShow() {},
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {},
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {},
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {},
+  onLoad() {
+    this.storeBindings = createStoreBindings(this, {
+      store: userStore,
+      fields: ["userInfo", "userAvatar"],
+    });
+  },
 });

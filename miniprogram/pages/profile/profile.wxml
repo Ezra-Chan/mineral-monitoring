@@ -1,3 +1,13 @@
 <!-- pages/profile/profile.wxml -->
-<text>pages/profile/profile.wxml</text>
-<text>{{systemTitle}}</text>
+<view class="profile">
+  <view class="user-info">
+    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+      <van-image round fit="cover" class="avatar" src="{{userAvatar}}" />
+    </button>
+    <view class="nickname-wrapper">
+      <text class="nick-name van-ellipsis">{{userInfo.name}}</text>
+      <text class="role-name van-ellipsis">{{userInfo.role_name}}</text>
+    </view>
+  </view>
+  <van-button type="info" size="large" round block bind:click="logout">退出登录</van-button>
+</view>
