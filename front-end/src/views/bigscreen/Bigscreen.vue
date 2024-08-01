@@ -8,7 +8,7 @@
             :key="wareHouseDetail.addressCityDesc"
             :city="cities[wareHouseDetail.addressCityDesc] ?? wareHouseDetail.addressCityDesc"
           />
-          <el-text type="primary" class="fs-1 p-r-1 cursor-pointer" v-if="currentWareHouse">
+          <el-text type="primary" class="fs-1 p-r-1" v-if="currentWareHouse">
             {{ wareHouseInfo }}
           </el-text>
         </div>
