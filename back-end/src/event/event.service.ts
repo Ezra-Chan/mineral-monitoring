@@ -23,7 +23,14 @@ export class EventService {
   }
 
   async findByParams(params: any) {
-    const { cameraId, eventTime, size } = params;
+    const {
+      cameraId,
+      eventTime,
+      size = 100,
+      pageSize = 100,
+      pageNo = 1,
+      types,
+    } = params;
     let filter: FindOptionsWhere<Event> = {};
     if (cameraId) {
       let cameras = [];
@@ -42,30 +49,55 @@ export class EventService {
         eventTime: MoreThanOrEqual(eventTime),
       };
     }
+    const count: { [key: string]: number } = {};
+    if (types) {
+      types.forEach(async (type: string) => {
+        const typeFilter = {
+          ...filter,
+          eventName: type,
+        };
+        const options: FindManyOptions = {
+          where: typeFilter,
+          order: {
+            eventTime: 'DESC',
+          },
+        };
+        count[type] = await this.eventRepository.count(options);
+      });
+    }
     const options: FindManyOptions = {
       where: filter,
       order: {
         eventTime: 'DESC',
       },
+      skip: (pageNo - 1) * pageSize,
+      take: pageSize,
     };
     if (!eventTime) {
-      options.take = size ?? 100;
+      options.take = size; // 老版本需要
     }
-    const events = await this.eventRepository.find(options);
-    if (eventTime && events.length < 100) {
+    const [events, total] = await this.eventRepository.findAndCount(options);
+    if (eventTime && total < size) {
       let newFilter: FindOptionsWhere<Event> = {};
       if (cameraId) {
         newFilter = { cameraId: filter.cameraId };
       }
-      return await this.eventRepository.find({
+      const e = await this.eventRepository.find({
         where: newFilter,
         order: {
           eventTime: 'DESC',
         },
-        take: size ?? 100,
+        take: size,
       });
+      return eventTime
+        ? {
+            events: e,
+            total,
+            count,
+          }
+        : events;
     } else {
-      return events;
+      return eventTime ? { events, total, count } : events;
     }
   }
 

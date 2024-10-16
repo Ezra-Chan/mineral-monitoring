@@ -5,36 +5,49 @@
     element-loading-background="#0004"
   >
     <div class="w-full h-25" ref="eventTypeRef" />
-    <el-table
-      class="event-list w-full h-calc-6.75!"
-      stripe
-      :data="dataSource"
-      :header-row-style="{
-        background: 'rgba(14, 188, 225, 0.3)',
-        color: 'var(--el-color-primary)',
-      }"
-    >
-      <el-table-column
-        v-for="item in columns"
-        :key="item.prop"
-        :prop="item.prop"
-        :label="item.label"
-        :min-width="item.minWidth || 0"
+    <div class="event-list w-full h-calc-6.75">
+      <el-table
+        class="w-full h-calc-2!"
+        stripe
+        :data="dataSource"
+        :header-row-style="{
+          background: 'rgba(14, 188, 225, 0.3)',
+          color: 'var(--el-color-primary)',
+        }"
+      >
+        <el-table-column
+          v-for="item in columns"
+          :key="item.prop"
+          :prop="item.prop"
+          :label="item.label"
+          :min-width="item.minWidth || 0"
+          :formatter="item.formatter"
+        />
+        <el-table-column label="操作" min-width="90" align="center">
+          <template #default="{ row }">
+            <el-text
+              v-if="row.cameraId"
+              type="primary"
+              class="cursor-pointer"
+              size="small"
+              @click="handleView(row)"
+            >
+              查看
+            </el-text>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        class="h-8 justify-end"
+        layout="prev, pager, next"
+        size="small"
+        :current-page="pageNo"
+        :page-size="100"
+        :total="types.total || 0"
+        :hide-on-single-page="true"
+        @current-change="handleCurrentChange"
       />
-      <el-table-column label="操作" min-width="90" align="center">
-        <template #default="{ row }">
-          <el-text
-            v-if="row.cameraId"
-            type="primary"
-            class="cursor-pointer"
-            size="small"
-            @click="handleView(row)"
-          >
-            查看
-          </el-text>
-        </template>
-      </el-table-column>
-    </el-table>
+    </div>
   </div>
   <el-dialog v-model="dialogVisible" title="关键画面" width="1000" :before-close="handleClose">
     <div class="w-full h-xl" v-loading="imgLoading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -57,7 +70,7 @@ import { getAllEvents } from '@/api/monitoring';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { Decrypt } from '@/utils/AES';
-import { computed } from 'vue';
+import { eventListTypes } from '@/utils/constant';
 
 const props = defineProps({
   cameras: {
@@ -72,6 +85,7 @@ const columns = [
     prop: 'eventTime',
     label: '时间',
     minWidth: 160,
+    formatter: (_, c, val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss'),
   },
   {
     prop: 'eventName',
@@ -92,6 +106,7 @@ let loading = $ref(false);
 let imgLoading = $ref(false);
 let dialogVisible = $ref(false);
 let imgSrc = $ref('');
+let pageNo = $ref(1);
 const types = ref({});
 
 const { toggle } = useFullscreen(imgRef);
@@ -112,32 +127,21 @@ const cameraIds = computed(() =>
 const getEventsList = async (needLoading = true) => {
   needLoading && (loading = true);
   try {
-    const { data = [] } = await getAllEvents({
+    const { data: { events = [], total = 0, count = {} } = {} } = await getAllEvents({
       size: 100,
       eventTime: dayjs().format('YYYY-MM-DD 00:00:00'),
       cameraId: cameraIds.value,
+      types: eventListTypes,
+      pageSize: 100,
+      pageNo,
     });
     const typeMap = {
-      区域进入: 0,
-      人员出入: 0,
-      车辆出入: 0,
-      total: 0,
+      ...count,
+      total,
     };
-    const today = dayjs().format('YYYY-MM-DD');
-    dataSource.value = data.map(ev => {
-      const { eventTime, eventName } = ev;
-      const formatTime = dayjs(eventTime).format('YYYY-MM-DD HH:mm:ss');
-      if (formatTime.startsWith(today)) {
-        typeMap[eventName]++;
-        typeMap.total++;
-      }
-      return {
-        ...ev,
-        eventTime: formatTime,
-      };
-    });
+    dataSource.value = events;
     types.value = typeMap;
-    emits('update', typeMap.total);
+    emits('update', total);
   } catch (error) {
     console.error(error);
   } finally {
@@ -145,11 +149,15 @@ const getEventsList = async (needLoading = true) => {
   }
 };
 
+const handleCurrentChange = page => {
+  pageNo = page;
+  getEventsList(false);
+};
+
 const setOptions = () => {
   if (myChart.value) {
-    const typeArr = ['区域进入', '人员出入', '车辆出入'];
     let series = [];
-    typeArr.forEach((type, index) => {
+    eventListTypes.forEach((type, index) => {
       const current = types.value[type];
       const left = types.value.total - current;
       series = [
@@ -163,7 +171,7 @@ const setOptions = () => {
             hoverAnimation: false,
             data: [
               {
-                value: types.value[type],
+                value: current,
                 label: {
                   normal: {
                     show: true,
@@ -210,7 +218,7 @@ const setOptions = () => {
       ];
     });
     myChart.value.setOption({
-      title: typeArr.map((type, index) => ({
+      title: eventListTypes.map((type, index) => ({
         text: `${type}: ${types.value[type]}`,
         left: index * 33.33 + 16.66 + '%',
         bottom: -5,
@@ -297,9 +305,18 @@ onMounted(() => {
 
 <style lang="less">
 .event-list {
-  &.el-table {
+  .el-table {
     --el-table-border-color: transparent;
     --el-fill-color-lighter: rgba(14, 188, 225, 0.1);
+  }
+  .el-pagination {
+    button {
+      color: #fff;
+    }
+
+    .el-pager li:not(.is-active) {
+      color: #fff;
+    }
   }
 }
 </style>

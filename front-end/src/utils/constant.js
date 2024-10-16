@@ -13,6 +13,8 @@ export const radarChartTypes = [
   },
 ];
 
+export const eventListTypes = ['区域进入', '人员出入', '车辆出入'];
+
 export const colors = ['rgb(101,214,251)', 'rgb(30, 200, 90)', 'rgb(50,117,246)'];
 
 export const barColors = ['rgb(217,207,152)', 'rgb(10, 240, 60, 0.5)', 'rgb(50,117,246)'];
