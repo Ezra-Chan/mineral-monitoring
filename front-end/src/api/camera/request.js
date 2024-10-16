@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { Decrypt } from '@/utils/AES';
+import { cameraLoginParams } from './constant';
 
 let apiContextPath = '';
-if (import.meta.env.DEV) {
-  apiContextPath = '/api2';
-}
+// if (import.meta.env.DEV) {
+//   apiContextPath = '/api2';
+// }
 
 export const getInstance = () => {
   const instance = axios.create({
@@ -16,17 +17,20 @@ export const getInstance = () => {
   instance.defaults.headers.post['Content-Type'] = 'application/json';
 
   instance.interceptors.request.use(config => {
-    const { companyInfo } = JSON.parse(localStorage.getItem('user-state') || '{}');
+    const { companyInfo, monitorInfo: { user: { u, p } = {}, token, domain } = {} } = JSON.parse(
+      localStorage.getItem('user-state') || '{}',
+    );
     if (apiContextPath) {
       config.baseURL = apiContextPath;
     } else if (!apiContextPath && companyInfo) {
-      config.baseURL = companyInfo.monitor_ip;
+      config.baseURL = domain ? 'https:' + domain : companyInfo.monitor_ip;
     }
     if (!config.headers) config.headers = {};
     if (!config.headers.Authorization) {
       if (localStorage.getItem('user-state')) {
-        const { monitorUser: { u, p } = {} } = JSON.parse(localStorage.getItem('user-state'));
-        config.headers.Authorization = `Basic ${btoa(`${u}:${Decrypt(p)}`)}`;
+        config.headers.Authorization = token
+          ? 'Bearer ' + token
+          : `Basic ${btoa(`${u}:${Decrypt(p)}`)}`;
       }
     }
     return config;

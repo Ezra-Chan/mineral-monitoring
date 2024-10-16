@@ -8,16 +8,17 @@ import videojs from 'video.js';
 import lang_zhcn from 'video.js/dist/lang/zh-CN.json';
 import 'video.js/dist/video-js.min.css';
 import { useUserStore } from '@/store/user';
+import { handleCameraPath1 } from '@/utils';
 
 videojs.addLanguage('zh-CN', lang_zhcn);
 
-videojs.Vhs.xhr.beforeRequest = function (options) {
-  const headers = options.headers || {};
-  headers['Authorization'] = 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=';
-  console.log('headers', headers);
-  options.headers = headers;
-  return options;
-};
+// videojs.Vhs.xhr.beforeRequest = function (options) {
+//   const headers = options.headers || {};
+//   headers['Authorization'] = 'Basic cm9vdDpIaHN6Y3lAMTIzNDU=';
+//   console.log('headers', headers);
+//   options.headers = headers;
+//   return options;
+// };
 
 const props = defineProps({
   src: {
@@ -32,6 +33,9 @@ const videoInst = shallowRef();
 const visibility = useDocumentVisibility();
 const time = $ref(dayjs().valueOf());
 const userStore = useUserStore();
+const { companyInfo = {}, monitorInfo: { domain, token } = {} } = userStore;
+const ip = domain ? 'https:' + domain : companyInfo.monitor_ip + '/';
+
 const initVideo = () => {
   videoInst.value = videojs(videoRef, {
     autoplay: 'muted',
@@ -43,10 +47,24 @@ const initVideo = () => {
     playbackRates: [1.0],
     sources: [
       {
-        src: userStore.companyInfo.monitor_ip + '/live/media' + props.src + '?format=mp4',
+        src: ip + 'live/media' + props.src + '?format=mp4' + (token ? `&authToken=${token}` : ''),
         type: 'video/mp4',
       },
     ],
+  });
+  videoInst.value.on('error', e => {
+    if (videoInst.value.cache_.src.includes(props.src)) {
+      videoInst.value.src({
+        src:
+          ip +
+          'live/media' +
+          handleCameraPath1(props.src) +
+          '?format=mp4' +
+          (token ? `&authToken=${token}` : ''),
+        type: 'video/mp4',
+      });
+      videoInst.value.load();
+    }
   });
   videoInst.value.on('timeupdate', () => {
     const videoPlayTime = videoInst.value.currentTime();

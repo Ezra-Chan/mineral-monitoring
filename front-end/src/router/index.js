@@ -6,6 +6,7 @@ import { useGlobalStore } from '@/store/global';
 import { staticRouter, errorRouter } from '@/router/staticRouter';
 import { initDynamicRouter } from '@/router/dynamicRouter';
 import { LOGIN_URL, ROUTER_WHITE_LIST } from '@/config';
+import { cameraLogin } from '@/utils/account';
 
 /**
  * @description 📚 路由参数配置简介
@@ -62,6 +63,8 @@ router.beforeEach(async (to, from, next) => {
 
   // 7.存储 routerName 做按钮权限筛选
   authStore.setRouteName(to.name);
+
+  await cameraLogin();
 
   // 8.正常访问页面
   next();

@@ -5,36 +5,42 @@
     element-loading-background="#0004"
   >
     <div class="w-full h-25" ref="eventTypeRef" />
-    <el-table
-      class="event-list w-full h-calc-6.75!"
-      stripe
-      :data="dataSource"
-      :header-row-style="{
-        background: 'rgba(14, 188, 225, 0.3)',
-        color: 'var(--el-color-primary)',
-      }"
-    >
-      <el-table-column
-        v-for="item in columns"
-        :key="item.prop"
-        :prop="item.prop"
-        :label="item.label"
-        :min-width="item.minWidth || 0"
-      />
-      <el-table-column label="操作" min-width="90" align="center">
-        <template #default="{ row }">
-          <el-text
-            v-if="row.cameraId"
-            type="primary"
-            class="cursor-pointer"
-            size="small"
-            @click="handleView(row)"
-          >
-            查看
-          </el-text>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-auto-resizer>
+      <template #default="{ height, width }">
+        <el-table-v2
+          stripe
+          :data="dataSource"
+          :columns="columns"
+          :header-row-style="{
+            background: 'rgba(14, 188, 225, 0.3)',
+            color: 'var(--el-color-primary)',
+          }"
+          :width="width"
+          :height="height"
+        >
+          <!-- <el-table-column
+            v-for="item in columns"
+            :key="item.prop"
+            :prop="item.prop"
+            :label="item.label"
+            :min-width="item.minWidth || 0"
+          />
+          <el-table-column label="操作" min-width="90" align="center">
+            <template #default="{ row }">
+              <el-text
+                v-if="row.cameraId"
+                type="primary"
+                class="cursor-pointer"
+                size="small"
+                @click="handleView(row)"
+              >
+                查看
+              </el-text>
+            </template>
+          </el-table-column> -->
+        </el-table-v2>
+      </template>
+    </el-auto-resizer>
   </div>
   <el-dialog v-model="dialogVisible" title="关键画面" width="1000" :before-close="handleClose">
     <div class="w-full h-xl" v-loading="imgLoading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -50,14 +56,13 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script lang="jsx" setup>
 import dayjs from 'dayjs';
 import * as echarts from 'echarts';
 import { getAllEvents } from '@/api/monitoring';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { Decrypt } from '@/utils/AES';
-import { computed } from 'vue';
 
 const props = defineProps({
   cameras: {
@@ -69,18 +74,35 @@ const emits = defineEmits(['update']);
 
 const columns = [
   {
-    prop: 'eventTime',
-    label: '时间',
+    dataKey: 'eventTime',
+    title: '时间',
     minWidth: 160,
   },
   {
-    prop: 'eventName',
-    label: '事件',
+    dataKey: 'eventName',
+    title: '事件',
+    minWidth: 0,
   },
   {
-    prop: 'position',
-    label: '位置',
+    dataKey: 'position',
+    title: '位置',
     minWidth: 150,
+  },
+  {
+    title: '操作',
+    minWidth: 90,
+    align: 'center',
+    cellRenderer: ({ rowData }) => (
+      <el-text
+        v-if="rowData.cameraId"
+        type="primary"
+        class="cursor-pointer"
+        size="small"
+        onClick={() => handleView(rowData)}
+      >
+        查看
+      </el-text>
+    ),
   },
 ];
 const colors = ['#fbc292', '#06fbfe', '#A098FC', '#4386FA'];
@@ -245,7 +267,9 @@ const checkImage = (urls, i, callback) => {
       const imageUrl = URL.createObjectURL(blob);
       callback(true, imageUrl);
     })
-    .catch(() => {
+    .catch(err => {
+      console.log('Error=====:', err);
+
       if (i === 0) {
         checkImage(urls, 1, callback);
       } else {

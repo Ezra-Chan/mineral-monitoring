@@ -103,12 +103,12 @@ export const IE_TYPE = [
 
 export const ALERT_STATUS = [
   {
-    label: '已读',
+    label: '已处理',
     value: true,
     tagType: 'success',
   },
   {
-    label: '未读',
+    label: '未处理',
     value: false,
     tagType: 'danger',
   },
@@ -520,7 +520,7 @@ export const ROLE_PERMISSIONS = [
       },
       {
         id: '12-2',
-        title: '已读',
+        title: '处理',
         name: 'read',
       },
     ],

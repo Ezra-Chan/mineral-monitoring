@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
+import axios from 'axios';
 import { getRadarToken } from '@/api/radar';
+import { cameraLoginParams, cameraDomians } from '@/api/camera/constant';
 import {
   loginApi,
   refreshTokenApi,
@@ -14,6 +16,7 @@ import { initDynamicRouter } from '@/router/dynamicRouter';
 import { Decrypt } from '@/utils/AES';
 import { encrypt } from '@/utils/rsa';
 import { SYSTEM_ROLES_MAP } from '@/utils/constant';
+import { ElMessage } from 'element-plus';
 
 let isPending = false;
 let kexinPending = false;
@@ -45,6 +48,43 @@ const refreshMonitoringToken = async () => {
   const { data = {} } = await refreshTokenApi();
   const { access_token } = data;
   userStore.setToken(access_token);
+};
+
+// 登录视频平台
+export const cameraLogin = async () => {
+  try {
+    const userStore = useUserStore();
+    const { monitorInfo = {}, companyInfo = {} } = userStore;
+    const { user, token, tokenTime = 0 } = monitorInfo;
+    const { monitor_ip } = companyInfo;
+    if (
+      user &&
+      monitor_ip?.startsWith('https://') &&
+      (!token || dayjs().valueOf() - tokenTime > 23 * 60 * 60 * 1000)
+    ) {
+      const { u, p } = user;
+      const [url, params] = cameraLoginParams({
+        email: u,
+        password: Decrypt(p),
+      });
+      const { data = {} } = await axios.post(monitor_ip + url, params);
+      const { accessToken } = data;
+      const { data: { domains = [] } = {} } = await axios.get(monitor_ip + cameraDomians, {
+        headers: {
+          Authorization: accessToken,
+        },
+      });
+      userStore.setMonitorInfo({
+        ...monitorInfo,
+        token: accessToken,
+        tokenTime: dayjs().valueOf(),
+        domain: domains[0]?.domain?.webClientURL || '',
+      });
+    }
+  } catch (error) {
+    console.error('cameraLogin', error);
+    ElMessage({ message: '监控平台登录失败', type: 'error' });
+  }
 };
 
 // 登录可信仓

@@ -18,7 +18,7 @@
         >
           {{ globalStore.systemTitle }}
         </el-text>
-        <div class="flex items-center gap-8 absolute right-0 self-start p-r-4 h-12.5">
+        <div class="flex items-center gap-4 absolute right-0 self-start p-r-4 h-12.5">
           <el-select v-model="currentWareHouse" :teleported="false" style="width: 10rem">
             <el-option
               v-for="item in warehouses"
@@ -28,6 +28,7 @@
             />
           </el-select>
           <real-time />
+          <Device v-if="warehouses.length && Object.keys(DeviceButtons).length" />
           <Message
             v-if="warehouses.length && Object.keys(BUTTONS).length"
             style="--color: #fff"
@@ -150,6 +151,7 @@ import BarChart from './components/BarChart.vue';
 import EventList from './components/EventList.vue';
 import VideoPlayer from '../../components/Video.vue';
 import Message from '@/components/layout/Header/components/StationMessage.vue';
+import Device from '@/components/layout/Header/components/DeviceStatus.vue';
 import { useAuthButtons } from '@/hooks/useAuthButtons';
 
 const route = useRoute();
@@ -161,6 +163,7 @@ const barChartSwitch = useStorage('barChartSwitch', false);
 const eventListSwitch = useStorage('eventListSwitch', false);
 
 const { BUTTONS } = useAuthButtons('alert');
+const { BUTTONS: DeviceButtons } = useAuthButtons('device');
 const { userInfo, warehouses } = $(userStore);
 let show = $ref(false);
 let cameras = $ref({});

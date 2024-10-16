@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', {
     warehouses: [], // 有权限的仓库
     radarToken: '',
     radarUser: void 0,
-    monitorUser: void 0,
+    monitorInfo: void 0,
   }),
   getters: {},
   actions: {
@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', {
         this.warehouses = void 0;
         this.radarToken = '';
         this.radarUser = void 0;
-        this.monitorUser = void 0;
+        this.monitorInfo = void 0;
       }
     },
     setRadarToken(token) {
@@ -48,8 +48,8 @@ export const useUserStore = defineStore('user', {
     setRadarUser(radarUser) {
       this.radarUser = radarUser;
     },
-    setMonitorUser(monitorUser) {
-      this.monitorUser = monitorUser;
+    setMonitorInfo(monitorInfo) {
+      this.monitorInfo = monitorInfo;
     },
   },
   persist: piniaPersistConfig('user-state'),

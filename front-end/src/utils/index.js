@@ -214,3 +214,5 @@ export const formatMenuAndButton = (menus = []) => {
 };
 
 export const handleCameraPath = path => path.replace('hosts', '').replace(/0$/, '1');
+
+export const handleCameraPath1 = path => path.replace('hosts', '').replace(/1$/, '0');

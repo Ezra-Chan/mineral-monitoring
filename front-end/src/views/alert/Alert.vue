@@ -25,7 +25,7 @@
           :icon="Check"
           @click="readAlert(scope.row)"
         >
-          已读
+          处理
         </el-button>
       </template>
     </ProTable>
@@ -136,17 +136,30 @@ const formColumns = markRaw([
       },
     },
   },
+  {
+    formItem: {
+      label: '备注',
+      prop: 'remark',
+    },
+    component: 'el-input',
+    attrs: {
+      type: 'textarea',
+      rows: 5,
+    },
+  },
 ]);
 
 const readAlert = row => {
-  ElMessageBox.confirm(`确定该事件已处理吗？`, '提示', {
+  ElMessageBox.prompt(`确定该事件已处理吗？`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
+    inputPlaceholder: '请输入备注',
+    inputType: 'textarea',
   })
-    .then(async () => {
+    .then(async ({ value }) => {
       try {
-        await readAlertApi(row.id);
+        await readAlertApi(row.id, value);
         ElMessage.success('操作成功');
         proTable.value.search();
         bus.emit();

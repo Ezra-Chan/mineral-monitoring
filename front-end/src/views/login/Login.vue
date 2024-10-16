@@ -64,7 +64,7 @@ import { useAuthStore } from '@/store/auth';
 import { Encrypt } from '@/utils/AES';
 import { objOmit } from '@/utils';
 import { initSystem } from '@/utils/init';
-import { monitoringLogin, kexinLogin, isAdmin } from '@/utils/account';
+import { monitoringLogin, kexinLogin, cameraLogin, isAdmin } from '@/utils/account';
 import { getCompanyApi } from '@/api/platform';
 import { initDynamicRouter } from '@/router/dynamicRouter';
 
@@ -118,12 +118,15 @@ const getOtherPlatformInfo = async () => {
     u: kexin_user,
     p: Encrypt(kexin_pwd),
   });
-  userStore.setMonitorUser({
-    u: monitor_user,
-    p: Encrypt(monitor_pwd),
+  userStore.setMonitorInfo({
+    user: {
+      u: monitor_user,
+      p: Encrypt(monitor_pwd),
+    },
   });
   userStore.setCompanyInfo(objOmit(data.company, ['kexin_pwd', 'monitor_pwd']));
   await kexinLogin();
+  await cameraLogin();
   ElMessage({ type: 'success', message: '登录成功' });
 };
 
